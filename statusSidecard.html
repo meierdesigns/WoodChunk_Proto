@@ -1,0 +1,29 @@
+<!-- Status-Sidecard: Button zum Öffnen -->
+<button id="statusSidecardBtn" class="status-sidecard-btn">🛈</button>
+
+<!-- Status-Sidecard: Overlay -->
+<div id="statusSidecardOverlay" class="status-sidecard-overlay"></div>
+
+<!-- Status-Sidecard: Hauptfenster -->
+<div id="statusSidecard" class="status-sidecard">
+  <button id="closeStatusSidecard" class="status-sidecard-close">×</button>
+  <h2 class="status-sidecard-title">Statusmeldungen</h2>
+  <ul id="statusList" class="status-sidecard-list"></ul>
+</div>
+
+<style>
+.status-sidecard {
+  max-height: 500px;
+  overflow-y: auto;
+}
+</style>
+
+<!--
+  Styles für diese Klassen sollten in einer zentralen CSS-Datei gepflegt werden, z.B.:
+  .status-sidecard-btn { ... }
+  .status-sidecard-overlay { ... }
+  .status-sidecard { ... }
+  .status-sidecard-close { ... }
+  .status-sidecard-title { ... }
+  .status-sidecard-list { ... }
+--> 

@@ -270,9 +270,16 @@ th .icon, td .icon {
 </head>
 <body>
 <div id="gameContainer">
-  <div style="display: flex; justify-content: space-between; width: 100%; align-items: flex-start;">
-    <div id="score" class="status" style="min-width: 500px; width: 500px;"><span class="icon">💰</span> 0 | <span class="icon">🪵</span> 0 | <span class="icon">🌲</span> <span id="treeCount">10</span></div>
-    <div class="weather-group status" style="min-width: 200px;">
+  <div class="topbar-flex">
+    <div class="topbar-left">
+      <div class="score status"><span class="icon">💰</span> 0 | <span class="icon">🪵</span> 0 | <span class="icon">🌲</span> <span id="treeCount">10</span></div>
+      <div class="topbar-progress">
+        <progress-bar icon="🪓" value="0" max="10" barClass=""></progress-bar>
+        <progress-bar icon="🌱" value="0" max="10" barClass="forester"></progress-bar>
+        <progress-bar icon="🪑" value="0" max="40" barClass="carpenter"></progress-bar>
+      </div>
+    </div>
+    <div class="topbar-weather weather-group status">
       <div class="weather-row">
         <span class="weather-icon-current"></span>
         <div class="divider"></div>
@@ -289,13 +296,12 @@ th .icon, td .icon {
       </div>
     </div>
   </div>
-  <div id="progressBarsWrapper" style="margin-bottom:32px;">
-    <progress-bar icon="🪓" value="0" max="10" barClass=""></progress-bar>
-    <progress-bar icon="🌱" value="0" max="10" barClass="forester"></progress-bar>
-    <progress-bar icon="🪑" value="0" max="40" barClass="carpenter"></progress-bar>
-  </div>
   <div id="workerVisuals"></div>
   <div class="button-group" style="flex-direction: column; gap: 20px;">
+    <div class="topbar-actions">
+      <button id="chopTreeButton">🌲 Bäume hacken</button>
+      <button id="researchButton" onclick="openResearchModal()">🔬 Forschung</button>
+    </div>
     <div>
       <div class="button-section-title">Arbeitsamt</div>
       <div class="button-section">
@@ -339,8 +345,7 @@ th .icon, td .icon {
         </table>
       </div>
       <div style="width:100%; display:flex; justify-content:center; margin-top:12px; gap: 12px;">
-        <button id="chopTreeButton" style="font-size:18px; padding:10px 24px;">🌲 Bäume hacken</button>
-        <button id="researchButton" onclick="openResearchModal()" style="font-size:14px; padding:6px 12px;">🔬 Forschung</button>
+        <!-- Buttons entfernt, da sie jetzt oben stehen -->
       </div>
     </div>
     <div>
@@ -362,13 +367,13 @@ th .icon, td .icon {
               <td>15</td>
               <td><button id="chairButton">Bauen</button></td>
             </tr>
-            <tr>
+            <tr style="display:none" id="tableRow">
               <td>🛋️ Tisch</td>
               <td>20</td>
               <td>40</td>
               <td><button id="tableButton">Bauen</button></td>
             </tr>
-            <tr>
+            <tr style="display:none" id="cabinetRow">
               <td>🚪 Schrank</td>
               <td>50</td>
               <td>100</td>
@@ -381,6 +386,8 @@ th .icon, td .icon {
   </div>
   
   <button id="resetBtn">🔄 Spiel zurücksetzen</button>
+  <button id="musicPopoutBtn" class="inline-btn" title="Musikplayer öffnen">🎵</button>
+  <button id="statusSidecardBtn" class="inline-btn">🛈</button>
 </div>
 <!-- Status Sidecard Button und Sidecard -->
 <button id="statusSidecardBtn" style="position:fixed;bottom:32px;right:32px;z-index:2000;font-size:2em;padding:12px 16px;border-radius:50%;background:#222;color:#ffd700;border:2px solid #ffd700;box-shadow:2px 2px 8px #000;cursor:pointer;">🛈</button>
@@ -435,31 +442,28 @@ function calculateWorkerPrice(basePrice, count) {
 }
 
 function updateDisplay() {
-  document.getElementById("score").innerHTML = 
-    `<span class="icon">💰</span> ${formatNumber(gold)} | ` +
-    `<span class="icon">🪵</span> ${formatNumber(holz)} | ` +
-    `<span class="icon">🌲</span> <span id="treeCount">${formatNumber(trees)}</span>`;
-  
+  document.querySelectorAll('.score').forEach(scoreElem => {
+    scoreElem.innerHTML = 
+      `<span class="icon">💰</span> ${formatNumber(gold)} | ` +
+      `<span class="icon">🪵</span> ${formatNumber(holz)} | ` +
+      `<span class="icon">🌲</span> <span id="treeCount">${formatNumber(trees)}</span>`;
+  });
   // Update worker counts
   document.getElementById("workerCount").textContent = workers;
   document.getElementById("foresterCount").textContent = foresters;
   document.getElementById("carpenterCount").textContent = carpenters;
-  
   // Preise für normale Arbeiter
   const workerPrice = calculateWorkerPrice(workerBaseCost, workers - 1);
   const foresterPrice = calculateWorkerPrice(foresterBaseCost, foresters - 1);
   const carpenterPrice = calculateWorkerPrice(carpenterBaseCost, carpenters);
-
   // Tabelle aktualisieren
   document.querySelector('tr:nth-child(1) td:nth-child(3)').textContent = formatNumber(workerPrice) + '💰';
   document.querySelector('tr:nth-child(2) td:nth-child(3)').textContent = formatNumber(foresterPrice) + '💰';
   document.querySelector('tr:nth-child(3) td:nth-child(3)').textContent = formatNumber(carpenterPrice) + '💰';
-
   // Buttons aktivieren/deaktivieren basierend auf den neuen Preisen
   document.getElementById("hireWorkerButton").disabled = gold < workerPrice;
   document.getElementById("hireForesterButton").disabled = gold < foresterPrice;
   document.getElementById("hireCarpenterButton").disabled = gold < carpenterPrice;
-  
   // Rest der updateDisplay Funktion bleibt gleich
   document.getElementById("toolLevelAxe").innerText = toolLevel;
   document.getElementById("toolLevelPlant").innerText = plantToolLevel;
@@ -500,11 +504,11 @@ function loadGameFromServer() {
         toolLevel = save.toolLevel; plantToolLevel = save.plantToolLevel; carpenterToolLevel = save.carpenterToolLevel;
         progress = save.progress || 0;
         foresterProgress = save.foresterProgress || 0;
-        
         // Fortschrittsbalken wiederherstellen
-        document.querySelector('progress-bar[barclass=""]').setAttribute('value', progress);
-        document.querySelector('progress-bar[barclass="forester"]').setAttribute('value', foresterProgress);
-        
+        setAllProgressBars('', progress);
+        setAllProgressBars('forester', foresterProgress);
+        // Schreiner-Balken ggf. auch
+        setAllProgressBars('carpenter', carpenterProgress);
         updateDisplay();
       } else {
         console.log('Kein gespeicherter Spielstand gefunden');
@@ -541,18 +545,24 @@ function showPlusOneAnimation(targetBar) {
   }, 1500);
 }
 
+function setAllProgressBars(barClass, value) {
+  document.querySelectorAll(`progress-bar[barclass="${barClass}"]`).forEach(bar => {
+    bar.setAttribute('value', value);
+  });
+}
+
 function autoCollect() {
   // Holzfäller
   if (trees > 0 && workers > 0) {
     progress += toolLevel * workers;
     let barWidth = (progress / 10) * 100;
     if (barWidth > 100) barWidth = 100;
-    document.querySelector('progress-bar[barclass=""]').setAttribute('value', progress);
+    setAllProgressBars('', progress);
     if (progress >= 10) {
       holz += (Math.floor(Math.random() * 11) + 5) * workers;
       trees -= Math.min(trees, workers);
       progress = 0;
-      document.querySelector('progress-bar[barclass=""]').setAttribute('value', progress);
+      setAllProgressBars('', progress);
       showPlusOneAnimation(document.querySelector('progress-bar[barclass=""]'));
     }
   }
@@ -562,11 +572,11 @@ function autoCollect() {
     foresterProgress += foresters * plantToolLevel;
     let foresterBarWidth = (foresterProgress / 10) * 100;
     if (foresterBarWidth > 100) foresterBarWidth = 100;
-    document.querySelector('progress-bar[barclass="forester"]').setAttribute('value', foresterProgress);
+    setAllProgressBars('forester', foresterProgress);
     if (foresterProgress >= 10) {
       trees += foresters * plantToolLevel;
       foresterProgress = 0;
-      document.querySelector('progress-bar[barclass="forester"]').setAttribute('value', foresterProgress);
+      setAllProgressBars('forester', foresterProgress);
       showPlusOneAnimation(document.querySelector('progress-bar[barclass="forester"]'));
     }
   }
@@ -574,13 +584,13 @@ function autoCollect() {
   // Schreiner (sehr langsam)
   if (carpenters > 0 && holz >= 10 * carpenters) {
     carpenterProgress += carpenters * carpenterToolLevel;
-    document.querySelector('progress-bar[barclass="carpenter"]').setAttribute('value', carpenterProgress);
+    setAllProgressBars('carpenter', carpenterProgress);
     
     if (carpenterProgress >= CARPENTER_MAX) {
       holz -= 10 * carpenters;
       gold += 15 * carpenters * carpenterToolLevel;
       carpenterProgress = 0;
-      document.querySelector('progress-bar[barclass="carpenter"]').setAttribute('value', carpenterProgress);
+      setAllProgressBars('carpenter', carpenterProgress);
       showPlusOneAnimation(document.querySelector('progress-bar[barclass="carpenter"]'));
     }
   }
@@ -664,7 +674,7 @@ document.getElementById("chopTreeButton").onclick = function() {
       holz += Math.floor(Math.random() * 11) + 5; // Zwischen 5 und 15 Holz
       progress = 0;
     }
-    document.querySelector('progress-bar[barclass=""]').setAttribute('value', progress);
+    setAllProgressBars('', progress);
     updateDisplay();
   }
 };
@@ -685,6 +695,7 @@ document.getElementById("resetBtn").onclick = function() {
   toolLevel = 1; plantToolLevel = 1; carpenterToolLevel = 1;
   progress = 0;
   foresterProgress = 0;
+  localStorage.removeItem('research'); // Forschungsfortschritt zurücksetzen
   updateDisplay();
   saveGameToServer();
 };
@@ -742,6 +753,27 @@ document.getElementById('musicPopoutBtn').onclick = function() {
   window.open('musicplayer.html', 'MusicPlayer', 'width=340,height=120,menubar=no,toolbar=no,location=no,status=no');
 };
 
+// --- Möbelbau-Freischaltung nach Forschung ---
+function updateMoebelVisibility() {
+  // Zeilen holen
+  const tableRow = document.getElementById('tableRow');
+  const cabinetRow = document.getElementById('cabinetRow');
+  // Forschung prüfen
+  const tableUnlocked = window.researchSystem && window.researchSystem.research.find(r => r.id === 'table' && r.completed);
+  const cabinetUnlocked = window.researchSystem && window.researchSystem.research.find(r => r.id === 'cabinet' && r.completed);
+  if (tableRow) tableRow.style.display = tableUnlocked ? '' : 'none';
+  if (cabinetRow) cabinetRow.style.display = cabinetUnlocked ? '' : 'none';
+}
+// Nach Forschung und beim Laden aufrufen
+if (window.researchSystem) {
+  const origApplyResearchEffects = researchSystem.applyResearchEffects.bind(researchSystem);
+  researchSystem.applyResearchEffects = function(research) {
+    origApplyResearchEffects(research);
+    updateMoebelVisibility();
+  };
+}
+document.addEventListener('DOMContentLoaded', updateMoebelVisibility);
+
 });
 
 class ProgressBar extends HTMLElement {
@@ -768,7 +800,7 @@ class ProgressBar extends HTMLElement {
 customElements.define('progress-bar', ProgressBar);
 </script>
 <!-- Füge das Forschungs-Modal am Ende des Body-Tags hinzu -->
-<div id="researchModal" class="modal">
+<div id="researchModal" class="modal" style="display:none;">
   <div class="modal-content" style="max-width: 1000px; width: 90%;">
     <div class="modal-header">
       <h2>🔬 Forschung</h2>
@@ -780,18 +812,11 @@ customElements.define('progress-bar', ProgressBar);
         <button class="tab-button" onclick="showResearchTab('list')">Forschungsliste</button>
       </div>
       <div id="researchTree" class="research-tab-content">
-        <div class="mermaid">
-          graph TD
-          classDef default fill:#fff,stroke:#333,stroke-width:4px,color:#000,font-size:18px,rx:10,ry:10
-          classDef locked fill:#f0f0f0,stroke:#666,stroke-width:2px,color:#666,font-size:18px,rx:10,ry:10
-          linkStyle default stroke:#333,stroke-width:4px
-
-          better_tools["<div class='research-title'>🪓 Bessere Werkzeuge</div><div class='research-effect'>+50% Effizienz</div><div class='research-cost'>100 🪵 | 50 💰</div>"]
-          advanced_forestry["<div class='research-title'>🌱 Fortgeschrittene<br/>Forstwirtschaft</div><div class='research-effect'>+50% Baumwachstum</div><div class='research-cost'>200 🪵 | 100 💰</div>"]:::locked
-          efficient_sawmill["<div class='research-title'>🪚 Effiziente Sägemühle</div><div class='research-effect'>+100% Holz pro Baum</div><div class='research-cost'>300 🪵 | 150 💰</div>"]:::locked
-          
-          better_tools ==> advanced_forestry
-          better_tools ==> efficient_sawmill
+        <div style="display: flex; flex-direction: row; gap: 24px; min-height: 320px; height: 100%;">
+          <div id="skilltree-scroll" style="flex:0 0 260px; max-height:85vh; overflow-y:auto;">
+            <svg id="skilltree-svg" width="260" style="height:auto; min-height:100%; display:block;"></svg>
+          </div>
+          <div id="skilltree-details" style="flex:1; min-width: 0;"></div>
         </div>
       </div>
       <div id="researchList" class="research-tab-content" style="display: none;">
@@ -846,6 +871,36 @@ customElements.define('progress-bar', ProgressBar);
   border: 2px solid #ccc;
 }
 
+.modal {
+  position: fixed;
+  top: 60px;
+  left: 0;
+  right: 0;
+  bottom: 40px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+  border-radius: 18px;
+  max-width: 98vw;
+  z-index: 3000;
+}
+.modal-content {
+  height: auto;
+  max-height: 100%;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  border-radius: 18px;
+}
+.research-tab-content {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+}
 .modal-content {
   background: linear-gradient(to bottom right, #2c3e50, #3498db);
 }
@@ -878,6 +933,27 @@ customElements.define('progress-bar', ProgressBar);
 .tab-button.active {
   background: rgba(255,255,255,0.2);
   border-color: rgba(255,255,255,0.4);
+}
+#statusSidecard {
+  position: fixed;
+  top: 80px;
+  right: 0;
+  width: 340px;
+  max-width: 90vw;
+  height: auto;
+  bottom: 40px;
+  background: rgba(30,30,30,0.98);
+  color: #ffd700;
+  z-index: 2100;
+  box-shadow: -4px 0 24px #000;
+  border-left: 3px solid #ffd700;
+  border-radius: 0 0 18px 18px;
+  padding: 0 18px 0 24px;
+  overflow-y: auto;
+}
+.status-sidecard {
+  max-height: 500px;
+  overflow-y: auto;
 }
 </style>
 

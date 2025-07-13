@@ -65,33 +65,38 @@ function createWeatherIcon(weather, isCurrent = false) {
 }
 
 function updateWeatherFrames() {
-  const currentContainer = document.querySelector('.weather-icon-current');
-  const forecastContainer = document.querySelector('.weather-icon-forecast');
-  const seasonDisplay = document.querySelector('.weather-season');
-  
-  if (!currentContainer || !forecastContainer || !seasonDisplay) {
+  const currentContainers = document.querySelectorAll('.weather-icon-current');
+  const forecastContainers = document.querySelectorAll('.weather-icon-forecast');
+  const seasonDisplays = document.querySelectorAll('.weather-season');
+
+  if (currentContainers.length === 0 || forecastContainers.length === 0 || seasonDisplays.length === 0) {
     console.error('Wetter-Container nicht gefunden');
     return;
   }
-  
-  // Clear existing content
-  currentContainer.innerHTML = '';
-  forecastContainer.innerHTML = '';
-  
+
   // Show current weather
   const currentWeather = weatherQueue[currentFrameIndex];
-  currentContainer.appendChild(createWeatherIcon(currentWeather, true));
-  
-  // Show next 4 weather forecasts
-  for (let i = 1; i <= 4; i++) {
-    const nextIndex = (currentFrameIndex + i) % weatherQueue.length;
-    if (weatherQueue[nextIndex]) {
-      forecastContainer.appendChild(createWeatherIcon(weatherQueue[nextIndex], false));
-    }
+  if (currentWeather) {
+    // Alle aktuellen Wetter-Container aktualisieren
+    currentContainers.forEach(currentContainer => {
+      currentContainer.innerHTML = '';
+      currentContainer.appendChild(createWeatherIcon(currentWeather, true));
+    });
+    // Alle Forecast-Container aktualisieren
+    forecastContainers.forEach(forecastContainer => {
+      forecastContainer.innerHTML = '';
+      for (let i = 1; i <= 4; i++) {
+        const nextIndex = (currentFrameIndex + i) % weatherQueue.length;
+        if (weatherQueue[nextIndex]) {
+          forecastContainer.appendChild(createWeatherIcon(weatherQueue[nextIndex], false));
+        }
+      }
+    });
+    // Alle Season-Anzeigen aktualisieren
+    seasonDisplays.forEach(seasonDisplay => {
+      seasonDisplay.textContent = currentWeather.season;
+    });
   }
-
-  // Update season
-  seasonDisplay.textContent = currentWeather.season;
 }
 
 // Lokale Zeit-Update-Funktion
@@ -100,15 +105,15 @@ function updateLocalTime() {
   const elapsed = (now - lastTimeUpdate) / 1000; // Sekunden seit letztem Update
   gameTime = (gameTime + elapsed) % 1440; // Update lokale Zeit
   lastTimeUpdate = now;
-  
-  // Aktualisiere die Zeitanzeige
-  const timeDisplay = document.querySelector('.weather-time');
-  if (timeDisplay) {
+
+  // Aktualisiere alle Zeitanzeigen
+  const timeDisplays = document.querySelectorAll('.weather-time');
+  timeDisplays.forEach(timeDisplay => {
     timeDisplay.textContent = formatGameTime(Math.floor(gameTime));
-  }
+  });
 }
 
-// Server-Zeit abrufen und lokale Zeit synchronisieren
+// Server-Zeit abrufen und lokale Zeit synchronisieren (optional)
 async function syncWithServerTime() {
   try {
     const response = await fetch('/time');
@@ -126,7 +131,7 @@ async function syncWithServerTime() {
       console.error('Ungültige Serverantwort:', data);
     }
   } catch (error) {
-    console.error('Fehler bei Server-Synchronisation:', error);
+    console.log('Server nicht verfügbar, verwende lokale Zeit');
     // Bei Fehlern weiterlaufen mit lokaler Zeit
   }
 }
@@ -143,21 +148,34 @@ function initWeather() {
     clearInterval(timeUpdateInterval);
   }
   
+  // Initialisiere Wetter-Queue
   fillWeatherQueue();
-  updateWeatherFrames();
   
-  // Initiale Synchronisation mit Server
-  syncWithServerTime().catch(console.error);
+  // Setze initiale Zeit (lokale Zeit als Fallback)
+  const now = new Date();
+  gameTime = (now.getHours() * 60 + now.getMinutes()) % 1440;
+  lastTimeUpdate = Date.now();
+  
+  // Initialisiere Wetter-Anzeige
+  updateWeatherFrames();
+  updateLocalTime();
+  
+  // Versuche Server-Synchronisation (optional)
+  syncWithServerTime().catch(() => {
+    console.log('Verwende lokale Zeit');
+  });
   
   // Lokales Zeit-Update alle 100ms für flüssige Anzeige
   timeUpdateInterval = setInterval(updateLocalTime, 100);
   
-  // Server-Synchronisation alle 30 Sekunden
+  // Server-Synchronisation alle 30 Sekunden (optional)
   setInterval(() => {
-    syncWithServerTime().catch(console.error);
+    syncWithServerTime().catch(() => {
+      // Ignoriere Fehler, verwende lokale Zeit
+    });
   }, 30000);
   
-  // Wetter ändert sich weiterhin alle 30 Sekunden
+  // Wetter ändert sich alle 30 Sekunden
   setInterval(advanceWeather, 30000);
 }
 
