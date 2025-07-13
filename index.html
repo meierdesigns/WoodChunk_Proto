@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Möbel Clicker-Game</title>
+<link rel="icon" type="image/x-icon" href="favicon_io/favicon.ico">
+<link rel="stylesheet" href="src/weather.css">
+<link rel="stylesheet" href="style.css">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+body {
+  margin: 0; padding: 0;
+  background: linear-gradient(135deg, #000080 0%, #0000a0 50%, #000080 100%);
+  font-family: 'Press Start 2P', monospace;
+  image-rendering: pixelated;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  color: #ffffff;
+  padding: 10px;
+  overflow-x: hidden;
+  text-shadow: none !important;
+}
+
+#gameContainer { 
+  width: 100%; 
+  max-width: 100vw;
+  box-sizing: border-box;
+  background: linear-gradient(180deg, #c0c0c0 0%, #a0a0a0 100%);
+  border: 4px solid #000000;
+  border-radius: 8px;
+  box-shadow: 
+    inset 2px 2px 0px #ffffff,
+    inset -2px -2px 0px #808080,
+    4px 4px 0px #000000;
+  padding: 15px;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+.status { 
+  font-size: 12px; 
+  color: #000000; 
+  background: #ffffff;
+  border: 2px solid #000000;
+  padding: 6px 10px;
+  margin: 5px 0;
+  box-shadow: 2px 2px 0px #000000;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: none !important;
+}
+
+.status .icon {
+  position: relative;
+  top: -2px;
+  margin-right: 2px;
+  margin-left: 0;
+  font-size: 1.5em !important;
+}
+
+
+
+.bar { 
+  width: 100%; 
+  height: 24px; 
+  background: #808080; 
+  border: 3px solid #000000;
+  margin: 10px 0;
+  box-shadow: inset 2px 2px 0px #ffffff, inset -2px -2px 0px #404040;
+  overflow: hidden;
+}
+
+.bar-inner { 
+  height: 100%; 
+  width: 0%; 
+  transition: width 0.2s ease;
+  box-shadow: inset 1px 1px 0px #ffffff;
+  min-width: 0;
+  max-width: 100%;
+}
+
+#progressBar { 
+  background: linear-gradient(90deg, #ff0000 0%, #ff4444 100%); 
+  width: 0%;
+}
+
+.bar-inner.forester { 
+  background: linear-gradient(90deg, #00ff00 0%, #44ff44 100%); 
+  width: 0%;
+}
+
+.bar-inner.carpenter { 
+  background: linear-gradient(90deg, #ff8800 0%, #ffaa44 100%); 
+  width: 0%;
+}
+
+button { 
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px; 
+  background: linear-gradient(180deg, #c0c0c0 0%, #a0a0a0 100%);
+  color: #000000; 
+  border: 3px solid #000000;
+  padding: 6px 12px; 
+  cursor: pointer;
+  box-shadow: 
+    inset 1px 1px 0px #ffffff,
+    inset -1px -1px 0px #808080,
+    2px 2px 0px #000000;
+  text-shadow: 1px 1px 0px #ffffff;
+  transition: all 0.1s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+button:hover {
+  background: linear-gradient(180deg, #e0e0e0 0%, #c0c0c0 100%);
+  transform: translateY(-1px);
+}
+
+button:active {
+  box-shadow: 
+    inset -1px -1px 0px #ffffff,
+    inset 1px 1px 0px #808080,
+    1px 1px 0px #000000;
+  transform: translateY(1px);
+}
+
+button:disabled { 
+  opacity: 0.5; 
+  cursor: not-allowed;
+  background: #808080;
+  color: #888 !important;
+}
+
+.button-group { 
+  display: flex; 
+  flex-direction: row; 
+  width: 100%; 
+  gap: 15px; 
+  flex-wrap: wrap;
+}
+
+.button-section { 
+  display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); 
+  gap: 8px; 
+  background: linear-gradient(180deg, #d0d0d0 0%, #b0b0b0 100%);
+  padding: 12px; 
+  border: 3px solid #000000;
+  box-shadow: 
+    inset 2px 2px 0px #ffffff,
+    inset -2px -2px 0px #808080;
+  flex: 1;
+  min-width: 0;
+}
+
+.button-section-title { 
+  font-size: 12px; 
+  color: #ffffff; 
+  background: linear-gradient(180deg, #404040 0%, #202020 100%);
+  padding: 8px; 
+  text-align: center;
+  border: 2px solid #000000;
+  box-shadow: 2px 2px 0px #000000;
+  text-shadow: none !important;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  background: #ffffff;
+  border: 2px solid #000000;
+  color: #222 !important;
+}
+
+th, td {
+  border: 1px solid #000000;
+  padding: 6px;
+  text-align: center;
+  font-size: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+th {
+  background: linear-gradient(180deg, #606060 0%, #222 100%);
+  color: #fff;
+  border-bottom: 2px solid #ffd700;
+  font-weight: bold;
+}
+
+#resetBtn { 
+  margin-top: 20px;
+  background: linear-gradient(180deg, #ff4444 0%, #cc0000 100%);
+  color: #ffffff;
+  text-shadow: 1px 1px 0px #000000;
+  font-size: 14px;
+  padding: 12px 24px;
+}
+
+#chopTreeButton {
+  background: linear-gradient(180deg, #44ff44 0%, #00cc00 100%);
+  color: #ffffff;
+  text-shadow: 1px 1px 0px #000000;
+  font-size: 16px;
+  padding: 12px 24px;
+}
+.icon {
+  font-size: 1.5em !important;
+}
+.status .icon {
+  position: relative;
+  top: -2px;
+  margin-right: 2px;
+  margin-left: 0;
+  font-size: 1.5em !important;
+}
+th .icon, td .icon {
+  font-size: 1.5em !important;
+}
+</style>
+<template id="progress-bar-template">
+  <style>
+    .progress-bar-outer {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      margin-top: 10px;
+    }
+    .bar-icon {
+      font-size: 20px;
+      margin-right: 4px;
+    }
+    .bar {
+      width: 100%;
+      height: 24px;
+      background: #808080;
+      border: 3px solid #000000;
+      box-shadow: inset 2px 2px 0px #fff, inset -2px -2px 0px #404040;
+      overflow: hidden;
+    }
+    .bar-inner {
+      height: 100%;
+      width: 0%;
+      transition: width 0.2s ease;
+      box-shadow: inset 1px 1px 0px #fff;
+      min-width: 0;
+      max-width: 100%;
+      background: linear-gradient(90deg, #ff0000 0%, #ff4444 100%);
+    }
+    .bar-inner.forester {
+      background: linear-gradient(90deg, #00ff00 0%, #44ff44 100%);
+    }
+    .bar-inner.carpenter {
+      background: linear-gradient(90deg, #ff8800 0%, #ffaa44 100%);
+    }
+  </style>
+  <div class="progress-bar-outer">
+    <span class="bar-icon"></span>
+    <div class="bar"><div class="bar-inner"></div></div>
+  </div>
+</template>
+</head>
+<body>
+<div id="gameContainer">
+  <div style="display: flex; justify-content: space-between; width: 100%; align-items: flex-start;">
+    <div id="score" class="status" style="min-width: 500px; width: 500px;"><span class="icon">💰</span> 0 | <span class="icon">🪵</span> 0 | <span class="icon">🌲</span> <span id="treeCount">10</span></div>
+    <div class="weather-group status" style="min-width: 200px;">
+      <div class="weather-row">
+        <span class="weather-icon-current"></span>
+        <div class="divider"></div>
+        <div class="forecast-section">
+          <div class="forecast-text">Forecast</div>
+          <div class="forecast-icons">
+            <span class="weather-icon-forecast"></span>
+          </div>
+        </div>
+      </div>
+      <div class="weather-info">
+        <span class="weather-time">00:00</span>
+        <span class="weather-season">Summer</span>
+      </div>
+    </div>
+  </div>
+  <div id="progressBarsWrapper" style="margin-bottom:32px;">
+    <progress-bar icon="🪓" value="0" max="10" barClass=""></progress-bar>
+    <progress-bar icon="🌱" value="0" max="10" barClass="forester"></progress-bar>
+    <progress-bar icon="🪑" value="0" max="40" barClass="carpenter"></progress-bar>
+  </div>
+  <div id="workerVisuals"></div>
+  <div class="button-group" style="flex-direction: column; gap: 20px;">
+    <div>
+      <div class="button-section-title">Arbeitsamt</div>
+      <div class="button-section">
+        <table style="width: 100%; border-collapse: collapse; text-align: center;">
+          <thead>
+            <tr>
+              <th style="text-align: left;">Beruf</th>
+              <th>Anzahl</th>
+              <th>Kosten</th>
+              <th>Aktion</th>
+              <th>Werkzeug</th>
+              <th>Auto</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>🪓 Holzfäller</td>
+              <td><span id="workerCount">1</span></td>
+              <td>20💰</td>
+              <td><button id="hireWorkerButton">Kaufen</button></td>
+              <td><button id="upgradeToolButton" title="Axt verbessern"><span class="icon">🪓</span> Lv. <span id="toolLevelAxe">1</span> (<span id="toolCostAxe">50</span><span class="icon">💰</span>)</button></td>
+              <td><label class="auto-upgrade-label"><input type="checkbox" name="autoUpgrade" value="axe"><span>Auto</span></label></td>
+            </tr>
+            <tr>
+              <td>🌱 Förster</td>
+              <td><span id="foresterCount">1</span></td>
+              <td>25💰</td>
+              <td><button id="hireForesterButton">Kaufen</button></td>
+              <td><button id="upgradePlantToolButton" title="Pflanzwerkzeug verbessern"><span class="icon">🌿</span> Lv. <span id="toolLevelPlant">1</span> (<span id="toolCostPlant">50</span><span class="icon">💰</span>)</button></td>
+              <td><label class="auto-upgrade-label"><input type="checkbox" name="autoUpgrade" value="plant"><span>Auto</span></label></td>
+            </tr>
+            <tr>
+              <td>🪑 Schreiner</td>
+              <td><span id="carpenterCount">0</span></td>
+              <td>30💰</td>
+              <td><button id="hireCarpenterButton">Kaufen</button></td>
+              <td><button id="upgradeCarpenterToolButton" title="Schreinerwerkzeug verbessern"><span class="icon">🔨</span> Lv. <span id="toolLevelCarpenter">1</span> (<span id="toolCostCarpenter">50</span><span class="icon">💰</span>)</button></td>
+              <td><label class="auto-upgrade-label"><input type="checkbox" name="autoUpgrade" value="carpenter"><span>Auto</span></label></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="width:100%; display:flex; justify-content:center; margin-top:12px; gap: 12px;">
+        <button id="chopTreeButton" style="font-size:18px; padding:10px 24px;">🌲 Bäume hacken</button>
+        <button id="researchButton" onclick="openResearchModal()" style="font-size:14px; padding:6px 12px;">🔬 Forschung</button>
+      </div>
+    </div>
+    <div>
+      <div class="button-section-title">Möbelbau</div>
+      <div class="button-section" style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr>
+              <th style="text-align: left;">Möbel</th>
+              <th>🪵 Kosten</th>
+              <th>💰 Ertrag</th>
+              <th>Aktion</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>🪑 Stuhl</td>
+              <td>10</td>
+              <td>15</td>
+              <td><button id="chairButton">Bauen</button></td>
+            </tr>
+            <tr>
+              <td>🛋️ Tisch</td>
+              <td>20</td>
+              <td>40</td>
+              <td><button id="tableButton">Bauen</button></td>
+            </tr>
+            <tr>
+              <td>🚪 Schrank</td>
+              <td>50</td>
+              <td>100</td>
+              <td><button id="wardrobeButton">Bauen</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+  <button id="resetBtn">🔄 Spiel zurücksetzen</button>
+</div>
+<!-- Status Sidecard Button und Sidecard -->
+<button id="statusSidecardBtn" style="position:fixed;bottom:32px;right:32px;z-index:2000;font-size:2em;padding:12px 16px;border-radius:50%;background:#222;color:#ffd700;border:2px solid #ffd700;box-shadow:2px 2px 8px #000;cursor:pointer;">🛈</button>
+<div id="statusSidecardOverlay" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.25);z-index:2099;"></div>
+<div id="statusSidecard" style="display:none;position:fixed;top:0;right:0;width:340px;max-width:90vw;height:100vh;background:rgba(30,30,30,0.98);color:#ffd700;z-index:2100;box-shadow:-4px 0 24px #000;border-left:3px solid #ffd700;padding:0 18px 0 24px;overflow-y:auto;transition:right 0.2s;">
+  <button id="closeStatusSidecard" style="position:absolute;top:12px;right:18px;font-size:1.5em;background:none;border:none;color:#ffd700;cursor:pointer;">×</button>
+  <h2 style="margin-top:0;font-size:1.1em;">Statusmeldungen</h2>
+  <ul id="statusList" style="list-style:none;padding:0;margin:0;font-size:0.95em;"></ul>
+</div>
+<!-- Toast für Statusmeldungen -->
+<div id="statusToast" style="display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#222;color:#ffd700;padding:14px 32px;border-radius:8px;font-size:1em;z-index:3000;box-shadow:0 4px 24px #000;border:2px solid #ffd700;text-align:center;pointer-events:none;opacity:0.97;transition:opacity 0.3s;"></div>
+<!-- Music Player Popout Icon -->
+  <button id="musicPopoutBtn" title="Musikplayer öffnen" style="position:fixed;bottom:32px;left:32px;z-index:2500;background:#222;border:2px solid #ffd700;border-radius:50%;padding:10px 13px;font-size:1.5em;color:#ffd700;box-shadow:2px 2px 8px #000;cursor:pointer;">🎵</button>
+<script src="src/weather.js"></script>
+<script src="src/research.js"></script>
+<script>
+// Funktion zum Formatieren von Zahlen
+function formatNumber(num) {
+  if (num >= 1000000000) {
+    return (num / 1000000000).toFixed(1) + ' Mrd.';
+  }
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1) + ' Mio.';
+  }
+  if (num >= 1000) {
+    return (num / 1000).toFixed(1) + ' Tsd.';
+  }
+  return num.toString();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+let gold = 0, holz = 0, trees = 10;
+let workers = 1, foresters = 1, carpenters = 0;
+let toolLevel = 1, plantToolLevel = 1, carpenterToolLevel = 1;
+let progress = 0;
+let foresterProgress = 0;
+let carpenterTimer = 0;
+let carpenterProgress = 0;
+const CARPENTER_MAX = 40;
+
+// Basis-Preise für Arbeiter
+let workerBaseCost = 20;
+let foresterBaseCost = 25;
+let carpenterBaseCost = 30;
+
+// Preis-Multiplikator (1.5 = 50% teurer pro Kauf)
+const PRICE_MULTIPLIER = 1.5;
+
+// Aktuelle Preise berechnen
+function calculateWorkerPrice(basePrice, count) {
+  return Math.floor(basePrice * Math.pow(PRICE_MULTIPLIER, count));
+}
+
+function updateDisplay() {
+  document.getElementById("score").innerHTML = 
+    `<span class="icon">💰</span> ${formatNumber(gold)} | ` +
+    `<span class="icon">🪵</span> ${formatNumber(holz)} | ` +
+    `<span class="icon">🌲</span> <span id="treeCount">${formatNumber(trees)}</span>`;
+  
+  // Update worker counts
+  document.getElementById("workerCount").textContent = workers;
+  document.getElementById("foresterCount").textContent = foresters;
+  document.getElementById("carpenterCount").textContent = carpenters;
+  
+  // Preise für normale Arbeiter
+  const workerPrice = calculateWorkerPrice(workerBaseCost, workers - 1);
+  const foresterPrice = calculateWorkerPrice(foresterBaseCost, foresters - 1);
+  const carpenterPrice = calculateWorkerPrice(carpenterBaseCost, carpenters);
+
+  // Tabelle aktualisieren
+  document.querySelector('tr:nth-child(1) td:nth-child(3)').textContent = formatNumber(workerPrice) + '💰';
+  document.querySelector('tr:nth-child(2) td:nth-child(3)').textContent = formatNumber(foresterPrice) + '💰';
+  document.querySelector('tr:nth-child(3) td:nth-child(3)').textContent = formatNumber(carpenterPrice) + '💰';
+
+  // Buttons aktivieren/deaktivieren basierend auf den neuen Preisen
+  document.getElementById("hireWorkerButton").disabled = gold < workerPrice;
+  document.getElementById("hireForesterButton").disabled = gold < foresterPrice;
+  document.getElementById("hireCarpenterButton").disabled = gold < carpenterPrice;
+  
+  // Rest der updateDisplay Funktion bleibt gleich
+  document.getElementById("toolLevelAxe").innerText = toolLevel;
+  document.getElementById("toolLevelPlant").innerText = plantToolLevel;
+  document.getElementById("toolLevelCarpenter").innerText = carpenterToolLevel;
+  document.getElementById("toolCostAxe").innerText = formatNumber(toolLevel * 50);
+  document.getElementById("toolCostPlant").innerText = formatNumber(plantToolLevel * 50);
+  document.getElementById("toolCostCarpenter").innerText = formatNumber(carpenterToolLevel * 50);
+  document.getElementById("upgradeToolButton").disabled = gold < toolLevel * 50;
+  document.getElementById("upgradePlantToolButton").disabled = gold < plantToolLevel * 50;
+  document.getElementById("upgradeCarpenterToolButton").disabled = gold < carpenterToolLevel * 50;
+  document.getElementById("chairButton").disabled = holz < 10;
+  document.getElementById("tableButton").disabled = holz < 20;
+  document.getElementById("wardrobeButton").disabled = holz < 50;
+}
+
+function saveGameToServer() {
+  fetch('/save', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ gold, holz, trees, workers, foresters, carpenters, toolLevel, plantToolLevel, carpenterToolLevel, progress, foresterProgress })
+  })
+  .then(response => response.json())
+  .then(data => {
+    // Kein Log mehr beim Speichern
+  })
+  .catch(error => {
+    console.error('Fehler beim Speichern:', error);
+  });
+}
+function loadGameFromServer() {
+  fetch('/load')
+    .then(res => res.json())
+    .then(save => {
+      if (save) {
+        console.log('Spielstand geladen:', save);
+        gold = save.gold; holz = save.holz; trees = save.trees;
+        workers = save.workers; foresters = save.foresters; carpenters = save.carpenters;
+        toolLevel = save.toolLevel; plantToolLevel = save.plantToolLevel; carpenterToolLevel = save.carpenterToolLevel;
+        progress = save.progress || 0;
+        foresterProgress = save.foresterProgress || 0;
+        
+        // Fortschrittsbalken wiederherstellen
+        document.querySelector('progress-bar[barclass=""]').setAttribute('value', progress);
+        document.querySelector('progress-bar[barclass="forester"]').setAttribute('value', foresterProgress);
+        
+        updateDisplay();
+      } else {
+        console.log('Kein gespeicherter Spielstand gefunden');
+      }
+    })
+    .catch(error => {
+      console.error('Fehler beim Laden:', error);
+    });
+}
+
+// Füge eine Funktion für die +1-Animation hinzu
+function showPlusOneAnimation(targetBar) {
+  const anim = document.createElement('div');
+  anim.textContent = '+1';
+  anim.style.position = 'absolute';
+  anim.style.left = targetBar.getBoundingClientRect().left + window.scrollX + targetBar.offsetWidth - 40 + 'px';
+  anim.style.top = targetBar.getBoundingClientRect().top + window.scrollY - 24 + 'px';
+  anim.style.fontSize = '20px';
+  anim.style.fontFamily = 'Press Start 2P, monospace';
+  anim.style.color = '#00ff00';
+  anim.style.textShadow = '2px 2px 0 #000';
+  anim.style.pointerEvents = 'none';
+  anim.style.zIndex = 1000;
+  anim.style.transition = 'transform 1.5s cubic-bezier(.4,2,.6,1), opacity 1.5s';
+  anim.style.transform = 'translateY(0)';
+  anim.style.opacity = '1';
+  document.body.appendChild(anim);
+  setTimeout(() => {
+    anim.style.transform = 'translateY(-40px)';
+    anim.style.opacity = '0';
+  }, 10);
+  setTimeout(() => {
+    anim.remove();
+  }, 1500);
+}
+
+function autoCollect() {
+  // Holzfäller
+  if (trees > 0 && workers > 0) {
+    progress += toolLevel * workers;
+    let barWidth = (progress / 10) * 100;
+    if (barWidth > 100) barWidth = 100;
+    document.querySelector('progress-bar[barclass=""]').setAttribute('value', progress);
+    if (progress >= 10) {
+      holz += (Math.floor(Math.random() * 11) + 5) * workers;
+      trees -= Math.min(trees, workers);
+      progress = 0;
+      document.querySelector('progress-bar[barclass=""]').setAttribute('value', progress);
+      showPlusOneAnimation(document.querySelector('progress-bar[barclass=""]'));
+    }
+  }
+  
+  // Förster
+  if (foresters > 0) {
+    foresterProgress += foresters * plantToolLevel;
+    let foresterBarWidth = (foresterProgress / 10) * 100;
+    if (foresterBarWidth > 100) foresterBarWidth = 100;
+    document.querySelector('progress-bar[barclass="forester"]').setAttribute('value', foresterProgress);
+    if (foresterProgress >= 10) {
+      trees += foresters * plantToolLevel;
+      foresterProgress = 0;
+      document.querySelector('progress-bar[barclass="forester"]').setAttribute('value', foresterProgress);
+      showPlusOneAnimation(document.querySelector('progress-bar[barclass="forester"]'));
+    }
+  }
+  
+  // Schreiner (sehr langsam)
+  if (carpenters > 0 && holz >= 10 * carpenters) {
+    carpenterProgress += carpenters * carpenterToolLevel;
+    document.querySelector('progress-bar[barclass="carpenter"]').setAttribute('value', carpenterProgress);
+    
+    if (carpenterProgress >= CARPENTER_MAX) {
+      holz -= 10 * carpenters;
+      gold += 15 * carpenters * carpenterToolLevel;
+      carpenterProgress = 0;
+      document.querySelector('progress-bar[barclass="carpenter"]').setAttribute('value', carpenterProgress);
+      showPlusOneAnimation(document.querySelector('progress-bar[barclass="carpenter"]'));
+    }
+  }
+  
+  gold = Math.max(0, gold);
+  holz = Math.max(0, holz);
+  trees = Math.max(0, trees);
+  updateDisplay();
+}
+
+function autoUpgrade() {
+  document.querySelectorAll('input[name="autoUpgrade"]:checked').forEach(input => {
+    if (input.value === 'axe') upgradeTool();
+    if (input.value === 'plant') upgradePlantTool();
+    if (input.value === 'carpenter') upgradeCarpenterTool();
+  });
+}
+
+function upgradeTool() {
+  const cost = toolLevel * 50;
+  if (gold >= cost) {
+    gold -= cost;
+    toolLevel++;
+    updateDisplay();
+  }
+}
+function upgradePlantTool() {
+  const cost = plantToolLevel * 50;
+  if (gold >= cost) {
+    gold -= cost;
+    plantToolLevel++;
+    updateDisplay();
+  }
+}
+function upgradeCarpenterTool() {
+  const cost = carpenterToolLevel * 50;
+  if (gold >= cost) {
+    gold -= cost;
+    carpenterToolLevel++;
+    updateDisplay();
+  }
+}
+
+document.getElementById("upgradeToolButton").onclick = upgradeTool;
+document.getElementById("upgradePlantToolButton").onclick = upgradePlantTool;
+document.getElementById("upgradeCarpenterToolButton").onclick = upgradeCarpenterTool;
+
+// Kauflogik für Arbeiter aktualisieren
+document.getElementById("hireWorkerButton").onclick = function() {
+  const price = calculateWorkerPrice(workerBaseCost, workers - 1);
+  if (gold >= price) {
+    gold -= price;
+    workers++;
+    updateDisplay();
+  }
+};
+
+document.getElementById("hireForesterButton").onclick = function() {
+  const price = calculateWorkerPrice(foresterBaseCost, foresters - 1);
+  if (gold >= price) {
+    gold -= price;
+    foresters++;
+    updateDisplay();
+  }
+};
+
+document.getElementById("hireCarpenterButton").onclick = function() {
+  const price = calculateWorkerPrice(carpenterBaseCost, carpenters);
+  if (gold >= price) {
+    gold -= price;
+    carpenters++;
+    updateDisplay();
+  }
+};
+
+document.getElementById("chopTreeButton").onclick = function() {
+  if (trees > 0) {
+    progress += 1;
+    if (progress >= 10) {
+      trees--;
+      holz += Math.floor(Math.random() * 11) + 5; // Zwischen 5 und 15 Holz
+      progress = 0;
+    }
+    document.querySelector('progress-bar[barclass=""]').setAttribute('value', progress);
+    updateDisplay();
+  }
+};
+
+document.getElementById("chairButton").onclick = function() {
+  if (holz >= 10) { holz -= 10; gold += 15; updateDisplay(); }
+};
+document.getElementById("tableButton").onclick = function() {
+  if (holz >= 20) { holz -= 20; gold += 40; updateDisplay(); }
+};
+document.getElementById("wardrobeButton").onclick = function() {
+  if (holz >= 50) { holz -= 50; gold += 100; updateDisplay(); }
+};
+
+document.getElementById("resetBtn").onclick = function() {
+  gold = 0; holz = 0; trees = 10;
+  workers = 1; foresters = 1; carpenters = 0;
+  toolLevel = 1; plantToolLevel = 1; carpenterToolLevel = 1;
+  progress = 0;
+  foresterProgress = 0;
+  updateDisplay();
+  saveGameToServer();
+};
+
+setInterval(autoCollect, 2000);
+setInterval(autoUpgrade, 1000);
+setInterval(saveGameToServer, 2000);
+
+// Spiel beim Start laden
+loadGameFromServer();
+updateDisplay();
+
+// Wetter-Modul initialisieren
+weatherModule.initWeather();
+
+// --- Status Sidecard Logik ---
+const statusBtn = document.getElementById('statusSidecardBtn');
+const sidecard = document.getElementById('statusSidecard');
+const closeSidecard = document.getElementById('closeStatusSidecard');
+const sidecardOverlay = document.getElementById('statusSidecardOverlay');
+// Initiale Position: außerhalb des Bildschirms
+sidecard.style.right = '-380px';
+sidecard.style.display = 'block';
+sidecard.style.transition = 'right 0.3s cubic-bezier(.7,0,.3,1)';
+
+let sidecardOpen = false;
+
+function openSidecard() {
+  sidecard.style.right = '0';
+  sidecardOpen = true;
+  sidecardOverlay.style.display = 'block';
+}
+function closeSidecardFn() {
+  sidecard.style.right = '-380px';
+  sidecardOpen = false;
+  sidecardOverlay.style.display = 'none';
+}
+statusBtn.onclick = openSidecard;
+closeSidecard.onclick = closeSidecardFn;
+sidecardOverlay.onclick = closeSidecardFn;
+// ESC schließt Sidecard
+window.addEventListener('keydown', e => { if (sidecardOpen && e.key === 'Escape') closeSidecardFn(); });
+
+// Toast-Logik für Statusmeldungen (wird für Fehler genutzt)
+function showStatusToast(msg) {
+  const toast = document.getElementById('statusToast');
+  toast.textContent = msg;
+  toast.style.display = 'block';
+  toast.style.opacity = '0.97';
+  setTimeout(() => { toast.style.opacity = '0'; }, 2200);
+  setTimeout(() => { toast.style.display = 'none'; }, 2600);
+}
+
+document.getElementById('musicPopoutBtn').onclick = function() {
+  window.open('musicplayer.html', 'MusicPlayer', 'width=340,height=120,menubar=no,toolbar=no,location=no,status=no');
+};
+
+});
+
+class ProgressBar extends HTMLElement {
+  constructor() {
+    super();
+    const template = document.getElementById('progress-bar-template').content.cloneNode(true);
+    this.attachShadow({mode: 'open'}).appendChild(template);
+  }
+  static get observedAttributes() { return ['icon', 'value', 'max', 'barclass']; }
+  attributeChangedCallback(name, oldValue, newValue) { this.render(); }
+  connectedCallback() { this.render(); }
+  render() {
+    const icon = this.getAttribute('icon') || '';
+    const value = parseFloat(this.getAttribute('value')) || 0;
+    const max = parseFloat(this.getAttribute('max')) || 10;
+    const barClass = this.getAttribute('barclass') || '';
+    const percent = Math.min(100, Math.max(0, (value / max) * 100));
+    this.shadowRoot.querySelector('.bar-icon').textContent = icon;
+    const barInner = this.shadowRoot.querySelector('.bar-inner');
+    barInner.style.width = percent + '%';
+    barInner.className = 'bar-inner' + (barClass ? ' ' + barClass : '');
+  }
+}
+customElements.define('progress-bar', ProgressBar);
+</script>
+<!-- Füge das Forschungs-Modal am Ende des Body-Tags hinzu -->
+<div id="researchModal" class="modal">
+  <div class="modal-content" style="max-width: 1000px; width: 90%;">
+    <div class="modal-header">
+      <h2>🔬 Forschung</h2>
+      <span class="close-button" onclick="closeResearchModal()">&times;</span>
+    </div>
+    <div class="modal-body">
+      <div class="research-tabs">
+        <button class="tab-button active" onclick="showResearchTab('tree')">Forschungsbaum</button>
+        <button class="tab-button" onclick="showResearchTab('list')">Forschungsliste</button>
+      </div>
+      <div id="researchTree" class="research-tab-content">
+        <div class="mermaid">
+          graph TD
+          classDef default fill:#fff,stroke:#333,stroke-width:4px,color:#000,font-size:18px,rx:10,ry:10
+          classDef locked fill:#f0f0f0,stroke:#666,stroke-width:2px,color:#666,font-size:18px,rx:10,ry:10
+          linkStyle default stroke:#333,stroke-width:4px
+
+          better_tools["<div class='research-title'>🪓 Bessere Werkzeuge</div><div class='research-effect'>+50% Effizienz</div><div class='research-cost'>100 🪵 | 50 💰</div>"]
+          advanced_forestry["<div class='research-title'>🌱 Fortgeschrittene<br/>Forstwirtschaft</div><div class='research-effect'>+50% Baumwachstum</div><div class='research-cost'>200 🪵 | 100 💰</div>"]:::locked
+          efficient_sawmill["<div class='research-title'>🪚 Effiziente Sägemühle</div><div class='research-effect'>+100% Holz pro Baum</div><div class='research-cost'>300 🪵 | 150 💰</div>"]:::locked
+          
+          better_tools ==> advanced_forestry
+          better_tools ==> efficient_sawmill
+        </div>
+      </div>
+      <div id="researchList" class="research-tab-content" style="display: none;">
+        <div class="research-grid">
+          <!-- Forschungsoptionen werden hier dynamisch eingefügt -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.research-title {
+  font-weight: bold;
+  font-size: 20px;
+  margin-bottom: 8px;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+.research-effect {
+  color: #006400;
+  font-size: 18px;
+  margin: 8px 0;
+  font-weight: 500;
+}
+
+.research-cost {
+  color: #8B4513;
+  font-size: 16px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 2px solid #ddd;
+}
+
+.mermaid .node {
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+}
+
+.mermaid .edgePath path {
+  stroke-width: 4px;
+  stroke: #333;
+  marker-end: url(#arrowhead);
+}
+
+.mermaid .arrowheadPath {
+  fill: #333;
+  stroke: none;
+}
+
+.mermaid {
+  background: linear-gradient(to bottom, #f0f0f0, #e0e0e0);
+  border: 2px solid #ccc;
+}
+
+.modal-content {
+  background: linear-gradient(to bottom right, #2c3e50, #3498db);
+}
+
+.modal-header {
+  border-bottom: 2px solid rgba(255,255,255,0.1);
+}
+
+.modal-header h2 {
+  color: #fff;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+}
+
+.research-tabs {
+  background: rgba(255,255,255,0.1);
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.tab-button {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.2);
+  transition: all 0.3s ease;
+}
+
+.tab-button:hover {
+  background: rgba(0,0,0,0.5);
+}
+
+.tab-button.active {
+  background: rgba(255,255,255,0.2);
+  border-color: rgba(255,255,255,0.4);
+}
+</style>
+
+<script>
+function showResearchTab(tabName) {
+  // Hide all tab contents
+  document.querySelectorAll('.research-tab-content').forEach(tab => {
+    tab.style.display = 'none';
+  });
+  
+  // Show selected tab content
+  document.getElementById('research' + tabName.charAt(0).toUpperCase() + tabName.slice(1)).style.display = 'block';
+  
+  // Update tab button styles
+  document.querySelectorAll('.tab-button').forEach(button => {
+    button.classList.remove('active');
+  });
+  document.querySelector(`.tab-button[onclick*="${tabName}"]`).classList.add('active');
+}
+</script>
+
+</body>
+</html> 

@@ -1,0 +1,14 @@
+{
+  "gold": 0,
+  "holz": 34,
+  "trees": 16,
+  "workers": 1,
+  "foresters": 2,
+  "carpenters": 1,
+  "toolLevel": 1,
+  "plantToolLevel": 1,
+  "carpenterToolLevel": 1,
+  "progress": 2,
+  "foresterProgress": 2,
+  "timestamp": "2025-07-12T23:02:10.933Z"
+}

@@ -1,0 +1,92 @@
+/* Weather Group Styles */
+.weather-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 200px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.weather-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+}
+
+.divider {
+  color: #000000;
+  height: 32px;
+  width: 2px;
+  background-color: #000000;
+  margin: 0 4px;
+}
+
+.forecast-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  height: 32px;
+}
+
+.forecast-text {
+  color: #000000;
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+.forecast-icons {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  flex: 1;
+}
+
+.weather-icon-current {
+  display: flex;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+}
+
+.weather-icon-forecast {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 20px;
+}
+
+/* Entferne die allgemeine SVG-Icon-Größe, da sie jetzt im JS gesetzt wird */
+.weather-svg-icon {
+  image-rendering: pixelated;
+  vertical-align: middle;
+}
+
+.weather-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: #000000;
+  border-top: 2px solid #808080;
+  padding-top: 4px;
+  margin-top: 2px;
+}
+
+/* Weather Progress Bar */
+.weather-progress-container {
+  height: 6px;
+  background: #808080;
+  border: 1px solid #000000;
+  overflow: hidden;
+}
+
+.weather-progress-bar {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #4488ff 0%, #44aaff 100%);
+  transition: width 0.1s linear;
+} 
