@@ -196,16 +196,17 @@ th {
 }
 
 #chopTreeButton {
-  font-size: 11px !important;
-  padding: 2px 8px !important;
-  font-weight: normal !important;
-  min-width: 0;
-  width: auto;
-  height: 28px;
+  background: linear-gradient(180deg, #44ff44 0%, #00cc00 100%);
+  color: #ffffff;
+  text-shadow: 1px 1px 0px #000000;
+  font-size: 16px;
+  padding: 12px 24px;
 }
+
 .icon {
   font-size: 1.5em !important;
 }
+
 .status .icon {
   position: relative;
   top: -2px;
@@ -213,71 +214,499 @@ th {
   margin-left: 0;
   font-size: 1.5em !important;
 }
+
 th .icon, td .icon {
   font-size: 1.5em !important;
-} 
+}
 
+/* Progress Bar Template Styles */
+.progress-bar-outer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-top: 0;
+}
+
+.bar-icon {
+  font-size: 20px;
+  margin-right: 4px;
+}
+
+.bar {
+  width: 100%;
+  height: 24px;
+  background: #808080;
+  border: 3px solid #000000;
+  box-shadow: inset 2px 2px 0px #fff, inset -2px -2px 0px #404040;
+  overflow: hidden;
+}
+
+.bar-inner {
+  height: 100%;
+  width: 0%;
+  transition: width 0.2s ease;
+  box-shadow: inset 1px 1px 0px #fff;
+  min-width: 0;
+  max-width: 100%;
+  background: linear-gradient(90deg, #ff0000 0%, #ff4444 100%);
+}
+
+.bar-inner.forester {
+  background: linear-gradient(90deg, #00ff00 0%, #44ff44 100%);
+}
+
+.bar-inner.carpenter {
+  background: linear-gradient(90deg, #ff8800 0%, #ffaa44 100%);
+}
+
+/* Research Modal Styles */
+.research-title {
+  font-weight: bold;
+  font-size: 20px;
+  margin-bottom: 8px;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+.research-effect {
+  color: #006400;
+  font-size: 18px;
+  margin: 8px 0;
+  font-weight: 500;
+}
+
+.research-cost {
+  color: #8B4513;
+  font-size: 16px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 2px solid #ddd;
+}
+
+.mermaid .node {
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+}
+
+.mermaid .edgePath path {
+  stroke-width: 4px;
+  stroke: #333;
+  marker-end: url(#arrowhead);
+}
+
+.mermaid .arrowheadPath {
+  fill: #333;
+  stroke: none;
+}
+
+.mermaid {
+  background: linear-gradient(to bottom, #f0f0f0, #e0e0e0);
+  border: 2px solid #ccc;
+}
+
+.modal {
+  position: fixed;
+  top: 60px;
+  left: 0;
+  right: 0;
+  bottom: 40px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+  max-width: 98vw;
+  z-index: 3000;
+  box-shadow: 4px 4px 0px #000000;
+}
+
+.modal-header {
+  position: relative;
+  background: linear-gradient(180deg, #4b2e13 0%, #7c5a3a 100%);
+  color: #fff;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 2em;
+  font-weight: bold;
+  padding: 18px 48px 18px 24px;
+  box-shadow: 0 4px 0 #000000;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.2em;
+  font-family: 'Press Start 2P', monospace;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 2px 2px 0 #000;
+  flex: 1;
+}
+
+.close-button {
+  position: absolute;
+  top: 8px;
+  right: 18px;
+  font-size: 1.5em;
+  background: none;
+  border: none;
+  color: #ffd700;
+  cursor: pointer;
+  font-family: 'Press Start 2P', monospace;
+  text-shadow: 2px 2px 0 #000;
+  padding: 0 8px;
+  line-height: 1;
+}
+
+.modal-header {
+  border-bottom: 2px solid rgba(255,255,255,0.1);
+}
+
+.modal-header h2 {
+  color: #fff;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Status Sidecard Styles */
+#statusSidecard {
+  position: fixed;
+  top: 80px;
+  right: 0;
+  width: 340px;
+  max-width: 90vw;
+  height: auto;
+  bottom: 40px;
+  background: rgba(30,30,30,0.98);
+  color: #ffd700;
+  z-index: 2100;
+  box-shadow: -4px 0 24px #000;
+  border-left: 3px solid #ffd700;
+  border-radius: 0 0 18px 18px;
+  padding: 0 18px 0 24px;
+  overflow-y: auto;
+}
+
+.status-sidecard {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+/* Inline button styles */
+.inline-btn {
+  position: fixed;
+  bottom: 32px;
+  left: 32px;
+  z-index: 2500;
+  background: #222;
+  border: 2px solid #ffd700;
+  border-radius: 50%;
+  padding: 10px 13px;
+  font-size: 1.5em;
+  color: #ffd700;
+  box-shadow: 2px 2px 8px #000;
+  cursor: pointer;
+}
+
+/* Auto upgrade toggle button styles */
+.auto-toggle-btn {
+  background: #f0f0f0;
+  color: #333;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 50px;
+  text-align: center;
+  font-weight: bold;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.auto-toggle-btn:hover {
+  background: #e0e0e0;
+  border-color: #999;
+}
+
+.auto-toggle-btn:active {
+  background: #d0d0d0;
+  transform: translateY(1px);
+}
+
+/* Active state for auto-toggle buttons */
+.auto-toggle-btn.active {
+  background: #4CAF50;
+  color: white;
+  border-color: #45a049;
+}
+
+/* Topbar styles */
 .topbar-flex {
   display: flex;
-  flex-direction: row;
   justify-content: space-between;
   align-items: flex-start;
-  width: 100%;
-  gap: 32px;
-  margin-bottom: 6px;
+  gap: 15px;
+  margin-bottom: 15px;
 }
+
 .topbar-left {
-  flex: 2;
-  min-width: 320px;
-  max-width: 600px;
-  display: flex;
-  flex-direction: column;
-  gap: 0px;
+  flex: 1;
+  min-width: 0;
 }
+
 .topbar-progress {
   display: flex;
   flex-direction: row;
-  gap: 16px;
-  align-items: flex-end;
-  margin-top: 0;
-  padding-top: 0;
+  gap: 8px;
+  margin-top: 8px;
 }
-.score.status {
-  margin-bottom: 0;
-  padding-bottom: 0;
-}
+
 .topbar-progress progress-bar {
-  flex: 1;
-  min-width: 120px;
+  flex: 1 1 0;
+  min-width: 80px;
+  max-width: 200px;
 }
-.topbar-weather {
-  min-width: 260px;
-  max-width: 340px;
-  flex: 1;
-  font-size: 1.1em;
-  padding: 121px 18px;
-  box-sizing: border-box;
-} 
 
 .topbar-actions {
   display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: 10px;
+  margin-bottom: 15px;
 }
-.topbar-actions button {
-  font-size: 13px;
-  padding: 4px 12px;
-  min-width: 0;
-  width: auto;
+
+.topbar-weather {
+  flex-shrink: 0;
+  min-width: 200px;
+}
+
+.weather-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.weather-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.divider {
+  width: 2px;
+  height: 20px;
+  background: #000;
+  margin: 0 5px;
+}
+
+.forecast-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.forecast-text {
+  font-size: 8px;
+  color: #000;
+}
+
+.forecast-icons {
+  display: flex;
+  gap: 4px;
+}
+
+.weather-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 8px;
+  color: #000;
+}
+
+.weather-icon-current,
+.weather-icon-forecast {
+  font-size: 16px;
+}
+
+/* Worker visuals */
+#workerVisuals {
+  margin: 10px 0;
+  min-height: 20px;
 } 
 
-#researchButton {
-  font-size: 11px !important;
-  padding: 2px 8px !important;
-  font-weight: normal !important;
-  min-width: 0;
-  width: auto;
-  height: 28px;
+/* =====================
+   Forschungsmodal Styles
+   ===================== */
+
+#researchModal, .research-modal {
+  min-height: 110dvh !important;
+  max-height: 110dvh !important;
+  height: 110dvh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow-y: auto;
+  color: #e6d3b3 !important;
+  text-shadow: 2px 2px 0 #000, 0 0 1px #000;
+}
+#researchModal *, .research-modal * {
+  color: #e6d3b3 !important;
+  text-shadow: 2px 2px 0 #000, 0 0 1px #000;
+}
+
+.modal-content {
+  max-width: 1000px;
+  width: 90%;
+  background: #3a2c1a;
+  border-radius: 16px;
+  margin: 0 auto;
+  padding: 24px 32px;
+  box-shadow: 0 8px 32px #000a;
+}
+
+.research-tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+  background: rgba(255,255,255,0.1);
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.research-tab-content {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+}
+
+.tab-button {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.2);
+  transition: all 0.3s ease;
+  color: #e6d3b3;
+  font-weight: bold;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-size: 1.1em;
+}
+.tab-button:hover {
+  background: rgba(0,0,0,0.5);
+}
+.tab-button.active {
+  background: rgba(255,255,255,0.2);
+  border-color: rgba(255,255,255,0.4);
+}
+
+/* Skilltree SVG-Knoten */
+/* --- entfernt: svg .skilltree-rect, svg [data-skill-rect], .skill-completed, .skill-selected, .skill-default --- */
+
+/* Details-Panel im Modal */
+[id^="tree-details-"] {
+  background: #2a1d12;
+  border-radius: 10px;
+  padding: 18px 20px;
+  margin-top: 0;
+  min-height: 180px;
+  box-shadow: 0 2px 12px #0005;
+}
+
+.research-button {
+  background: #4CAF50;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 28px;
+  font-size: 1.2em;
+  font-family: inherit;
+  font-weight: bold;
+  margin-top: 12px;
+  box-shadow: 0 2px 8px #0004;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  outline: none;
+  display: inline-block;
+}
+.research-button:disabled {
+  background: #888;
+  color: #eee;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.research-status {
+  font-size: 1.1em;
+  padding: 10px 28px;
+  margin-top: 12px;
+  border-radius: 6px;
+  font-weight: bold;
+  display: inline-block;
+}
+.research-status-completed {
+  background: #2a4;
+  color: #fff !important;
+}
+.research-status-unavailable {
+  background: #a22;
+  color: #fff !important;
+}
+
+.furniture-unlock-btn, .moebel-unlock-btn {
+  background: #4CAF50;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 16px;
+  font-size: 1em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.furniture-unlock-btn:disabled, .moebel-unlock-btn:disabled {
+  background: #aaa;
+  color: #eee;
+  cursor: not-allowed;
+}
+
+.moebel-table-wrap {
+  background: #2a1d12;
+  border-radius: 10px;
+  padding: 18px 20px;
+  margin-top: 18px;
+  box-shadow: 0 2px 12px #0005;
+}
+
+/* =====================
+   Ende Forschungsmodal Styles
+   ===================== */ 
+
+.skill-completed {
+  fill: #4caf50 !important;
+  filter: drop-shadow(0 0 8px #4caf50aa);
+}
+.skill-selected {
+  fill: #ffe066 !important;
+}
+.skill-default {
+  fill: #e0dac7 !important;
+} 
+
+/* Animierte Ressourcengewinn-Anzeige */
+.resource-gain-anim {
+  position: absolute;
+  color: #4caf50;
+  font-weight: bold;
+  font-size: 1.2em;
+  left: 0; right: 0; margin: auto;
+  pointer-events: none;
+  animation: gain-pop 1.2s ease-out forwards;
+  z-index: 10;
+}
+@keyframes gain-pop {
+  0% { opacity: 1; transform: translateY(0);}
+  100% { opacity: 0; transform: translateY(-32px);}
+} 
+
+/* Arbeitsamt-Tabelle größere Schrift */
+.arbeitsamt-table, .arbeitsamt-table th, .arbeitsamt-table td {
+  font-size: 10pt !important;
 } 

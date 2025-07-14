@@ -57,9 +57,11 @@ export class UI {
                         if (person.target.type === 'wood') {
                             const amount = Math.floor(Math.random() * 3) + 1;
                             this.wood += amount;
+                            showResourceGainAnimation('wood', amount);
                         } else if (person.target.type === 'stone') {
                             const amount = Math.floor(Math.random() * 2) + 1;
                             this.stone += amount;
+                            showResourceGainAnimation('stone', amount);
                         }
                         this.updateResourceUI();
                         person.target.collected = true;

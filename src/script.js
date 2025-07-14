@@ -154,7 +154,9 @@ class MedievalEconomyGame {
             nearestResource.collected = true;
             
             if (nearestResource.type === 'wood') {
-                this.gameState.wood += Math.floor(Math.random() * 3) + 1; // 1-3 Holz
+                const amount = Math.floor(Math.random() * 3) + 1;
+                this.gameState.wood += amount;
+                showResourceGainAnimation('wood', amount);
             } else if (nearestResource.type === 'stone') {
                 this.gameState.stone += Math.floor(Math.random() * 2) + 1; // 1-2 Stein
             }
@@ -411,6 +413,31 @@ class MedievalEconomyGame {
             this.resourceInfo.style.display = 'none';
         }, 2000);
     }
+}
+
+// Animierte Ressourcengewinn-Anzeige
+function showResourceGainAnimation(type, amount) {
+  let el = null;
+  if (type === 'wood') el = document.getElementById('wood-count');
+  if (type === 'gold') {
+    // Gold-Anzeige ist vermutlich im Score-Text, daher an die Score-Leiste anhängen
+    el = document.querySelector('.score.status') || document.body;
+  }
+  if (type === 'tree') el = document.getElementById('treeCount');
+  if (type === 'stone') el = document.getElementById('stone-count');
+  if (!el) return;
+  const anim = document.createElement('span');
+  anim.className = 'resource-gain-anim';
+  anim.textContent = `+${amount}`;
+  // Für Gold: Positioniere rechts neben dem Score
+  if (type === 'gold' && el !== document.body) {
+    anim.style.left = '120px';
+    anim.style.color = '#ffd700';
+  }
+  if (type === 'tree') anim.style.color = '#228B22';
+  if (type === 'stone') anim.style.color = '#888';
+  el.appendChild(anim);
+  setTimeout(() => anim.remove(), 1200);
 }
 
 // Spiel starten wenn DOM geladen ist

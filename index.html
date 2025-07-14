@@ -6,225 +6,7 @@
 <link rel="icon" type="image/x-icon" href="favicon_io/favicon.ico">
 <link rel="stylesheet" href="src/weather.css">
 <link rel="stylesheet" href="style.css">
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
-body {
-  margin: 0; padding: 0;
-  background: linear-gradient(135deg, #000080 0%, #0000a0 50%, #000080 100%);
-  font-family: 'Press Start 2P', monospace;
-  image-rendering: pixelated;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: 100vh;
-  color: #ffffff;
-  padding: 10px;
-  overflow-x: hidden;
-  text-shadow: none !important;
-}
-
-#gameContainer { 
-  width: 100%; 
-  max-width: 100vw;
-  box-sizing: border-box;
-  background: linear-gradient(180deg, #c0c0c0 0%, #a0a0a0 100%);
-  border: 4px solid #000000;
-  border-radius: 8px;
-  box-shadow: 
-    inset 2px 2px 0px #ffffff,
-    inset -2px -2px 0px #808080,
-    4px 4px 0px #000000;
-  padding: 15px;
-  margin: 0;
-  overflow-x: hidden;
-}
-
-.status { 
-  font-size: 12px; 
-  color: #000000; 
-  background: #ffffff;
-  border: 2px solid #000000;
-  padding: 6px 10px;
-  margin: 5px 0;
-  box-shadow: 2px 2px 0px #000000;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-shadow: none !important;
-}
-
-.status .icon {
-  position: relative;
-  top: -2px;
-  margin-right: 2px;
-  margin-left: 0;
-  font-size: 1.5em !important;
-}
-
-
-
-.bar { 
-  width: 100%; 
-  height: 24px; 
-  background: #808080; 
-  border: 3px solid #000000;
-  margin: 10px 0;
-  box-shadow: inset 2px 2px 0px #ffffff, inset -2px -2px 0px #404040;
-  overflow: hidden;
-}
-
-.bar-inner { 
-  height: 100%; 
-  width: 0%; 
-  transition: width 0.2s ease;
-  box-shadow: inset 1px 1px 0px #ffffff;
-  min-width: 0;
-  max-width: 100%;
-}
-
-#progressBar { 
-  background: linear-gradient(90deg, #ff0000 0%, #ff4444 100%); 
-  width: 0%;
-}
-
-.bar-inner.forester { 
-  background: linear-gradient(90deg, #00ff00 0%, #44ff44 100%); 
-  width: 0%;
-}
-
-.bar-inner.carpenter { 
-  background: linear-gradient(90deg, #ff8800 0%, #ffaa44 100%); 
-  width: 0%;
-}
-
-button { 
-  font-family: 'Press Start 2P', monospace;
-  font-size: 10px; 
-  background: linear-gradient(180deg, #c0c0c0 0%, #a0a0a0 100%);
-  color: #000000; 
-  border: 3px solid #000000;
-  padding: 6px 12px; 
-  cursor: pointer;
-  box-shadow: 
-    inset 1px 1px 0px #ffffff,
-    inset -1px -1px 0px #808080,
-    2px 2px 0px #000000;
-  text-shadow: 1px 1px 0px #ffffff;
-  transition: all 0.1s;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-button:hover {
-  background: linear-gradient(180deg, #e0e0e0 0%, #c0c0c0 100%);
-  transform: translateY(-1px);
-}
-
-button:active {
-  box-shadow: 
-    inset -1px -1px 0px #ffffff,
-    inset 1px 1px 0px #808080,
-    1px 1px 0px #000000;
-  transform: translateY(1px);
-}
-
-button:disabled { 
-  opacity: 0.5; 
-  cursor: not-allowed;
-  background: #808080;
-  color: #888 !important;
-}
-
-.button-group { 
-  display: flex; 
-  flex-direction: row; 
-  width: 100%; 
-  gap: 15px; 
-  flex-wrap: wrap;
-}
-
-.button-section { 
-  display: grid; 
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); 
-  gap: 8px; 
-  background: linear-gradient(180deg, #d0d0d0 0%, #b0b0b0 100%);
-  padding: 12px; 
-  border: 3px solid #000000;
-  box-shadow: 
-    inset 2px 2px 0px #ffffff,
-    inset -2px -2px 0px #808080;
-  flex: 1;
-  min-width: 0;
-}
-
-.button-section-title { 
-  font-size: 12px; 
-  color: #ffffff; 
-  background: linear-gradient(180deg, #404040 0%, #202020 100%);
-  padding: 8px; 
-  text-align: center;
-  border: 2px solid #000000;
-  box-shadow: 2px 2px 0px #000000;
-  text-shadow: none !important;
-}
-
-table {
-  border-collapse: collapse;
-  width: 100%;
-  background: #ffffff;
-  border: 2px solid #000000;
-  color: #222 !important;
-}
-
-th, td {
-  border: 1px solid #000000;
-  padding: 6px;
-  text-align: center;
-  font-size: 8px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-th {
-  background: linear-gradient(180deg, #606060 0%, #222 100%);
-  color: #fff;
-  border-bottom: 2px solid #ffd700;
-  font-weight: bold;
-}
-
-#resetBtn { 
-  margin-top: 20px;
-  background: linear-gradient(180deg, #ff4444 0%, #cc0000 100%);
-  color: #ffffff;
-  text-shadow: 1px 1px 0px #000000;
-  font-size: 14px;
-  padding: 12px 24px;
-}
-
-#chopTreeButton {
-  background: linear-gradient(180deg, #44ff44 0%, #00cc00 100%);
-  color: #ffffff;
-  text-shadow: 1px 1px 0px #000000;
-  font-size: 16px;
-  padding: 12px 24px;
-}
-.icon {
-  font-size: 1.5em !important;
-}
-.status .icon {
-  position: relative;
-  top: -2px;
-  margin-right: 2px;
-  margin-left: 0;
-  font-size: 1.5em !important;
-}
-th .icon, td .icon {
-  font-size: 1.5em !important;
-}
-</style>
 <template id="progress-bar-template">
   <style>
     .progress-bar-outer {
@@ -232,7 +14,7 @@ th .icon, td .icon {
       align-items: center;
       gap: 10px;
       width: 100%;
-      margin-top: 10px;
+      margin-top: 4px;
     }
     .bar-icon {
       font-size: 20px;
@@ -272,7 +54,7 @@ th .icon, td .icon {
 <div id="gameContainer">
   <div class="topbar-flex">
     <div class="topbar-left">
-      <div class="score status"><span class="icon">💰</span> 0 | <span class="icon">🪵</span> 0 | <span class="icon">🌲</span> <span id="treeCount">10</span></div>
+      <div class="score status"><span class="icon">🪵</span> 0 | <span class="icon">🌲</span> <span id="treeCount">10</span> | <span class="icon">💰</span> 0</div>
       <div class="topbar-progress">
         <progress-bar icon="🪓" value="0" max="10" barClass=""></progress-bar>
         <progress-bar icon="🌱" value="0" max="10" barClass="forester"></progress-bar>
@@ -299,13 +81,12 @@ th .icon, td .icon {
   <div id="workerVisuals"></div>
   <div class="button-group" style="flex-direction: column; gap: 20px;">
     <div class="topbar-actions">
-      <button id="chopTreeButton">🌲 Bäume hacken</button>
       <button id="researchButton" onclick="openResearchModal()">🔬 Forschung</button>
     </div>
     <div>
       <div class="button-section-title">Arbeitsamt</div>
       <div class="button-section">
-        <table style="width: 100%; border-collapse: collapse; text-align: center;">
+        <table class="arbeitsamt-table" style="width: 100%; border-collapse: collapse; text-align: center; font-size: 20pt;">
           <thead>
             <tr>
               <th style="text-align: left;">Beruf</th>
@@ -323,7 +104,7 @@ th .icon, td .icon {
               <td>20💰</td>
               <td><button id="hireWorkerButton">Kaufen</button></td>
               <td><button id="upgradeToolButton" title="Axt verbessern"><span class="icon">🪓</span> Lv. <span id="toolLevelAxe">1</span> (<span id="toolCostAxe">50</span><span class="icon">💰</span>)</button></td>
-              <td><label class="auto-upgrade-label"><input type="checkbox" name="autoUpgrade" value="axe"><span>Auto</span></label></td>
+              <td><button id="autoUpgradeAxeBtn" class="auto-toggle-btn" data-tool="axe" title="Automatische Axt-Upgrades aktivieren/deaktivieren">⚡ Auto</button></td>
             </tr>
             <tr>
               <td>🌱 Förster</td>
@@ -331,15 +112,15 @@ th .icon, td .icon {
               <td>25💰</td>
               <td><button id="hireForesterButton">Kaufen</button></td>
               <td><button id="upgradePlantToolButton" title="Pflanzwerkzeug verbessern"><span class="icon">🌿</span> Lv. <span id="toolLevelPlant">1</span> (<span id="toolCostPlant">50</span><span class="icon">💰</span>)</button></td>
-              <td><label class="auto-upgrade-label"><input type="checkbox" name="autoUpgrade" value="plant"><span>Auto</span></label></td>
+              <td><button id="autoUpgradePlantBtn" class="auto-toggle-btn" data-tool="plant" title="Automatische Pflanzwerkzeug-Upgrades aktivieren/deaktivieren">⚡ Auto</button></td>
             </tr>
             <tr>
-              <td>🪑 Schreiner</td>
+              <td>🪚 Schreiner</td>
               <td><span id="carpenterCount">0</span></td>
               <td>30💰</td>
               <td><button id="hireCarpenterButton">Kaufen</button></td>
               <td><button id="upgradeCarpenterToolButton" title="Schreinerwerkzeug verbessern"><span class="icon">🔨</span> Lv. <span id="toolLevelCarpenter">1</span> (<span id="toolCostCarpenter">50</span><span class="icon">💰</span>)</button></td>
-              <td><label class="auto-upgrade-label"><input type="checkbox" name="autoUpgrade" value="carpenter"><span>Auto</span></label></td>
+              <td><button id="autoUpgradeCarpenterBtn" class="auto-toggle-btn" data-tool="carpenter" title="Automatische Schreinerwerkzeug-Upgrades aktivieren/deaktivieren">⚡ Auto</button></td>
             </tr>
           </tbody>
         </table>
@@ -379,6 +160,12 @@ th .icon, td .icon {
               <td>100</td>
               <td><button id="wardrobeButton">Bauen</button></td>
             </tr>
+            <tr style="display:none" id="tableFurnitureRow"><td>🍽️ Tisch</td><td>20</td><td>40</td><td><button id="tableFurnitureButton">Bauen</button></td></tr>
+            <tr style="display:none" id="wardrobeRow"><td>🚪 Schrank</td><td>50</td><td>100</td><td><button id="wardrobeButton">Bauen</button></td></tr>
+            <tr style="display:none" id="bedRow"><td>🛏️ Bett</td><td>60</td><td>120</td><td><button id="bedButton">Bauen</button></td></tr>
+            <tr style="display:none" id="shelfRow"><td>📚 Regal</td><td>30</td><td>60</td><td><button id="shelfButton">Bauen</button></td></tr>
+            <tr style="display:none" id="dresserRow"><td>🗄️ Kommode</td><td>40</td><td>80</td><td><button id="dresserButton">Bauen</button></td></tr>
+            <tr style="display:none" id="sofaRow"><td>🛋️ Sofa</td><td>100</td><td>200</td><td><button id="sofaButton">Bauen</button></td></tr>
           </tbody>
         </table>
       </div>
@@ -386,6 +173,7 @@ th .icon, td .icon {
   </div>
   
   <button id="resetBtn">🔄 Spiel zurücksetzen</button>
+  <button id="resetResearchBtn" style="font-size:0.95em;padding:6px 14px;margin-left:8px;">Forschungen zurücksetzen</button>
   <button id="musicPopoutBtn" class="inline-btn" title="Musikplayer öffnen">🎵</button>
   <button id="statusSidecardBtn" class="inline-btn">🛈</button>
 </div>
@@ -401,8 +189,8 @@ th .icon, td .icon {
 <div id="statusToast" style="display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#222;color:#ffd700;padding:14px 32px;border-radius:8px;font-size:1em;z-index:3000;box-shadow:0 4px 24px #000;border:2px solid #ffd700;text-align:center;pointer-events:none;opacity:0.97;transition:opacity 0.3s;"></div>
 <!-- Music Player Popout Icon -->
   <button id="musicPopoutBtn" title="Musikplayer öffnen" style="position:fixed;bottom:32px;left:32px;z-index:2500;background:#222;border:2px solid #ffd700;border-radius:50%;padding:10px 13px;font-size:1.5em;color:#ffd700;box-shadow:2px 2px 8px #000;cursor:pointer;">🎵</button>
-<script src="src/weather.js"></script>
 <script src="src/research.js"></script>
+<script src="src/weather.js"></script>
 <script>
 // Funktion zum Formatieren von Zahlen
 function formatNumber(num) {
@@ -428,6 +216,13 @@ let carpenterTimer = 0;
 let carpenterProgress = 0;
 const CARPENTER_MAX = 40;
 
+// Ressourcen global verfügbar machen für das Forschungssystem
+window.gold = gold;
+window.holz = holz;
+window.trees = trees;
+
+console.log('🎮 DEBUG: Hauptspiel initialisiert, Ressourcen global verfügbar gemacht');
+
 // Basis-Preise für Arbeiter
 let workerBaseCost = 20;
 let foresterBaseCost = 25;
@@ -442,11 +237,16 @@ function calculateWorkerPrice(basePrice, count) {
 }
 
 function updateDisplay() {
+  // Globale Variablen aktualisieren
+  window.gold = gold;
+  window.holz = holz;
+  window.trees = trees;
+  
   document.querySelectorAll('.score').forEach(scoreElem => {
     scoreElem.innerHTML = 
-      `<span class="icon">💰</span> ${formatNumber(gold)} | ` +
       `<span class="icon">🪵</span> ${formatNumber(holz)} | ` +
-      `<span class="icon">🌲</span> <span id="treeCount">${formatNumber(trees)}</span>`;
+      `<span class="icon">🌲</span> <span id="treeCount">${formatNumber(trees)}</span> | ` +
+      `<span class="icon">💰</span> ${formatNumber(gold)}`;
   });
   // Update worker counts
   document.getElementById("workerCount").textContent = workers;
@@ -474,9 +274,28 @@ function updateDisplay() {
   document.getElementById("upgradeToolButton").disabled = gold < toolLevel * 50;
   document.getElementById("upgradePlantToolButton").disabled = gold < plantToolLevel * 50;
   document.getElementById("upgradeCarpenterToolButton").disabled = gold < carpenterToolLevel * 50;
-  document.getElementById("chairButton").disabled = holz < 10;
-  document.getElementById("tableButton").disabled = holz < 20;
-  document.getElementById("wardrobeButton").disabled = holz < 50;
+  
+  // Update auto-upgrade button states
+  updateAutoUpgradeButton('axe');
+  updateAutoUpgradeButton('plant');
+  updateAutoUpgradeButton('carpenter');
+  // Möbel-Bauen-Buttons aktivieren/deaktivieren je nach Forschung und Ressourcen
+  if (window.researchSystem) {
+    const moebelButtons = [
+      {id: 'chairButton', research: 'chair', cost: 10},
+      {id: 'tableFurnitureButton', research: 'table_furniture', cost: 20},
+      {id: 'wardrobeButton', research: 'wardrobe', cost: 50},
+      {id: 'bedButton', research: 'bed', cost: 60},
+      {id: 'shelfButton', research: 'shelf', cost: 30},
+      {id: 'dresserButton', research: 'dresser', cost: 40},
+      {id: 'sofaButton', research: 'sofa', cost: 100}
+    ];
+    moebelButtons.forEach(btn => {
+      const button = document.getElementById(btn.id);
+      const unlocked = window.researchSystem.research.find(r => r.id === btn.research && r.completed);
+      if (button) button.disabled = !(unlocked && holz >= btn.cost);
+    });
+  }
 }
 
 function saveGameToServer() {
@@ -510,19 +329,22 @@ function loadGameFromServer() {
         // Schreiner-Balken ggf. auch
         setAllProgressBars('carpenter', carpenterProgress);
         updateDisplay();
+        if (window.updateMoebelVisibility) window.updateMoebelVisibility();
       } else {
         console.log('Kein gespeicherter Spielstand gefunden');
+        if (window.updateMoebelVisibility) window.updateMoebelVisibility();
       }
     })
     .catch(error => {
       console.error('Fehler beim Laden:', error);
+      if (window.updateMoebelVisibility) window.updateMoebelVisibility();
     });
 }
 
-// Füge eine Funktion für die +1-Animation hinzu
-function showPlusOneAnimation(targetBar) {
+// Füge eine Funktion für die +X-Animation hinzu
+function showPlusOneAnimation(targetBar, amount) {
   const anim = document.createElement('div');
-  anim.textContent = '+1';
+  anim.textContent = `+${amount}`;
   anim.style.position = 'absolute';
   anim.style.left = targetBar.getBoundingClientRect().left + window.scrollX + targetBar.offsetWidth - 40 + 'px';
   anim.style.top = targetBar.getBoundingClientRect().top + window.scrollY - 24 + 'px';
@@ -563,7 +385,7 @@ function autoCollect() {
       trees -= Math.min(trees, workers);
       progress = 0;
       setAllProgressBars('', progress);
-      showPlusOneAnimation(document.querySelector('progress-bar[barclass=""]'));
+      showPlusOneAnimation(document.querySelector('progress-bar[barclass=""]'), (Math.floor(Math.random() * 11) + 5) * workers);
     }
   }
   
@@ -577,7 +399,7 @@ function autoCollect() {
       trees += foresters * plantToolLevel;
       foresterProgress = 0;
       setAllProgressBars('forester', foresterProgress);
-      showPlusOneAnimation(document.querySelector('progress-bar[barclass="forester"]'));
+      showPlusOneAnimation(document.querySelector('progress-bar[barclass="forester"]'), foresters * plantToolLevel);
     }
   }
   
@@ -591,7 +413,7 @@ function autoCollect() {
       gold += 15 * carpenters * carpenterToolLevel;
       carpenterProgress = 0;
       setAllProgressBars('carpenter', carpenterProgress);
-      showPlusOneAnimation(document.querySelector('progress-bar[barclass="carpenter"]'));
+      showPlusOneAnimation(document.querySelector('progress-bar[barclass="carpenter"]'), 15 * carpenters * carpenterToolLevel);
     }
   }
   
@@ -601,12 +423,67 @@ function autoCollect() {
   updateDisplay();
 }
 
+// Auto-upgrade state tracking
+const autoUpgradeState = {
+  axe: false,
+  plant: false,
+  carpenter: false
+};
+
+// Load auto-upgrade state from localStorage
+function loadAutoUpgradeState() {
+  const saved = localStorage.getItem('autoUpgradeState');
+  if (saved) {
+    Object.assign(autoUpgradeState, JSON.parse(saved));
+  }
+}
+
+// Save auto-upgrade state to localStorage
+function saveAutoUpgradeState() {
+  localStorage.setItem('autoUpgradeState', JSON.stringify(autoUpgradeState));
+}
+
+// Update auto-upgrade button appearance
+function updateAutoUpgradeButton(tool) {
+  const btn = document.getElementById(`autoUpgrade${tool.charAt(0).toUpperCase() + tool.slice(1)}Btn`);
+  if (btn) {
+    if (autoUpgradeState[tool]) {
+      btn.textContent = '✅ Auto';
+      btn.style.background = '#4CAF50';
+      btn.style.color = 'white';
+    } else {
+      btn.textContent = '⚡ Auto';
+      btn.style.background = '#f0f0f0';
+      btn.style.color = '#333';
+    }
+  }
+}
+
+// Toggle auto-upgrade for a specific tool
+function toggleAutoUpgrade(tool) {
+  autoUpgradeState[tool] = !autoUpgradeState[tool];
+  updateAutoUpgradeButton(tool);
+  saveAutoUpgradeState();
+  
+  // Show feedback
+  const status = autoUpgradeState[tool] ? 'aktiviert' : 'deaktiviert';
+  const toolName = tool === 'axe' ? 'Axt' : tool === 'plant' ? 'Pflanzwerkzeug' : 'Schreinerwerkzeug';
+  showStatusToast(`Automatische ${toolName}-Upgrades ${status}`);
+  
+  // Add visual feedback
+  const btn = document.getElementById(`autoUpgrade${tool.charAt(0).toUpperCase() + tool.slice(1)}Btn`);
+  if (btn) {
+    btn.style.transform = 'scale(0.95)';
+    setTimeout(() => {
+      btn.style.transform = 'scale(1)';
+    }, 100);
+  }
+}
+
 function autoUpgrade() {
-  document.querySelectorAll('input[name="autoUpgrade"]:checked').forEach(input => {
-    if (input.value === 'axe') upgradeTool();
-    if (input.value === 'plant') upgradePlantTool();
-    if (input.value === 'carpenter') upgradeCarpenterTool();
-  });
+  if (autoUpgradeState.axe) upgradeTool();
+  if (autoUpgradeState.plant) upgradePlantTool();
+  if (autoUpgradeState.carpenter) upgradeCarpenterTool();
 }
 
 function upgradeTool() {
@@ -666,28 +543,27 @@ document.getElementById("hireCarpenterButton").onclick = function() {
   }
 };
 
-document.getElementById("chopTreeButton").onclick = function() {
-  if (trees > 0) {
-    progress += 1;
-    if (progress >= 10) {
-      trees--;
-      holz += Math.floor(Math.random() * 11) + 5; // Zwischen 5 und 15 Holz
-      progress = 0;
+// Möbel-Bauen-Buttons: Korrekte Event-Handler für alle erforschten Möbel
+function handleMoebelBauButton(btnId, researchId, holzKosten, goldErtrag) {
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+  btn.onclick = function() {
+    if (!window.researchSystem) return;
+    const unlocked = window.researchSystem.research.find(r => r.id === researchId && r.completed);
+    if (unlocked && holz >= holzKosten) {
+      holz -= holzKosten;
+      gold += goldErtrag;
+      updateDisplay();
     }
-    setAllProgressBars('', progress);
-    updateDisplay();
-  }
-};
-
-document.getElementById("chairButton").onclick = function() {
-  if (holz >= 10) { holz -= 10; gold += 15; updateDisplay(); }
-};
-document.getElementById("tableButton").onclick = function() {
-  if (holz >= 20) { holz -= 20; gold += 40; updateDisplay(); }
-};
-document.getElementById("wardrobeButton").onclick = function() {
-  if (holz >= 50) { holz -= 50; gold += 100; updateDisplay(); }
-};
+  };
+}
+handleMoebelBauButton('chairButton', 'chair', 10, 15);
+handleMoebelBauButton('tableFurnitureButton', 'table_furniture', 20, 40);
+handleMoebelBauButton('wardrobeButton', 'wardrobe', 50, 100);
+handleMoebelBauButton('bedButton', 'bed', 60, 120);
+handleMoebelBauButton('shelfButton', 'shelf', 30, 60);
+handleMoebelBauButton('dresserButton', 'dresser', 40, 80);
+handleMoebelBauButton('sofaButton', 'sofa', 100, 200);
 
 document.getElementById("resetBtn").onclick = function() {
   gold = 0; holz = 0; trees = 10;
@@ -696,9 +572,28 @@ document.getElementById("resetBtn").onclick = function() {
   progress = 0;
   foresterProgress = 0;
   localStorage.removeItem('research'); // Forschungsfortschritt zurücksetzen
+  localStorage.removeItem('autoUpgradeState'); // Auto-upgrade state zurücksetzen
+  
+  // Reset auto-upgrade state
+  autoUpgradeState.axe = false;
+  autoUpgradeState.plant = false;
+  autoUpgradeState.carpenter = false;
+  
   updateDisplay();
   saveGameToServer();
+  if (window.updateMoebelVisibility) window.updateMoebelVisibility();
 };
+
+// Auto-upgrade button event listeners
+document.getElementById('autoUpgradeAxeBtn').onclick = () => toggleAutoUpgrade('axe');
+document.getElementById('autoUpgradePlantBtn').onclick = () => toggleAutoUpgrade('plant');
+document.getElementById('autoUpgradeCarpenterBtn').onclick = () => toggleAutoUpgrade('carpenter');
+
+// Initialize auto-upgrade system
+loadAutoUpgradeState();
+updateAutoUpgradeButton('axe');
+updateAutoUpgradeButton('plant');
+updateAutoUpgradeButton('carpenter');
 
 setInterval(autoCollect, 2000);
 setInterval(autoUpgrade, 1000);
@@ -754,16 +649,47 @@ document.getElementById('musicPopoutBtn').onclick = function() {
 };
 
 // --- Möbelbau-Freischaltung nach Forschung ---
-function updateMoebelVisibility() {
+// Erweitere die Funktion updateMoebelVisibility für alle Möbelstücke
+function updateMoebelVisibility(retryCount = 0) {
+  if (!window.researchSystem || !window.researchSystem.research) {
+    if (retryCount < 10) {
+      console.log(`[Möbelbau] Forschungssystem noch nicht bereit, versuche erneut... (${retryCount+1})`);
+      setTimeout(() => updateMoebelVisibility(retryCount + 1), 100);
+    } else {
+      console.warn('[Möbelbau] Forschungssystem konnte nicht initialisiert werden!');
+    }
+    return;
+  }
   // Zeilen holen
   const tableRow = document.getElementById('tableRow');
   const cabinetRow = document.getElementById('cabinetRow');
-  // Forschung prüfen
+  // Forschung prüfen (alt)
   const tableUnlocked = window.researchSystem && window.researchSystem.research.find(r => r.id === 'table' && r.completed);
   const cabinetUnlocked = window.researchSystem && window.researchSystem.research.find(r => r.id === 'cabinet' && r.completed);
   if (tableRow) tableRow.style.display = tableUnlocked ? '' : 'none';
   if (cabinetRow) cabinetRow.style.display = cabinetUnlocked ? '' : 'none';
+
+  // NEU: Für alle Möbelstücke prüfen - KORRIGIERTE IDs
+  const moebelIds = [
+    {id:'chair', row:'chairRow'},
+    {id:'table_furniture', row:'tableFurnitureRow'},
+    {id:'wardrobe', row:'wardrobeRow'},
+    {id:'bed', row:'bedRow'},
+    {id:'shelf', row:'shelfRow'},
+    {id:'dresser', row:'dresserRow'},
+    {id:'sofa', row:'sofaRow'}
+  ];
+  
+  moebelIds.forEach(m => {
+    const row = document.getElementById(m.row);
+    if (row) {
+      const unlocked = window.researchSystem.research.find(r => (r.id === m.id || r.id === 'furniture') && r.completed);
+      row.style.display = unlocked ? '' : 'none';
+      console.log(`[Möbelbau] Zeile ${m.row}: ${unlocked ? 'sichtbar' : 'ausgeblendet'} (Forschung abgeschlossen: ${unlocked ? 'true' : 'false'})`);
+    }
+  });
 }
+window.updateMoebelVisibility = updateMoebelVisibility;
 // Nach Forschung und beim Laden aufrufen
 if (window.researchSystem) {
   const origApplyResearchEffects = researchSystem.applyResearchEffects.bind(researchSystem);
@@ -773,6 +699,12 @@ if (window.researchSystem) {
   };
 }
 document.addEventListener('DOMContentLoaded', updateMoebelVisibility);
+
+// Auch beim Laden des Spiels aktualisieren
+document.addEventListener('DOMContentLoaded', function() {
+  // Kurze Verzögerung, um sicherzustellen, dass das Forschungssystem geladen ist
+  setTimeout(updateMoebelVisibility, 100);
+});
 
 });
 
@@ -807,171 +739,38 @@ customElements.define('progress-bar', ProgressBar);
       <span class="close-button" onclick="closeResearchModal()">&times;</span>
     </div>
     <div class="modal-body">
-      <div class="research-tabs">
-        <button class="tab-button active" onclick="showResearchTab('tree')">Forschungsbaum</button>
-        <button class="tab-button" onclick="showResearchTab('list')">Forschungsliste</button>
+      <div class="research-tabs" style="display:flex;gap:12px;margin-bottom:12px;">
+        <button class="tab-button" data-tab="lumberjack" onclick="showResearchTab('lumberjack')">🪓 Holzfäller</button>
+        <button class="tab-button" data-tab="forester" onclick="showResearchTab('forester')">🌱 Förster</button>
+        <button class="tab-button" data-tab="carpenter" onclick="showResearchTab('carpenter')">🪑 Schreiner</button>
       </div>
-      <div id="researchTree" class="research-tab-content">
-        <div style="display: flex; flex-direction: row; gap: 24px; min-height: 320px; height: 100%;">
-          <div id="skilltree-scroll" style="flex:0 0 260px; max-height:85vh; overflow-y:auto;">
-            <svg id="skilltree-svg" width="260" style="height:auto; min-height:100%; display:block;"></svg>
-          </div>
-          <div id="skilltree-details" style="flex:1; min-width: 0;"></div>
-        </div>
-      </div>
-      <div id="researchList" class="research-tab-content" style="display: none;">
-        <div class="research-grid">
-          <!-- Forschungsoptionen werden hier dynamisch eingefügt -->
-        </div>
-      </div>
+      <div id="researchLumberjack" class="research-tab-content" style="display:none;"></div>
+      <div id="researchForester" class="research-tab-content" style="display:none;"></div>
+      <div id="researchCarpenter" class="research-tab-content" style="display:none;"></div>
     </div>
   </div>
 </div>
 
-<style>
-.research-title {
-  font-weight: bold;
-  font-size: 20px;
-  margin-bottom: 8px;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-}
 
-.research-effect {
-  color: #006400;
-  font-size: 18px;
-  margin: 8px 0;
-  font-weight: 500;
-}
-
-.research-cost {
-  color: #8B4513;
-  font-size: 16px;
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 2px solid #ddd;
-}
-
-.mermaid .node {
-  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
-}
-
-.mermaid .edgePath path {
-  stroke-width: 4px;
-  stroke: #333;
-  marker-end: url(#arrowhead);
-}
-
-.mermaid .arrowheadPath {
-  fill: #333;
-  stroke: none;
-}
-
-.mermaid {
-  background: linear-gradient(to bottom, #f0f0f0, #e0e0e0);
-  border: 2px solid #ccc;
-}
-
-.modal {
-  position: fixed;
-  top: 60px;
-  left: 0;
-  right: 0;
-  bottom: 40px;
-  margin: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: visible;
-  border-radius: 18px;
-  max-width: 98vw;
-  z-index: 3000;
-}
-.modal-content {
-  height: auto;
-  max-height: 100%;
-  overflow: visible;
-  display: flex;
-  flex-direction: column;
-  border-radius: 18px;
-}
-.research-tab-content {
-  flex: 1 1 auto;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: visible;
-}
-.modal-content {
-  background: linear-gradient(to bottom right, #2c3e50, #3498db);
-}
-
-.modal-header {
-  border-bottom: 2px solid rgba(255,255,255,0.1);
-}
-
-.modal-header h2 {
-  color: #fff;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-}
-
-.research-tabs {
-  background: rgba(255,255,255,0.1);
-  padding: 10px;
-  border-radius: 8px;
-}
-
-.tab-button {
-  background: rgba(0,0,0,0.3);
-  border: 1px solid rgba(255,255,255,0.2);
-  transition: all 0.3s ease;
-}
-
-.tab-button:hover {
-  background: rgba(0,0,0,0.5);
-}
-
-.tab-button.active {
-  background: rgba(255,255,255,0.2);
-  border-color: rgba(255,255,255,0.4);
-}
-#statusSidecard {
-  position: fixed;
-  top: 80px;
-  right: 0;
-  width: 340px;
-  max-width: 90vw;
-  height: auto;
-  bottom: 40px;
-  background: rgba(30,30,30,0.98);
-  color: #ffd700;
-  z-index: 2100;
-  box-shadow: -4px 0 24px #000;
-  border-left: 3px solid #ffd700;
-  border-radius: 0 0 18px 18px;
-  padding: 0 18px 0 24px;
-  overflow-y: auto;
-}
-.status-sidecard {
-  max-height: 500px;
-  overflow-y: auto;
-}
-</style>
 
 <script>
 function showResearchTab(tabName) {
-  // Hide all tab contents
   document.querySelectorAll('.research-tab-content').forEach(tab => {
     tab.style.display = 'none';
   });
-  
-  // Show selected tab content
-  document.getElementById('research' + tabName.charAt(0).toUpperCase() + tabName.slice(1)).style.display = 'block';
-  
-  // Update tab button styles
+  if(tabName==='lumberjack') document.getElementById('researchLumberjack').style.display = 'block';
+  if(tabName==='forester') document.getElementById('researchForester').style.display = 'block';
+  if(tabName==='carpenter') document.getElementById('researchCarpenter').style.display = 'block';
   document.querySelectorAll('.tab-button').forEach(button => {
     button.classList.remove('active');
+    if(button.getAttribute('data-tab')===tabName) button.classList.add('active');
   });
-  document.querySelector(`.tab-button[onclick*="${tabName}"]`).classList.add('active');
+}
+// Forschungen zurücksetzen Button Handler
+if (document.getElementById('resetResearchBtn')) {
+  document.getElementById('resetResearchBtn').onclick = function() {
+    if (window.resetResearch) window.resetResearch();
+  };
 }
 </script>
 
