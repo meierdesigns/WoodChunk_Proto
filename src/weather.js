@@ -16,6 +16,9 @@ let gameTime = 0; // Zeit in Minuten
 let timeUpdateInterval = null;
 let lastTimeUpdate = Date.now();
 let localTimeOffset = 0;
+let lastHour = null;
+let dayCounter = 1;
+let seasonCounter = 0; // 0: Frühling, 1: Sommer, 2: Herbst, 3: Winter
 
 // Deterministische Wetter-Queue pro Tag
 function getDailySeed() {
@@ -32,19 +35,66 @@ function seededRandom(seed) {
 }
 
 function formatGameTime(minutes) {
-  const hours = Math.floor(minutes / 60);
-  const mins = minutes % 60;
-  return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+  const hours = Math.floor(minutes / 60) % 24;
+  return `${hours} Uhr`;
 }
 
 function fillWeatherQueue() {
+  // Bestimme aktuelle Jahreszeit
+  const totalMinutes = Math.floor(gameTime);
+  const daysSinceStart = Math.floor(totalMinutes / 1440);
+  const seasonIndex = Math.floor(daysSinceStart / 30) % 4;
+  const seasons = ['Spring', 'Summer', 'Autumn', 'Winter'];
+  const currentSeason = seasons[seasonIndex];
+
+  // Wettertypen nach Jahreszeit filtern und gewichten
+  let seasonWeather = [];
+  if (currentSeason === 'Spring') {
+    // Frühling: viel Soft Rain, Rainy, etwas Sunny, wenig Thunder, kein Snowing
+    seasonWeather = [
+      ...Array(6).fill('Soft Rain'),
+      ...Array(4).fill('Rainy'),
+      ...Array(3).fill('Cloudy'),
+      ...Array(2).fill('Sunny'),
+      ...Array(1).fill('Thunder'),
+      ...Array(1).fill('Windy')
+    ];
+  } else if (currentSeason === 'Summer') {
+    // Sommer: viel Sunny, etwas Thunder, wenig Rainy, kein Snowing
+    seasonWeather = [
+      ...Array(8).fill('Sunny'),
+      ...Array(2).fill('Thunder'),
+      ...Array(2).fill('Rainy'),
+      ...Array(2).fill('Cloudy'),
+      ...Array(1).fill('Windy')
+    ];
+  } else if (currentSeason === 'Autumn') {
+    // Herbst: viel Windy und Foggy, etwas Rainy, wenig Sunny, kein Snowing
+    seasonWeather = [
+      ...Array(5).fill('Windy'),
+      ...Array(5).fill('Foggy'),
+      ...Array(3).fill('Rainy'),
+      ...Array(2).fill('Cloudy'),
+      ...Array(1).fill('Sunny')
+    ];
+  } else if (currentSeason === 'Winter') {
+    // Winter: viel Snowing, etwas Cloudy, wenig Sunny, kein Rainy, kein Thunder
+    seasonWeather = [
+      ...Array(8).fill('Snowing'),
+      ...Array(3).fill('Cloudy'),
+      ...Array(2).fill('Sunny'),
+      ...Array(1).fill('Foggy')
+    ];
+  }
+
+  // Mappe Namen auf weatherTypes
+  const weatherTypeMap = Object.fromEntries(weatherTypes.map(w => [w.name, w]));
   const seed = getDailySeed();
   const rand = seededRandom(seed);
   weatherQueue = [];
-  // Fülle Queue mit 20 Wettertypen für den Tag
   for (let i = 0; i < 20; i++) {
-    const weather = weatherTypes[Math.floor(rand() * weatherTypes.length)];
-    weatherQueue.push(weather);
+    const name = seasonWeather[Math.floor(rand() * seasonWeather.length)];
+    weatherQueue.push(weatherTypeMap[name]);
   }
 }
 
@@ -94,7 +144,9 @@ function updateWeatherFrames() {
     });
     // Alle Season-Anzeigen aktualisieren
     seasonDisplays.forEach(seasonDisplay => {
-      seasonDisplay.textContent = currentWeather.season;
+      // Reihenfolge der Jahreszeiten
+      const seasons = ['Frühling', 'Sommer', 'Herbst', 'Winter'];
+      seasonDisplay.textContent = `Tag ${dayCounter} ${seasons[seasonCounter]}`;
     });
   }
 }
@@ -103,8 +155,20 @@ function updateWeatherFrames() {
 function updateLocalTime() {
   const now = Date.now();
   const elapsed = (now - lastTimeUpdate) / 1000; // Sekunden seit letztem Update
-  gameTime = (gameTime + elapsed) % 1440; // Update lokale Zeit
+  gameTime = (gameTime + elapsed * 60) % 1440; // 1 Sekunde = 1 Stunde (60 Minuten)
   lastTimeUpdate = now;
+
+  // Wetterwechsel und Tag/Jahreszeit-Wechsel bei Tageswechsel (0 Uhr)
+  const currentHour = Math.floor(gameTime / 60) % 24;
+  if (lastHour !== null && currentHour === 0 && lastHour !== 0) {
+    advanceWeather();
+    dayCounter++;
+    if (dayCounter > 30) {
+      dayCounter = 1;
+      seasonCounter = (seasonCounter + 1) % 4;
+    }
+  }
+  lastHour = currentHour;
 
   // Aktualisiere alle Zeitanzeigen
   const timeDisplays = document.querySelectorAll('.weather-time');
@@ -151,18 +215,21 @@ function initWeather() {
   // Initialisiere Wetter-Queue
   fillWeatherQueue();
   
-  // Setze initiale Zeit (lokale Zeit als Fallback)
-  const now = new Date();
-  gameTime = (now.getHours() * 60 + now.getMinutes()) % 1440;
-  lastTimeUpdate = Date.now();
+  // Entferne Initialisierung von dayCounter und seasonCounter
+  // const totalMinutes = Math.floor(gameTime);
+  // const daysSinceStart = Math.floor(totalMinutes / 1440);
+  // dayCounter = (daysSinceStart % 30) + 1;
+  // seasonCounter = Math.floor(daysSinceStart / 30) % 4;
   
   // Initialisiere Wetter-Anzeige
   updateWeatherFrames();
   updateLocalTime();
   
-  // Versuche Server-Synchronisation (optional)
-  syncWithServerTime().catch(() => {
-    console.log('Verwende lokale Zeit');
+  // Hole IMMER die Serverzeit (kein Fallback auf lokale Zeit)
+  syncWithServerTime().then(() => {
+    // Nach Synchronisation ggf. Anzeige aktualisieren
+    updateWeatherFrames();
+    updateLocalTime();
   });
   
   // Lokales Zeit-Update alle 100ms für flüssige Anzeige
@@ -176,7 +243,6 @@ function initWeather() {
   }, 30000);
   
   // Wetter ändert sich alle 30 Sekunden
-  setInterval(advanceWeather, 30000);
 }
 
 // Export für andere Module

@@ -1,8 +1,8 @@
 // Forschungsoptionen
 const researchOptions = [
     {
-        id: 'better_tools',
-        name: 'Bessere Werkzeuge',
+        id: 'Werkzeug',
+        name: 'Werkzeug',
         description: 'Verbessert die Effizienz beim Holzfällen',
         cost: { wood: 100, gold: 50 },
         requirements: [],
@@ -11,38 +11,38 @@ const researchOptions = [
         completed: false
     },
     {
-        id: 'table',
-        name: 'Tisch bauen',
+        id: 'Tisch',
+        name: 'Tisch',
         description: 'Ermöglicht den Bau von Tischen',
         cost: { wood: 120, gold: 60 },
-        requirements: ['better_tools'],
+        requirements: ['Werkzeug'],
         effects: { can_build_table: true },
         progress: 0,
         completed: false
     },
     {
-        id: 'cabinet',
-        name: 'Schrank bauen',
+        id: 'Schrank',
+        name: 'Schrank',
         description: 'Ermöglicht den Bau von Schränken',
         cost: { wood: 200, gold: 100 },
-        requirements: ['better_tools'],
+        requirements: ['Werkzeug'],
         effects: { can_build_cabinet: true },
         progress: 0,
         completed: false
     },
     {
-        id: 'better_axe',
-        name: 'Bessere Axt',
+        id: 'Axt',
+        name: 'Axt',
         description: 'Holzfäller arbeiten schneller',
         cost: { wood: 80, gold: 30 },
-        requirements: ['better_tools'],
+        requirements: ['Werkzeug'],
         effects: { chop_speed: 1.2 },
         progress: 0,
         completed: false
     },
     {
-        id: 'advanced_forestry',
-        name: 'Fortgeschrittene Forstwirtschaft',
+        id: 'Forst',
+        name: 'Forst',
         description: 'Erhöht die Regenerationsrate der Bäume',
         cost: { wood: 200, gold: 100 },
         requirements: [],
@@ -51,8 +51,8 @@ const researchOptions = [
         completed: false
     },
     {
-        id: 'efficient_sawmill',
-        name: 'Effiziente Sägemühle',
+        id: 'Säge',
+        name: 'Säge',
         description: 'Produziert mehr Holz pro Baum',
         cost: { wood: 300, gold: 150 },
         requirements: [],
@@ -61,69 +61,150 @@ const researchOptions = [
         completed: false
     },
     {
-        id: 'wood_refinement',
-        name: 'Holzveredelung',
+        id: 'Veredelung',
+        name: 'Veredelung',
         description: 'Erhöht den Wert von Holz',
         cost: { wood: 400, gold: 200 },
-        requirements: ['efficient_sawmill'],
+        requirements: ['Säge'],
         effects: { wood_value: 1.5 },
         progress: 0,
         completed: false
     },
     {
-        id: 'forest_management',
-        name: 'Forstmanagement',
+        id: 'Management',
+        name: 'Management',
         description: 'Optimiert die Nutzung des Waldes',
         cost: { wood: 250, gold: 120 },
-        requirements: ['advanced_forestry'],
+        requirements: ['Forst'],
         effects: { forest_efficiency: 1.3 },
         progress: 0,
         completed: false
     },
     {
-        id: 'auto_chop',
-        name: 'Automatisierte Holzfällung',
+        id: 'Automatik',
+        name: 'Automatik',
         description: 'Holzfällung läuft automatisch',
         cost: { wood: 600, gold: 300 },
-        requirements: ['better_axe'],
+        requirements: ['Werkzeug'],
         effects: { auto_chop: true },
         progress: 0,
         completed: false
     },
     {
-        id: 'weather_research',
-        name: 'Wetterforschung',
+        id: 'Wetter',
+        name: 'Wetter',
         description: 'Bessere Vorhersage für Ernte und Holzfällung',
         cost: { wood: 150, gold: 80 },
-        requirements: ['advanced_forestry'],
+        requirements: ['Management'],
         effects: { weather_prediction: true },
         progress: 0,
         completed: false
     },
     {
-        id: 'fast_transport',
-        name: 'Schneller Transport',
+        id: 'Transport',
+        name: 'Transport',
         description: 'Holz wird schneller gelagert',
         cost: { wood: 180, gold: 90 },
-        requirements: ['better_axe'],
+        requirements: ['Axt'],
         effects: { transport_speed: 1.5 },
+        progress: 0,
+        completed: false
+    },
+    // --- NEUE HOLZFÄLLER-SKILLS ---
+    {
+        id: 'Doppelaxt',
+        name: 'Doppelaxt',
+        description: 'Holzfäller können doppelt so schnell arbeiten',
+        cost: { wood: 300, gold: 150 },
+        requirements: ['Präzision'],
+        effects: { chop_speed: 2.0 },
+        progress: 0,
+        completed: false
+    },
+    {
+        id: 'Kettensäge',
+        name: 'Kettensäge',
+        description: 'Moderne Holzfällung mit Kettensäge',
+        cost: { wood: 800, gold: 400 },
+        requirements: ['Doppelaxt'],
+        effects: { chop_speed: 3.0 },
+        progress: 0,
+        completed: false
+    },
+    {
+        id: 'Verarbeitung',
+        name: 'Verarbeitung',
+        description: 'Bessere Verarbeitung von Holz zu wertvollen Produkten',
+        cost: { wood: 500, gold: 250 },
+        requirements: ['Transport'],
+        effects: { wood_value: 2.0 },
+        progress: 0,
+        completed: false
+    },
+    {
+        id: 'Automation',
+        name: 'Automation',
+        description: 'Vollautomatische Holzfällung und -verarbeitung',
+        cost: { wood: 1200, gold: 600 },
+        requirements: ['Kettensäge', 'Holzkonservierung'],
+        effects: { auto_chop: true, wood_multiplier: 2.5 },
+        progress: 0,
+        completed: false
+    },
+    {
+        id: 'Präzision',
+        name: 'Präzision',
+        description: 'Holzfäller schneiden Holz präziser und effizienter',
+        cost: { wood: 400, gold: 200 },
+        requirements: ['Werkzeug'],
+        effects: { wood_quality: 1.5 },
+        progress: 0,
+        completed: false
+    },
+    {
+        id: 'Massenfällung',
+        name: 'Massenfällung',
+        description: 'Holzfäller können mehrere Bäume gleichzeitig fällen',
+        cost: { wood: 600, gold: 300 },
+        requirements: ['Automatik'],
+        effects: { bulk_harvest: true },
+        progress: 0,
+        completed: false
+    },
+    {
+        id: 'Konservierung',
+        name: 'Konservierung',
+        description: 'Holz wird länger haltbar und wertvoller',
+        cost: { wood: 350, gold: 175 },
+        requirements: ['Massenfällung'],
+        effects: { wood_durability: 2.0 },
+        progress: 0,
+        completed: false
+    },
+    {
+        id: 'Vermessung',
+        name: 'Vermessung',
+        description: 'Bessere Erkennung von wertvollen Bäumen',
+        cost: { wood: 200, gold: 100 },
+        requirements: ['Forst'],
+        effects: { tree_detection: 1.5 },
         progress: 0,
         completed: false
     },
     // --- NEUER ZWEIG: Möbel ---
     {
-        id: 'furniture',
+        id: 'Möbel',
         name: 'Möbel',
         description: 'Ermöglicht die Erforschung und den Bau verschiedener Möbelstücke.',
         cost: { wood: 100, gold: 50 },
-        requirements: [],
+        requirements: ['Säge'],
         effects: {},
         progress: 0,
         completed: false
     },
     // Einzelne Möbelstücke als Unterforschungen
     {
-        id: 'chair',
+        id: 'Stuhl',
         name: 'Stuhl',
         description: 'Ermöglicht den Bau von Stühlen.',
         cost: { wood: 40, gold: 20 },
@@ -133,61 +214,61 @@ const researchOptions = [
         completed: true
     },
     {
-        id: 'table_furniture',
+        id: 'Tisch',
         name: 'Tisch',
         description: 'Ermöglicht den Bau von Tischen.',
         cost: { wood: 60, gold: 30 },
-        requirements: [],
+        requirements: ['Möbel'],
         effects: { can_build_table: true },
         progress: 0,
         completed: false
     },
     {
-        id: 'wardrobe',
+        id: 'Schrank',
         name: 'Schrank',
         description: 'Ermöglicht den Bau von Schränken.',
         cost: { wood: 80, gold: 40 },
-        requirements: [],
+        requirements: ['Möbel'],
         effects: { can_build_wardrobe: true },
         progress: 100,
         completed: true
     },
     {
-        id: 'bed',
+        id: 'Bett',
         name: 'Bett',
         description: 'Ermöglicht den Bau von Betten.',
         cost: { wood: 100, gold: 50 },
-        requirements: ['chair','table_furniture'],
+        requirements: ['Möbel','Tisch'],
         effects: { can_build_bed: true },
         progress: 0,
         completed: false
     },
     {
-        id: 'shelf',
+        id: 'Regal',
         name: 'Regal',
         description: 'Ermöglicht den Bau von Regalen.',
         cost: { wood: 50, gold: 25 },
-        requirements: ['chair','table_furniture'],
+        requirements: ['Möbel','Tisch'],
         effects: { can_build_shelf: true },
         progress: 0,
         completed: false
     },
     {
-        id: 'dresser',
+        id: 'Kommode',
         name: 'Kommode',
         description: 'Ermöglicht den Bau von Kommoden.',
         cost: { wood: 70, gold: 35 },
-        requirements: ['chair','table_furniture'],
+        requirements: ['Möbel','Schrank'],
         effects: { can_build_dresser: true },
         progress: 0,
         completed: false
     },
     {
-        id: 'sofa',
+        id: 'Sofa',
         name: 'Sofa',
         description: 'Ermöglicht den Bau von Sofas.',
         cost: { wood: 120, gold: 60 },
-        requirements: ['bed','shelf','dresser'],
+        requirements: ['Möbel','Bett','Kommode'],
         effects: { can_build_sofa: true },
         progress: 0,
         completed: false
@@ -197,18 +278,18 @@ const researchOptions = [
 
 // Suche im researchOptions-Array den Skill 'auto_chop' und entferne 'wood_refinement' aus requirements
 researchOptions.forEach(r => {
-    if (r.id === 'auto_chop') {
+    if (r.id === 'Automatik') {
         if (Array.isArray(r.requirements)) {
-            r.requirements = r.requirements.filter(req => req !== 'wood_refinement');
+            r.requirements = r.requirements.filter(req => req !== 'Veredelung');
         }
     }
 });
 
-// Entferne für alle Möbelstücke die Voraussetzung 'furniture' aus requirements
-['chair','table_furniture','wardrobe','bed','shelf','dresser','sofa'].forEach(id => {
+// Entferne für alle Möbelstücke die Voraussetzung 'Möbel' aus requirements
+['Stuhl','Tisch','Schrank','Bett','Regal','Kommode','Sofa'].forEach(id => {
     const r = researchOptions.find(r => r.id === id);
     if (r && Array.isArray(r.requirements)) {
-        r.requirements = r.requirements.filter(req => req !== 'furniture');
+        r.requirements = r.requirements.filter(req => req !== 'Möbel');
     }
 });
 
@@ -612,18 +693,18 @@ window.showAvailableResearch = function() {
 };
 
 // Globale Funktion zum Debuggen der aktuellen Ressourcen
-window.debugResources = function() {
-    console.log(`🔍 DEBUG: Aktuelle Ressourcen-Debug:`);
-    console.log(`🔍 window.gold:`, typeof window.gold !== 'undefined' ? window.gold : 'undefined');
-    console.log(`🔍 window.holz:`, typeof window.holz !== 'undefined' ? window.holz : 'undefined');
-    console.log(`🔍 window.game:`, typeof window.game !== 'undefined' ? 'available' : 'undefined');
-    if (window.game) {
-        console.log(`🔍 window.game.ui:`, window.game.ui ? 'available' : 'undefined');
-        console.log(`🔍 window.game.gameState:`, window.game.gameState ? 'available' : 'undefined');
-    }
-    const currentRes = window.getCurrentResources();
-    console.log(`🔍 getCurrentResources():`, currentRes);
-};
+// window.debugResources = function() {
+//     console.log(`🔍 DEBUG: Aktuelle Ressourcen-Debug:`);
+//     console.log(`🔍 window.gold:`, typeof window.gold !== 'undefined' ? window.gold : 'undefined');
+//     console.log(`🔍 window.holz:`, typeof window.holz !== 'undefined' ? window.holz : 'undefined');
+//     console.log(`🔍 window.game:`, typeof window.game !== 'undefined' ? 'available' : 'undefined');
+//     if (window.game) {
+//         console.log(`🔍 window.game.ui:`, window.game.ui ? 'available' : 'undefined');
+//         console.log(`🔍 window.game.gameState:`, window.game.gameState ? 'available' : 'undefined');
+//     }
+//     const currentRes = window.getCurrentResources();
+//     console.log(`🔍 getCurrentResources():`, currentRes);
+// };
 
 // Modal Funktionen
 // 1. Wenn das Forschungsfenster geöffnet wird, immer Holzhacker-Tab auswählen
@@ -652,25 +733,33 @@ window.onclick = function(event) {
 
 // --- Skilltree SVG-Rendering ---
 const researchIcons = {
-    'better_tools': '🪓',
-    'table': '🪑',
-    'cabinet': '🗄️',
-    'better_axe': '🪓',
-    'advanced_forestry': '🌱',
-    'efficient_sawmill': '🪚',
-    'wood_refinement': '🪵',
-    'forest_management': '🌳',
-    'auto_chop': '🤖',
-    'weather_research': '☀️',
-    'fast_transport': '🚚',
-    'furniture': '🛋️',
-    'chair': '🪑',
-    'table_furniture': '🍽️',
-    'wardrobe': '🚪',
-    'bed': '🛏️',
-    'shelf': '📚',
-    'dresser': '🗄️',
-    'sofa': '🛋️',
+    'Werkzeug': '🪓',
+    'Tisch': '🪑',
+    'Schrank': '🗄️',
+    'Axt': '🪓',
+    'Forst': '🌱',
+    'Säge': '🪚',
+    'Veredelung': '🪵',
+    'Management': '🌳',
+    'Automatik': '🤖',
+    'Wetter': '☀️',
+    'Transport': '🚚',
+    'Doppelaxt': '⚔️',
+    'Kettensäge': '🪚',
+    'Verarbeitung': '🏭',
+    'Automation': '🤖',
+    'Präzision': '✂️',
+    'Massenfällung': '🌲',
+    'Konservierung': '🛡️',
+    'Vermessung': '🗺️',
+    'Möbel': '🛋️',
+    'Stuhl': '🪑',
+    'Tisch': '🍽️',
+    'Schrank': '🚪',
+    'Bett': '🛏️',
+    'Regal': '🗄️',
+    'Kommode': '🗄️',
+    'Sofa': '🛋️',
 };
 let selectedResearchId = null;
 function renderSkilltreeSVG() {
@@ -683,49 +772,71 @@ function renderSkilltreeSVG() {
     svg.innerHTML = '';
     const nodes = researchSystem.research;
     // Nur Hauptzweige und keine Möbel-Kinder im Graphen anzeigen
-    const furnitureChildrenIds = ['chair','table_furniture','wardrobe','bed','shelf','dresser','sofa'];
+    const furnitureChildrenIds = ['Stuhl','Tisch','Schrank','Bett','Regal','Kommode','Sofa'];
     const positions = {
-        'better_tools': {x: 100, y: 60},
-        'furniture': {x: 240, y: 60},
-        'table': {x: 60, y: 220},
-        'cabinet': {x: 180, y: 220},
-        'better_axe': {x: 60, y: 380},
-        'advanced_forestry': {x: 100, y: 380},
-        'efficient_sawmill': {x: 180, y: 380},
-        'wood_refinement': {x: 60, y: 540},
-        'forest_management': {x: 100, y: 540},
-        'auto_chop': {x: 180, y: 540},
-        'weather_research': {x: 60, y: 700},
-        'fast_transport': {x: 180, y: 700},
-        // Möbel-Ast
-        'chair': {x: 200, y: 220},
-        'table_furniture': {x: 240, y: 220},
-        'wardrobe': {x: 280, y: 220},
-        'bed': {x: 200, y: 380},
-        'shelf': {x: 240, y: 380},
-        'dresser': {x: 280, y: 380},
-        'sofa': {x: 240, y: 540},
+        // Holzfäller-Skills (organisiert in Ebenen ohne Überschneidungen)
+        'Werkzeug': {x: 180, y: 64},
+        'Axt': {x: 70, y: 184},
+        'Präzision': {x: 180, y: 184},
+        'Automatik': {x: 290, y: 184},
+        'Transport': {x: 70, y: 304},
+        'Doppelaxt': {x: 180, y: 304},
+        'Massenfällung': {x: 290, y: 304},
+        'Verarbeitung': {x: 70, y: 424},
+        'Kettensäge': {x: 180, y: 424},
+        'Konservierung': {x: 290, y: 424},
+        'Vermessung': {x: 110, y: 544},
+        'Automation': {x: 250, y: 544},
+        
+        // Förster-Skills (einfache lineare Kette)
+        'Forst': {x: 180, y: 64},
+        'Management': {x: 180, y: 184},
+        'Wetter': {x: 180, y: 304},
+        
+        // Verarbeitung-Skills (einfache lineare Kette)
+        'Säge': {x: 180, y: 64},
+        'Veredelung': {x: 180, y: 184},
+        
+        // Möbel-Skills (organisiert in Ebenen ohne Überschneidungen)
+        'Möbel': {x: 180, y: 60},
+        'Stuhl': {x: 120, y: 180},
+        'Tisch': {x: 180, y: 180},
+        'Schrank': {x: 240, y: 180},
+        'Bett': {x: 120, y: 300},
+        'Regal': {x: 180, y: 300},
+        'Kommode': {x: 240, y: 300},
+        'Sofa': {x: 180, y: 420},
     };
     // SVG-Höhe dynamisch anpassen
     const yValues = Object.values(positions).map(pos => pos.y);
     const maxY = Math.max(...yValues);
-    svg.setAttribute('width', 340);
-    svg.setAttribute('height', Math.max(500, maxY + 70));
-    // Kanten zeichnen (nur für Knoten, die im positions-objekt sind)
+    svg.setAttribute('width', 500);
+    svg.setAttribute('height', Math.max(600, maxY + 80));
+    // Kanten zeichnen (nur für Knoten, die im positions-objekt sind und benachbarte Ebenen)
     nodes.forEach(node => {
         if (!positions[node.id]) return;
         node.requirements.forEach(reqId => {
             if (!positions[reqId]) return;
             const from = positions[reqId];
             const to = positions[node.id];
-            const line = document.createElementNS('http://www.w3.org/2000/svg','line');
-            line.setAttribute('x1', from.x);
-            line.setAttribute('y1', from.y+32);
-            line.setAttribute('x2', to.x);
-            line.setAttribute('y2', to.y-32);
-            line.setAttribute('stroke', '#888');
-            line.setAttribute('stroke-width', '4');
-            svg.appendChild(line);
+            
+            // Prüfe, ob die Skills in benachbarten Ebenen sind
+            const fromY = from.y;
+            const toY = to.y;
+            const yDiff = Math.abs(toY - fromY);
+            
+            // Nur zeichnen wenn die Skills in benachbarten Ebenen sind (120px Abstand)
+            if (yDiff <= 120) {
+                const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+                line.setAttribute('x1', from.x);
+                line.setAttribute('y1', from.y+32);
+                line.setAttribute('x2', to.x);
+                line.setAttribute('y2', to.y-32);
+                line.setAttribute('stroke', '#666');
+                line.setAttribute('stroke-width', '3');
+                line.setAttribute('stroke-dasharray', '5,5');
+                svg.appendChild(line);
+            }
         });
     });
     // Nur Knoten mit Position zeichnen (keine Möbel-Kinder)
@@ -744,8 +855,8 @@ function renderSkilltreeSVG() {
         rect.setAttribute('y', positions[node.id].y - size/2);
         rect.setAttribute('width', size);
         rect.setAttribute('height', size);
-        rect.setAttribute('rx', 12);
-        rect.setAttribute('ry', 12);
+        rect.setAttribute('rx', 10);
+        rect.setAttribute('ry', 10);
         // Setze Status-Klasse für das Styling
         if (completed) {
             rect.setAttribute('class', 'skilltree-rect skill-completed');
@@ -758,8 +869,7 @@ function renderSkilltreeSVG() {
             console.log(`⚪ DEBUG: Skill ${node.id} als default markiert`);
         }
         rect.setAttribute('stroke', '#000');
-        rect.setAttribute('stroke-width', '5');
-        rect.setAttribute('filter', 'drop-shadow(2px 2px 0 #808080)');
+        rect.setAttribute('stroke-width', '4');
         // Stelle sicher, dass die Cursor-Logik für alle Skills (auch auto_chop/Roboter) korrekt ist
         rect.style.cursor = 'pointer';
         rect.addEventListener('click', () => {
@@ -771,9 +881,10 @@ function renderSkilltreeSVG() {
         // Icon
         const icon = document.createElementNS('http://www.w3.org/2000/svg','text');
         icon.setAttribute('x', positions[node.id].x);
-        icon.setAttribute('y', positions[node.id].y+16);
+        icon.setAttribute('y', positions[node.id].y + 2); // 2px tiefer für optische Mitte
         icon.setAttribute('text-anchor', 'middle');
-        icon.setAttribute('font-size', '36');
+        icon.setAttribute('dominant-baseline', 'middle');
+        icon.setAttribute('font-size', '32'); // kleiner für 2px Abstand zum Rand
         icon.setAttribute('font-family', 'Segoe UI Emoji, Arial Unicode MS, sans-serif');
         icon.textContent = researchIcons[node.id] || '❓';
         icon.setAttribute('pointer-events', 'none');
@@ -809,25 +920,25 @@ function renderSkilltreeDetails(id) {
     console.log(`🎨 DEBUG: renderSkilltreeDetails für ${node.name} (${id})`);
     
     // Spezielle Behandlung für Möbel-Knoten
-    if (id === 'furniture') {
+    if (id === 'Möbel') {
         console.log(`🎨 DEBUG: Spezielle Möbel-Behandlung für ${id}`);
         // Ursprüngliche children-Liste
         let children = [
-            researchSystem.research.find(r => r.id === 'chair'),
-            researchSystem.research.find(r => r.id === 'table_furniture'),
-            researchSystem.research.find(r => r.id === 'wardrobe'),
-            researchSystem.research.find(r => r.id === 'bed'),
-            researchSystem.research.find(r => r.id === 'shelf'),
-            researchSystem.research.find(r => r.id === 'dresser'),
-            researchSystem.research.find(r => r.id === 'sofa')
+            researchSystem.research.find(r => r.id === 'Stuhl'),
+            researchSystem.research.find(r => r.id === 'Tisch'),
+            researchSystem.research.find(r => r.id === 'Schrank'),
+            researchSystem.research.find(r => r.id === 'Bett'),
+            researchSystem.research.find(r => r.id === 'Regal'),
+            researchSystem.research.find(r => r.id === 'Kommode'),
+            researchSystem.research.find(r => r.id === 'Sofa')
         ].filter(Boolean);
         // Entferne den fehlerhaften Stuhl-Eintrag (z.B. den zweiten, falls doppelt)
         // Wir nehmen nur den ersten Stuhl-Eintrag, falls mehrere vorhanden sind
         let seenChair = false;
         children = children.filter(child => {
-            if(child.id !== 'chair') return true;
+            if(child.id !== 'Stuhl') return true;
             if(!seenChair) { seenChair = true; return true; }
-            return false; // alle weiteren "chair" entfernen
+            return false; // alle weiteren "Stuhl" entfernen
         });
         let table = `<div style="padding:12px 0;">`;
         table += `<h2 style="margin-top:0">${researchIcons[id]||''} ${node.name}</h2>`;
@@ -903,13 +1014,10 @@ function renderSkilltreeDetails(id) {
     console.log(`🎨 DEBUG: Standard-Details für ${node.name} - verfügbar: ${available}, abgeschlossen: ${completed}, genug Ressourcen: ${enoughResources}`);
     
     details.innerHTML = `
-        <h2 style="margin-top:0">${researchIcons[node.id]||''} ${node.name}</h2>
+        <h2 style="margin-top:0"><span style="font-size:1.3em;">${researchIcons[node.id]||''}</span> ${node.name}</h2>
         <p style="color:#006400;font-size:1.1em">${node.description}</p>
         <div style="margin:12px 0 8px 0;font-size:1.1em">
             <b>Kosten:</b> ${Object.entries(node.cost).map(([r,a])=>`${a} ${r==='wood'?'🪵':'💰'}`).join(' | ')}
-        </div>
-        <div style="margin-bottom:10px">
-            <b>Status:</b> ${completed ? '<span style=\'color:#2a2\'>Abgeschlossen</span>' : (available ? 'Verfügbar' : 'Nicht verfügbar')}
         </div>
         ${(!completed && available && enoughResources) ? `<button id=\"research-unlock-btn\" style=\"font-size:1.1em;padding:8px 18px;\">Freischalten</button>` : ''}
     `;
@@ -938,11 +1046,18 @@ function renderSkilltreeDetails(id) {
 function renderTreeDetails(tab, id) {
     // Wenn keine ID oder ungültige ID, zeige nichts an
     let node = researchSystem.research.find(r => r.id === id);
-    if (!node) {
+    if (!node && id !== 'Möbel') {
         return; // Keine automatische Auswahl mehr
     }
     const details = document.getElementById(`tree-details-${tab}`);
     if (!details) return;
+    if (tab === 'carpenter' && id === 'Möbel') {
+        // Direkt die Möbel-Tabelle als Teil der Infocard anzeigen (ohne Button)
+        details.innerHTML = `<div id="moebel-table-placeholder"></div>`;
+        window.renderMoebelTable(details.querySelector('#moebel-table-placeholder'));
+        return; // Sofortiger Abbruch, keine weitere Button-Logik!
+    }
+    if (!node) return;
     const research = researchSystem.research.find(r => r.id===id);
     if (!research) return;
     const available = researchSystem.isResearchAvailable(research);
@@ -955,7 +1070,6 @@ function renderTreeDetails(tab, id) {
         <h3 style='margin-top:0'>${researchIcons[research.id]||''} ${research.name}</h3>
         <p>${research.description}</p>
         <div><b>Kosten:</b> ${Object.entries(research.cost).map(([r,a])=>`${a} ${r==='wood'?'🪵':'💰'}`).join(' | ')}</div>
-        <div><b>Status:</b> ${completed ? '<span style=\'color:#2a2\'>Abgeschlossen</span>' : (available ? 'Verfügbar' : 'Nicht verfügbar')}</div>
         ${buttonHtml}
     `;
     // Button-Logik: Button immer neu erzeugen und einfügen
@@ -1025,22 +1139,12 @@ function renderTreeDetails(tab, id) {
         details.innerHTML += `<div style='margin-top:10px;'><b>Voraussetzungen:</b><ul style='margin:4px 0 0 18px;padding:0;'>` +
             research.requirements.map(reqId => {
                 const req = researchSystem.research.find(r => r.id === reqId);
-                return `<li>${researchIcons[reqId]||''} ${req ? req.name : reqId} : <span style='color:${req && req.completed ? '#2a2' : '#a22'}'>${req && req.completed ? 'abgeschlossen' : 'offen'}</span></li>`;
+                return `<li><span style="font-size:1.2em;">${researchIcons[reqId]||''}</span> ${req ? req.name : reqId} : <span style='color:${req && req.completed ? '#2a2' : '#a22'};font-size:1.2em;'>${req && req.completed ? '✅' : '❌'}</span></li>`;
             }).join('') +
             `</ul></div>`;
     }
-    // Debug: Zeige aktuelle Ressourcen
-    const debugRes = window.getCurrentResources ? window.getCurrentResources() : {wood: '?', gold: '?'};
-    details.innerHTML += `<div style='margin-top:10px;font-size:0.95em;color:#888;'>[Debug] Ressourcen: 🪵 ${debugRes.wood} | 💰 ${debugRes.gold}</div>`;
     // Schreiner: Wenn Möbel-Skill ausgewählt, Möbel-Tabelle darunter anzeigen
-    if(tab==='carpenter' && id==='wood_refinement') {
-        window.renderMoebelTable(document.getElementById('researchCarpenter'));
-    } else if(tab==='carpenter') {
-        // Wenn ein anderer Schreiner-Skill ausgewählt wird, Tabelle entfernen
-        const container = document.getElementById('researchCarpenter');
-        const old = container.querySelector('.moebel-table-wrap');
-        if (old) old.remove();
-    }
+    // Entferne jegliche Logik, die die Möbel-Tabelle bei Veredelung oder anderen Skills anzeigt
 }
 window.renderTreeDetails = renderTreeDetails;
 // --- Skilltree SVG-Rendering ENDE ---
@@ -1090,40 +1194,70 @@ function refreshResearchModal(researchedId) {
     if (typeof window.updateMoebelVisibility === 'function') {
         window.updateMoebelVisibility();
     }
+
+    // --- NEU: Möbeltabelle neu rendern, falls sichtbar ---
+    if (window.selectedCarpenterSkill === 'Möbel') {
+        const moebelPlaceholder = document.querySelector('#tree-details-carpenter #moebel-table-placeholder');
+        if (moebelPlaceholder && typeof window.renderMoebelTable === 'function') {
+            window.renderMoebelTable(moebelPlaceholder);
+        }
+    }
     
     console.log(`✅ DEBUG: Research-Modal Refresh abgeschlossen für ${researchedId}`);
 }
 
 // --- Skill-IDs und Positionen global ---
     const LUMBERJACK_IDS = [
-        'better_tools','better_axe','auto_chop','fast_transport'
+        'Werkzeug','Axt','Automatik','Transport',
+        'Doppelaxt','Kettensäge','Verarbeitung','Automation',
+        'Präzision','Massenfällung','Konservierung','Vermessung'
     ];
     const FORESTER_IDS = [
-        'advanced_forestry','forest_management','weather_research'
+        'Forst','Management','Wetter'
     ];
     const CARPENTER_SKILL_IDS = [
-    'efficient_sawmill'
+        'Möbel',
+        'Säge',
+        'Veredelung'
     ];
     const MOEBEL_IDS = [
-    //'chair',
-    'table_furniture','wardrobe','bed','shelf','dresser','sofa'
+    //'Stuhl',
+    'Tisch','Schrank','Bett','Regal','Kommode','Sofa'
 ];
     const TREE_POSITIONS = {
         lumberjack: {
-            'better_tools': {x: 120, y: 60},
-            'better_axe': {x: 60, y: 180},
-            'auto_chop': {x: 180, y: 180},
-            'fast_transport': {x: 120, y: 300},
+            // Ebene 1 - Grundlagen (1 Skill, Mitte)
+            'Werkzeug': {x: 180, y: 64},
+            
+            // Ebene 2 - Basis-Verbesserungen (3 Skills, drei Spalten)
+            'Axt': {x: 70, y: 184},
+            'Präzision': {x: 180, y: 184},
+            'Automatik': {x: 290, y: 184},
+            
+            // Ebene 3 - Automatisierung (3 Skills, drei Spalten)
+            'Transport': {x: 70, y: 304},
+            'Doppelaxt': {x: 180, y: 304},
+            'Massenfällung': {x: 290, y: 304},
+            
+            // Ebene 4 - Erweiterte Werkzeuge (3 Skills, drei Spalten)
+            'Verarbeitung': {x: 70, y: 424},
+            'Kettensäge': {x: 180, y: 424},
+            'Konservierung': {x: 290, y: 424},
+            
+            // Ebene 5 - Spezialisierung (2 Skills, links und rechts)
+            'Vermessung': {x: 110, y: 544},
+            'Automation': {x: 250, y: 544},
         },
         forester: {
-            'advanced_forestry': {x: 120, y: 60},
-            'forest_management': {x: 60, y: 180},
-            'weather_research': {x: 180, y: 180},
+            'Forst': {x: 180, y: 64},
+            'Management': {x: 180, y: 184},
+            'Wetter': {x: 180, y: 304},
         },
         carpenter: {
-        'efficient_sawmill': {x: 120, y: 60},
-        'wood_refinement': {x: 120, y: 180},
-    }
+            'Säge': {x: 160, y: 64},
+            'Veredelung': {x: 100, y: 184},
+            'Möbel': {x: 220, y: 184},
+        }
 };
 
 // --- Möbel-Tabelle global ---
@@ -1136,12 +1270,18 @@ function renderMoebelTable(container) {
     // Erzeuge neuen Wrapper
     const wrap = document.createElement('div');
     wrap.className = 'moebel-table-wrap';
-    // Hier folgt der bisherige Code zum Erzeugen der Tabelle (html)
-    let html = `<div style="padding:12px 0;">`;
-    html += `<h2 style="margin-top:0">🪑 Möbel erforschen</h2>`;
-    html += `<table style="width:100%;border-collapse:collapse;margin-top:12px;">`;
-    html += `<thead><tr style="border-bottom:2px solid #333;"><th style="text-align:left;padding:8px 4px;">Möbel</th><th style="text-align:left;padding:8px 4px;">Kosten</th><th style="text-align:left;padding:8px 4px;">Aktion</th><th></th></tr></thead><tbody>`;
-    MOEBEL_IDS.forEach(id => {
+    let moebelIcon = researchIcons['Möbel'] || '';
+    let html = `<div style='font-family:"Press Start 2P", "VT323", "Pixel", monospace;font-size:1.3em;color:#000;margin-bottom:12px;'><span style="font-size:1.2em;vertical-align:middle;">${moebelIcon}</span> Möbelforschung</div>`;
+    html += renderMoebelResearchTable();
+    wrap.innerHTML = html;
+    container.appendChild(wrap);
+}
+
+function renderMoebelResearchTable() {
+    const moebelIds = ['Tisch', 'Schrank', 'Bett', 'Regal', 'Kommode', 'Sofa'];
+    let html = `<table style="width:100%;margin-top:0;font-family:'Press Start 2P', 'VT323', 'Pixel', monospace;font-size:1em;text-shadow:none;color:#000;border:none;border-collapse:separate;">
+        <thead><tr><th style="text-align:left;padding:8px 4px;color:#000;font-weight:normal;">Möbel</th><th style="text-align:left;padding:8px 4px;color:#000;font-weight:normal;">Kosten</th><th style="text-align:left;padding:8px 4px;color:#000;font-weight:normal;">Aktion</th></tr></thead><tbody>`;
+    moebelIds.forEach(id => {
         const research = researchSystem.research.find(r => r.id===id);
         if(!research) return;
         const available = researchSystem.isResearchAvailable(research);
@@ -1163,175 +1303,143 @@ function renderMoebelTable(container) {
             buttonHtml = `<button class="moebel-unlock-btn" data-id="${research.id}" style="font-size:1em;padding:4px 10px;min-width:32px;" ${disabled} title="${tooltip}">🔓 Forschen</button>`;
         }
         html += `<tr>
-            <td style='white-space:nowrap;padding:8px 4px;font-size:1.1em;'>${researchIcons[research.id]||''} ${research.name}</td>
-            <td style='white-space:nowrap;padding:8px 4px;font-size:1em;'>${Object.entries(research.cost).map(([r,a])=>`${a} <span style='font-size:1.1em;'>${r==='wood'?'🪵':'💰'}</span>`).join(' | ')}</td>
-            <td style='white-space:nowrap;padding:8px 4px;'>${buttonHtml}</td>
-            <td></td>
+            <td style='white-space:nowrap;padding:8px 4px;font-size:1.1em;font-family:"Press Start 2P", "VT323", "Pixel", monospace;text-shadow:none;color:#000 !important;'>${researchIcons[research.id]||''} ${research.name}</td>
+            <td style='white-space:nowrap;padding:8px 4px;font-size:1em;font-family:"Press Start 2P", "VT323", "Pixel", monospace;text-shadow:none;color:#000 !important;'>${Object.entries(research.cost).map(([r,a])=>`${a}<span style='font-size:1.1em;color:#000 !important;margin-left:2px;'>${r==='wood'?'🪵':'💰'}</span>`).join(' ')}</td>
+            <td style='white-space:nowrap;padding:8px 4px;'><span style="color:#000;">${buttonHtml}</span></td>
         </tr>`;
     });
-    html += `</tbody></table></div>`;
-    wrap.innerHTML = html;
-    // Nach dem Button einfügen
-    const btn = container.querySelector('#moebel-forsch-btn');
-    if (btn) {
-        btn.insertAdjacentElement('afterend', wrap);
-    } else {
-        container.appendChild(wrap);
-    }
-    // Event-Listener für alle Möbel-Buttons
-    wrap.querySelectorAll('.moebel-unlock-btn').forEach(btn => {
-        if (!btn.disabled) {
-            btn.onclick = () => {
-                const id = btn.getAttribute('data-id');
-                console.log(`🖱️ DEBUG: Möbel-Unlock-Button geklickt für ${id}`);
-                const result = researchSystem.startResearch(id);
-                console.log(`🖱️ DEBUG: Forschung ${id} Ergebnis: ${result.success ? 'ERFOLG' : 'FEHLGESCHLAGEN'}`);
-                if (result.success) {
-                    refreshResearchModal(id);
-                    // Tabelle nach Forschung sofort aktualisieren (offen lassen)
-                    renderMoebelTable(container);
-                }
-            };
-        }
-    });
+    html += `</tbody></table>`;
+    return html;
 }
-window.renderMoebelTable = renderMoebelTable;
 // --- Funktion global ---
 function renderResearchTreeTab(tab, selectedIdOverride) {
     console.log(`🌲 DEBUG: renderResearchTreeTab aufgerufen für ${tab}`);
-        let ids, positions;
-        if(tab==='lumberjack') { ids = LUMBERJACK_IDS; positions = TREE_POSITIONS.lumberjack; }
-        else if(tab==='forester') { ids = FORESTER_IDS; positions = TREE_POSITIONS.forester; }
-        else { ids = CARPENTER_SKILL_IDS; positions = TREE_POSITIONS.carpenter; }
-        const container = document.getElementById(
-            tab==='lumberjack' ? 'researchLumberjack' :
-            tab==='forester' ? 'researchForester' :
-            'researchCarpenter'
-        );
+    let ids, positions;
+    if(tab==='lumberjack') { ids = LUMBERJACK_IDS; positions = TREE_POSITIONS.lumberjack; }
+    else if(tab==='forester') { ids = FORESTER_IDS; positions = TREE_POSITIONS.forester; }
+    else { ids = CARPENTER_SKILL_IDS; positions = TREE_POSITIONS.carpenter; }
+    const container = document.getElementById(
+        tab==='lumberjack' ? 'researchLumberjack' :
+        tab==='forester' ? 'researchForester' :
+        'researchCarpenter'
+    );
     if(!container) {
         console.log(`❌ DEBUG: Container für ${tab} nicht gefunden!`);
         return;
     }
     console.log(` DEBUG: Container für ${tab} gefunden, rendere ${ids.length} Forschungen`);
-        // Layout: Skilltree links, Details rechts
-        let html = `<div style='display:flex;gap:32px;align-items:flex-start;width:100%;'>`;
-    html += `<div style='min-width:260px;max-width:260px;'><div style='width:100%;overflow-x:auto;'><svg id='tree-svg-${tab}' width='260' height='240'></svg></div></div>`;
-        html += `<div id='tree-details-${tab}' style='flex:1;min-width:220px;margin-top:0;'></div>`;
-        html += `</div>`;
-        container.innerHTML = html;
+    // Layout: Skilltree links, Details rechts
+    let html = `<div style='display:flex;gap:64px;align-items:flex-start;width:100%;'>`;
+    // Dynamische SVG-Höhe basierend auf den Positionen
+    const yValues = Object.values(positions).map(pos => pos.y);
+    const maxY = Math.max(...yValues);
+    const svgHeight = Math.max(600, maxY + 80);
+    html += `<div style='min-width:450px;max-width:450px;'><div style='width:100%;overflow-x:auto;'><svg id='tree-svg-${tab}' width='450' height='${svgHeight}'></svg></div></div>`;
+    html += `<div id='tree-details-${tab}' style='flex:1;min-width:60px;margin-top:0;margin-left:-100px;'></div>`;
+    html += `</div>`;
+    container.innerHTML = html;
     console.log(` DEBUG: HTML für ${tab} erstellt, tree-details-${tab} sollte jetzt existieren`);
-        const svg = container.querySelector(`#tree-svg-${tab}`);
-        // Knoten zeichnen
-        ids.forEach(id => {
-            const research = researchSystem.research.find(r => r.id===id);
-            if(!research) return;
-            const g = document.createElementNS('http://www.w3.org/2000/svg','g');
-            const available = researchSystem.isResearchAvailable(research);
-            const completed = research.completed;
-        // Debug: completed-Status und Objekt-Referenz
-        console.log(`[Tab-Skilltree] Render: id=${id}, completed=${completed}, researchObjekt===global:`, researchSystem.research.find(r => r.id===id)===research);
-        // Bestimme den ausgewählten Skill basierend auf der globalen Variable
-        const selected = (id === window.selectedCarpenterSkill && tab==='carpenter') || (id === window.selectedLumberjackSkill && tab==='lumberjack') || (id === window.selectedForesterSkill && tab==='forester');
-        // Im Skilltree-Rendering, beim Zeichnen der Knoten:
-        // Ersetze das bisherige rect durch zwei übereinanderliegende rects für den Pixelrahmen-Look
-        const outerRect = document.createElementNS('http://www.w3.org/2000/svg','rect');
-        outerRect.setAttribute('x', positions[id].x-36);
-        outerRect.setAttribute('y', positions[id].y-36);
-        outerRect.setAttribute('width', 72);
-        outerRect.setAttribute('height', 72);
-        outerRect.setAttribute('fill', '#d2c1a1');
-        outerRect.setAttribute('stroke', 'none');
-        outerRect.setAttribute('shape-rendering', 'crispEdges');
-        g.appendChild(outerRect);
-            const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
-            rect.setAttribute('x', positions[id].x-32);
-            rect.setAttribute('y', positions[id].y-32);
-            rect.setAttribute('width', 64);
-            rect.setAttribute('height', 64);
-        rect.setAttribute('stroke', '#2d1c16');
-        rect.setAttribute('stroke-width', '8');
-        rect.setAttribute('shape-rendering', 'crispEdges');
+    const svg = container.querySelector(`#tree-svg-${tab}`);
+    if (!svg) {
+        console.log(`❌ DEBUG: SVG für ${tab} nicht gefunden!`);
+        return;
+    }
+    // SVG-Inhalt rendern
+    // Verbindungslinien zwischen Skills zeichnen (nur benachbarte Ebenen)
+    ids.forEach(id => {
+        const research = researchSystem.research.find(r => r.id === id);
+        if (!research || !research.requirements) return;
+        research.requirements.forEach(reqId => {
+            if (!positions[reqId] || !positions[id]) return;
+            const from = positions[reqId];
+            const to = positions[id];
+            // Prüfe, ob die Skills in benachbarten Ebenen sind (max 160px Abstand)
+            const fromY = from.y;
+            const toY = to.y;
+            const yDiff = Math.abs(toY - fromY);
+            if (yDiff <= 160) {
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', from.x);
+                line.setAttribute('y1', from.y + 32);
+                line.setAttribute('x2', to.x);
+                line.setAttribute('y2', to.y - 32);
+                line.setAttribute('stroke', '#666');
+                line.setAttribute('stroke-width', '3');
+                line.setAttribute('stroke-dasharray', '5,5');
+                svg.appendChild(line);
+            }
+        });
+    });
+    // Nur Knoten mit Position zeichnen (keine Möbel-Kinder)
+    const size = 64;
+    ids.forEach(id => {
+        const research = researchSystem.research.find(r => r.id === id);
+        if (!research && id !== 'Möbel') {
+            console.log(`❌ DEBUG: Forschung ${id} nicht gefunden!`);
+            return;
+        }
+        const completed = research ? research.completed : false;
+        const selected = (tab==='lumberjack' ? window.selectedLumberjackSkill : tab==='forester' ? window.selectedForesterSkill : window.selectedCarpenterSkill) === id;
+        // SVG-Gruppe erstellen
+        const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+        g.setAttribute('data-skill-id', id);
+        // Rechteck
+        const padding = 2;
+        const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+        rect.setAttribute('x', positions[id].x - size/2 + padding);
+        rect.setAttribute('y', positions[id].y - size/2 + padding);
+        rect.setAttribute('width', size - 2*padding);
+        rect.setAttribute('height', size - 2*padding);
+        rect.setAttribute('rx', '0');
+        rect.setAttribute('ry', '0');
         // Setze NUR die Status-Klasse, KEIN fill mehr im JS!
         let klasse = '';
         if (completed) klasse = 'skilltree-rect skill-completed';
         else if (selected) klasse = 'skilltree-rect skill-selected';
         else klasse = 'skilltree-rect skill-default';
         rect.setAttribute('class', klasse);
-        // Debug: Welche Klasse wurde gesetzt?
-        console.log(`[Tab-Skilltree] id=${id}, gesetzte Klasse:`, klasse);
+        // Zusätzliche visuelle Verbesserungen
+        // Kein Glow/Drop-Shadow mehr
+        rect.removeAttribute('filter');
         rect.style.cursor = 'pointer';
-        rect.addEventListener('mouseenter', () => {
-            console.log(`🖱️ DEBUG: SVG-Knoten HOVER für ${id} in Tab ${tab}`);
+        rect.addEventListener('click', () => {
+            if(tab==='carpenter' && id==='Möbel') {
+                window.selectedCarpenterSkill = 'Möbel';
+                renderResearchTreeTab('carpenter', 'Möbel');
+            } else {
+                if(tab==='carpenter') window.selectedCarpenterSkill = id;
+                if(tab==='lumberjack') window.selectedLumberjackSkill = id;
+                if(tab==='forester') window.selectedForesterSkill = id;
+                renderResearchTreeTab(tab);
+            }
         });
-        rect.addEventListener('mouseleave', () => {
-            console.log(`🖱️ DEBUG: SVG-Knoten HOVER-ENDE für ${id} in Tab ${tab}`);
-        });
-            rect.addEventListener('click', () => {
-            console.log(`🖱️ DEBUG: SVG-Knoten KLICK für ${id} in Tab ${tab}`);
-            // Setze die globale Variable für den ausgewählten Skill
-            if(tab==='carpenter') window.selectedCarpenterSkill = id;
-            if(tab==='lumberjack') window.selectedLumberjackSkill = id;
-            if(tab==='forester') window.selectedForesterSkill = id;
-            // Rendere den Skilltree neu ohne selectedIdOverride
-            renderResearchTreeTab(tab);
-            });
-            g.appendChild(rect);
-            // Icon
-            const icon = document.createElementNS('http://www.w3.org/2000/svg','text');
-            icon.setAttribute('x', positions[id].x);
-            icon.setAttribute('y', positions[id].y+16);
-            icon.setAttribute('text-anchor', 'middle');
-            icon.setAttribute('font-size', '36');
-            icon.setAttribute('font-family', 'Segoe UI Emoji, Arial Unicode MS, sans-serif');
-            icon.textContent = researchIcons[research.id] || '❓';
-            icon.setAttribute('pointer-events', 'none');
-            g.appendChild(icon);
-            svg.appendChild(g);
-        });
+        g.appendChild(rect);
+        // Icon
+        const icon = document.createElementNS('http://www.w3.org/2000/svg','text');
+        icon.setAttribute('x', positions[id].x);
+        icon.setAttribute('y', positions[id].y + 2); // 2px tiefer für optische Mitte
+        icon.setAttribute('text-anchor', 'middle');
+        icon.setAttribute('dominant-baseline', 'middle');
+        icon.setAttribute('font-size', '32'); // kleiner für 2px Abstand zum Rand
+        icon.setAttribute('font-family', 'Segoe UI Emoji, Arial Unicode MS, sans-serif');
+        icon.textContent = researchIcons[id] || (research && researchIcons[research.id]) || '❓';
+        icon.setAttribute('pointer-events', 'none');
+        g.appendChild(icon);
+        svg.appendChild(g);
+    });
     // Nach dem Rendern: Details nur anzeigen wenn ein Skill explizit ausgewählt ist
-    let selectedId = selectedIdOverride || (tab==='lumberjack' ? window.selectedLumberjackSkill : tab==='forester' ? window.selectedForesterSkill : window.selectedCarpenterSkill);
-    // Nur Details anzeigen wenn der Skill im aktuellen Tab ist
+    let selectedId = (typeof selectedIdOverride !== 'undefined') ? selectedIdOverride : (tab==='lumberjack' ? window.selectedLumberjackSkill : tab==='forester' ? window.selectedForesterSkill : window.selectedCarpenterSkill);
     if (ids.includes(selectedId)) {
-        console.log(`🌲 DEBUG: Rendere Details für ${selectedId} in Tab ${tab}`);
         renderTreeDetails(tab, selectedId);
     }
-    // Schreiner-Tab: Button "Möbel erforschen" immer anzeigen
-    if (tab === 'carpenter') {
-        // Entferne alte Instanzen
-        const oldBtn = container.querySelector('#moebel-forsch-btn');
-        if (oldBtn) oldBtn.remove();
-        const oldTable = container.querySelector('.moebel-table-wrap');
-        if (oldTable) oldTable.remove();
-        // Button einfügen
-        const btn = document.createElement('button');
-        btn.id = 'moebel-forsch-btn';
-        btn.textContent = '🪑 Möbel erforschen';
-        btn.style.fontSize = '1em';
-        btn.style.padding = '8px 18px';
-        btn.style.margin = '18px 0 0 0';
-        btn.style.background = '#4CAF50';
-        btn.style.color = 'white';
-        btn.style.border = 'none';
-        btn.style.borderRadius = '4px';
-        btn.style.cursor = 'pointer';
-        btn.onclick = () => {
-            // Toggle Möbel-Tabelle
-            const existing = container.querySelector('.moebel-table-wrap');
-            if (existing) {
-                existing.remove();
-            } else {
-                renderMoebelTable(container);
-            }
-        };
-        container.appendChild(btn);
-    }
+    // Keine Button-Logik für Möbel mehr!
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     // Initialisierung der ausgewählten Skills pro Tab (global, außerhalb der Funktion!)
-    window.selectedLumberjackSkill = 'better_tools';
-    window.selectedForesterSkill = 'advanced_forestry';
-    window.selectedCarpenterSkill = 'efficient_sawmill';
+    window.selectedLumberjackSkill = 'Werkzeug';
+    window.selectedForesterSkill = 'Forst';
+    window.selectedCarpenterSkill = 'Säge';
 
     // 2. Beim Klick auf einen Berufstab: Tab-Button aktiv setzen
     window.showResearchTab = function(tabName) {
@@ -1354,7 +1462,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if(tabName==='carpenter') { 
             document.getElementById('researchCarpenter').style.display = 'block'; 
-            console.log('📋 DEBUG: Carpenter-Tab aktiviert');
+            console.log('📋 DEBUG: Verarbeitung-Tab aktiviert');
             renderResearchTreeTab('carpenter'); 
         }
     }
@@ -1380,9 +1488,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if(tabName==='carpenter') { 
             document.getElementById('researchCarpenter').style.display = 'block'; 
-            console.log('📋 DEBUG: Carpenter-Tab aktiviert');
+            console.log('📋 DEBUG: Verarbeitung-Tab aktiviert');
             renderResearchTreeTab('carpenter'); 
         }
     }
 });
 window.renderResearchTreeTab = renderResearchTreeTab;
+
+// ... existing code ...
+    // --- NEU: Schreiner-Tab komplett neu rendern, falls Möbeltabelle sichtbar ---
+    const moebelTabVisible = document.getElementById('researchCarpenter')?.style.display !== 'none';
+    const moebelDetails = document.querySelector('#tree-details-carpenter #moebel-table-placeholder');
+    if (moebelTabVisible && moebelDetails) {
+        window.selectedCarpenterSkill = 'Möbel';
+        renderResearchTreeTab('carpenter', 'Möbel');
+    }
+// ... existing code ...

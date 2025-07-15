@@ -2,24 +2,28 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
+html, body {
+  overflow-y: auto;
+  height: 100dvh;
+}
 body {
-  margin: 0; padding: 0;
+  margin: 0;
+  padding: 0;
   background: linear-gradient(135deg, #000080 0%, #0000a0 50%, #000080 100%);
   font-family: 'Press Start 2P', monospace;
   image-rendering: pixelated;
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 100vh;
+  height: 100dvh;
   color: #ffffff;
-  padding: 10px;
   overflow-x: hidden;
   text-shadow: none !important;
 }
 
 #gameContainer { 
   width: 100%; 
-  max-width: 100vw;
+  max-width: 900px;
   box-sizing: border-box;
   background: linear-gradient(180deg, #c0c0c0 0%, #a0a0a0 100%);
   border: 4px solid #000000;
@@ -28,8 +32,8 @@ body {
     inset 2px 2px 0px #ffffff,
     inset -2px -2px 0px #808080,
     4px 4px 0px #000000;
-  padding: 15px;
-  margin: 0;
+  padding: 16px;
+  margin: 16px auto;
   overflow-x: hidden;
 }
 
@@ -371,12 +375,12 @@ th .icon, td .icon {
 /* Status Sidecard Styles */
 #statusSidecard {
   position: fixed;
-  top: 80px;
+  top: 0;
   right: 0;
   width: 340px;
   max-width: 90vw;
-  height: auto;
-  bottom: 40px;
+  height: 100dvh;
+  max-height: 100dvh;
   background: rgba(30,30,30,0.98);
   color: #ffd700;
   z-index: 2100;
@@ -538,14 +542,14 @@ th .icon, td .icon {
    ===================== */
 
 #researchModal, .research-modal {
-  min-height: 110dvh !important;
-  max-height: 110dvh !important;
-  height: 110dvh !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  overflow-y: auto;
+  min-height: 90dvh !important;
+  max-height: 90dvh !important;
+  height: calc(100vh - 64px) !important;
+  padding: 12px !important;
   color: #e6d3b3 !important;
   text-shadow: 2px 2px 0 #000, 0 0 1px #000;
+  max-width: none !important;
+  box-sizing: border-box;
 }
 #researchModal *, .research-modal * {
   color: #e6d3b3 !important;
@@ -553,11 +557,10 @@ th .icon, td .icon {
 }
 
 .modal-content {
-  max-width: 1000px;
-  width: 90%;
+  max-width: calc(100vw - 64px);
+  margin: 0 auto;
   background: #3a2c1a;
   border-radius: 16px;
-  margin: 0 auto;
   padding: 24px 32px;
   box-shadow: 0 8px 32px #000a;
 }
@@ -585,9 +588,10 @@ th .icon, td .icon {
   transition: all 0.3s ease;
   color: #e6d3b3;
   font-weight: bold;
-  border-radius: 6px;
+  border-radius: 0 !important;
   padding: 8px 18px;
   font-size: 1.1em;
+  box-shadow: 4px 4px 0 #000 !important;
 }
 .tab-button:hover {
   background: rgba(0,0,0,0.5);
@@ -608,19 +612,20 @@ th .icon, td .icon {
   margin-top: 0;
   min-height: 180px;
   box-shadow: 0 2px 12px #0005;
+  font-size: 0.8em;
 }
 
 .research-button {
   background: #4CAF50;
   color: #fff;
   border: none;
-  border-radius: 6px;
+  border-radius: 0 !important;
   padding: 10px 28px;
   font-size: 1.2em;
   font-family: inherit;
   font-weight: bold;
   margin-top: 12px;
-  box-shadow: 0 2px 8px #0004;
+  box-shadow: 4px 4px 0 #000 !important;
   cursor: pointer;
   transition: background 0.2s, color 0.2s, box-shadow 0.2s;
   outline: none;
@@ -654,12 +659,13 @@ th .icon, td .icon {
   background: #4CAF50;
   color: #fff;
   border: none;
-  border-radius: 4px;
+  border-radius: 0 !important;
   padding: 6px 16px;
   font-size: 1em;
   font-weight: bold;
   cursor: pointer;
   transition: background 0.2s;
+  box-shadow: 4px 4px 0 #000 !important;
 }
 .furniture-unlock-btn:disabled, .moebel-unlock-btn:disabled {
   background: #aaa;
@@ -668,11 +674,14 @@ th .icon, td .icon {
 }
 
 .moebel-table-wrap {
-  background: #2a1d12;
-  border-radius: 10px;
-  padding: 18px 20px;
-  margin-top: 18px;
-  box-shadow: 0 2px 12px #0005;
+  background: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin-top: 0 !important;
+}
+.moebel-table-wrap table, .moebel-table-wrap th, .moebel-table-wrap td {
+  border: none !important;
 }
 
 /* =====================
@@ -681,13 +690,38 @@ th .icon, td .icon {
 
 .skill-completed {
   fill: #4caf50 !important;
-  filter: drop-shadow(0 0 8px #4caf50aa);
+  stroke: #2d5a2d !important;
+  stroke-width: 3 !important;
 }
 .skill-selected {
   fill: #ffe066 !important;
+  stroke: #b8860b !important;
+  stroke-width: 3 !important;
 }
 .skill-default {
   fill: #e0dac7 !important;
+  stroke: #8b7355 !important;
+  stroke-width: 2 !important;
+}
+
+.skilltree-rect, .skill-completed, .skill-selected, .skill-default {
+  rx: 0 !important;
+  ry: 0 !important;
+  box-shadow: 4px 4px 0 #000 !important;
+  stroke-width: 4 !important;
+}
+
+/* Verbindungslinien zwischen Skills */
+svg line {
+  stroke: #666 !important;
+  stroke-width: 3 !important;
+  stroke-dasharray: 5,5 !important;
+  opacity: 0.8;
+}
+
+svg line:hover {
+  stroke: #888 !important;
+  stroke-width: 4 !important;
 } 
 
 /* Animierte Ressourcengewinn-Anzeige */
@@ -709,4 +743,14 @@ th .icon, td .icon {
 /* Arbeitsamt-Tabelle größere Schrift */
 .arbeitsamt-table, .arbeitsamt-table th, .arbeitsamt-table td {
   font-size: 10pt !important;
+} 
+
+#researchModal svg line,
+.research-modal svg line {
+  stroke: #666 !important;
+  stroke-width: 3 !important;
+  stroke-dasharray: 5,5 !important;
+  opacity: 0.8 !important;
+  filter: none !important;
+  display: inline;
 } 

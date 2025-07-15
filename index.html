@@ -174,21 +174,17 @@
   
   <button id="resetBtn">🔄 Spiel zurücksetzen</button>
   <button id="resetResearchBtn" style="font-size:0.95em;padding:6px 14px;margin-left:8px;">Forschungen zurücksetzen</button>
-  <button id="musicPopoutBtn" class="inline-btn" title="Musikplayer öffnen">🎵</button>
-  <button id="statusSidecardBtn" class="inline-btn">🛈</button>
 </div>
 <!-- Status Sidecard Button und Sidecard -->
 <button id="statusSidecardBtn" style="position:fixed;bottom:32px;right:32px;z-index:2000;font-size:2em;padding:12px 16px;border-radius:50%;background:#222;color:#ffd700;border:2px solid #ffd700;box-shadow:2px 2px 8px #000;cursor:pointer;">🛈</button>
 <div id="statusSidecardOverlay" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.25);z-index:2099;"></div>
-<div id="statusSidecard" style="display:none;position:fixed;top:0;right:0;width:340px;max-width:90vw;height:100vh;background:rgba(30,30,30,0.98);color:#ffd700;z-index:2100;box-shadow:-4px 0 24px #000;border-left:3px solid #ffd700;padding:0 18px 0 24px;overflow-y:auto;transition:right 0.2s;">
+<div id="statusSidecard" style="display:none;position:fixed;top:0;right:0;width:340px;max-width:90vw;height:100dvh;max-height:100dvh;background:rgba(30,30,30,0.98);color:#ffd700;z-index:2100;box-shadow:-4px 0 24px #000;border-left:3px solid #ffd700;padding:0 18px 0 24px;overflow-y:auto;transition:right 0.2s;">
   <button id="closeStatusSidecard" style="position:absolute;top:12px;right:18px;font-size:1.5em;background:none;border:none;color:#ffd700;cursor:pointer;">×</button>
   <h2 style="margin-top:0;font-size:1.1em;">Statusmeldungen</h2>
   <ul id="statusList" style="list-style:none;padding:0;margin:0;font-size:0.95em;"></ul>
 </div>
 <!-- Toast für Statusmeldungen -->
 <div id="statusToast" style="display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#222;color:#ffd700;padding:14px 32px;border-radius:8px;font-size:1em;z-index:3000;box-shadow:0 4px 24px #000;border:2px solid #ffd700;text-align:center;pointer-events:none;opacity:0.97;transition:opacity 0.3s;"></div>
-<!-- Music Player Popout Icon -->
-  <button id="musicPopoutBtn" title="Musikplayer öffnen" style="position:fixed;bottom:32px;left:32px;z-index:2500;background:#222;border:2px solid #ffd700;border-radius:50%;padding:10px 13px;font-size:1.5em;color:#ffd700;box-shadow:2px 2px 8px #000;cursor:pointer;">🎵</button>
 <script src="src/research.js"></script>
 <script src="src/weather.js"></script>
 <script>
@@ -511,12 +507,16 @@ function upgradeCarpenterTool() {
   }
 }
 
-document.getElementById("upgradeToolButton").onclick = upgradeTool;
-document.getElementById("upgradePlantToolButton").onclick = upgradePlantTool;
-document.getElementById("upgradeCarpenterToolButton").onclick = upgradeCarpenterTool;
+const btnUpgradeTool = document.getElementById("upgradeToolButton");
+if (btnUpgradeTool) btnUpgradeTool.onclick = upgradeTool;
+const btnUpgradePlantTool = document.getElementById("upgradePlantToolButton");
+if (btnUpgradePlantTool) btnUpgradePlantTool.onclick = upgradePlantTool;
+const btnUpgradeCarpenterTool = document.getElementById("upgradeCarpenterToolButton");
+if (btnUpgradeCarpenterTool) btnUpgradeCarpenterTool.onclick = upgradeCarpenterTool;
 
 // Kauflogik für Arbeiter aktualisieren
-document.getElementById("hireWorkerButton").onclick = function() {
+const btnHireWorker = document.getElementById("hireWorkerButton");
+if (btnHireWorker) btnHireWorker.onclick = function() {
   const price = calculateWorkerPrice(workerBaseCost, workers - 1);
   if (gold >= price) {
     gold -= price;
@@ -525,7 +525,8 @@ document.getElementById("hireWorkerButton").onclick = function() {
   }
 };
 
-document.getElementById("hireForesterButton").onclick = function() {
+const btnHireForester = document.getElementById("hireForesterButton");
+if (btnHireForester) btnHireForester.onclick = function() {
   const price = calculateWorkerPrice(foresterBaseCost, foresters - 1);
   if (gold >= price) {
     gold -= price;
@@ -534,7 +535,8 @@ document.getElementById("hireForesterButton").onclick = function() {
   }
 };
 
-document.getElementById("hireCarpenterButton").onclick = function() {
+const btnHireCarpenter = document.getElementById("hireCarpenterButton");
+if (btnHireCarpenter) btnHireCarpenter.onclick = function() {
   const price = calculateWorkerPrice(carpenterBaseCost, carpenters);
   if (gold >= price) {
     gold -= price;
@@ -733,7 +735,7 @@ customElements.define('progress-bar', ProgressBar);
 </script>
 <!-- Füge das Forschungs-Modal am Ende des Body-Tags hinzu -->
 <div id="researchModal" class="modal" style="display:none;">
-  <div class="modal-content" style="max-width: 1000px; width: 90%;">
+  <div class="modal-content">
     <div class="modal-header">
       <h2>🔬 Forschung</h2>
       <span class="close-button" onclick="closeResearchModal()">&times;</span>
@@ -742,7 +744,7 @@ customElements.define('progress-bar', ProgressBar);
       <div class="research-tabs" style="display:flex;gap:12px;margin-bottom:12px;">
         <button class="tab-button" data-tab="lumberjack" onclick="showResearchTab('lumberjack')">🪓 Holzfäller</button>
         <button class="tab-button" data-tab="forester" onclick="showResearchTab('forester')">🌱 Förster</button>
-        <button class="tab-button" data-tab="carpenter" onclick="showResearchTab('carpenter')">🪑 Schreiner</button>
+        <button class="tab-button" data-tab="carpenter" onclick="showResearchTab('carpenter')">🏭 Verarbeitung</button>
       </div>
       <div id="researchLumberjack" class="research-tab-content" style="display:none;"></div>
       <div id="researchForester" class="research-tab-content" style="display:none;"></div>

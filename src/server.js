@@ -42,7 +42,7 @@ try {
 // Berechne aktuelle Spielzeit
 function getCurrentGameTime() {
   const realTimeElapsed = (Date.now() - gameStartTime) / 1000; // Sekunden seit Start
-  const totalGameMinutes = savedGameTime + realTimeElapsed; // 1 Sekunde = 1 Minute
+  const totalGameMinutes = savedGameTime + realTimeElapsed * 60; // 1 Sekunde = 1 Stunde (60 Minuten)
   return Math.floor(totalGameMinutes % 1440); // 1440 = Minuten pro Tag
 }
 
