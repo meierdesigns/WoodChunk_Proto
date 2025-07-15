@@ -27,6 +27,7 @@
       border: 3px solid #000000;
       box-shadow: inset 2px 2px 0px #fff, inset -2px -2px 0px #404040;
       overflow: hidden;
+      position: relative;
     }
     .bar-inner {
       height: 100%;
@@ -43,10 +44,25 @@
     .bar-inner.carpenter {
       background: linear-gradient(90deg, #ff8800 0%, #ffaa44 100%);
     }
+    .bar-text {
+      position: absolute;
+      top: 2px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #ffffff;
+      font-weight: bold;
+      font-size: 14px;
+      z-index: 10;
+      text-shadow: 1px 1px 0 #000;
+      line-height: 20px;
+    }
   </style>
   <div class="progress-bar-outer">
     <span class="bar-icon"></span>
-    <div class="bar"><div class="bar-inner"></div></div>
+    <div class="bar">
+      <div class="bar-inner"></div>
+      <div class="bar-text"></div>
+    </div>
   </div>
 </template>
 </head>
@@ -84,90 +100,171 @@
       <button id="researchButton" onclick="openResearchModal()">🔬 Forschung</button>
     </div>
     <div>
-      <div class="button-section-title">Arbeitsamt</div>
-      <div class="button-section">
-        <table class="arbeitsamt-table" style="width: 100%; border-collapse: collapse; text-align: center; font-size: 20pt;">
-          <thead>
-            <tr>
-              <th style="text-align: left;">Beruf</th>
-              <th>Anzahl</th>
-              <th>Kosten</th>
-              <th>Aktion</th>
-              <th>Werkzeug</th>
-              <th>Auto</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>🪓 Holzfäller</td>
-              <td><span id="workerCount">1</span></td>
-              <td>20💰</td>
-              <td><button id="hireWorkerButton">Kaufen</button></td>
-              <td><button id="upgradeToolButton" title="Axt verbessern"><span class="icon">🪓</span> Lv. <span id="toolLevelAxe">1</span> (<span id="toolCostAxe">50</span><span class="icon">💰</span>)</button></td>
-              <td><button id="autoUpgradeAxeBtn" class="auto-toggle-btn" data-tool="axe" title="Automatische Axt-Upgrades aktivieren/deaktivieren">⚡ Auto</button></td>
-            </tr>
-            <tr>
-              <td>🌱 Förster</td>
-              <td><span id="foresterCount">1</span></td>
-              <td>25💰</td>
-              <td><button id="hireForesterButton">Kaufen</button></td>
-              <td><button id="upgradePlantToolButton" title="Pflanzwerkzeug verbessern"><span class="icon">🌿</span> Lv. <span id="toolLevelPlant">1</span> (<span id="toolCostPlant">50</span><span class="icon">💰</span>)</button></td>
-              <td><button id="autoUpgradePlantBtn" class="auto-toggle-btn" data-tool="plant" title="Automatische Pflanzwerkzeug-Upgrades aktivieren/deaktivieren">⚡ Auto</button></td>
-            </tr>
-            <tr>
-              <td>🪚 Schreiner</td>
-              <td><span id="carpenterCount">0</span></td>
-              <td>30💰</td>
-              <td><button id="hireCarpenterButton">Kaufen</button></td>
-              <td><button id="upgradeCarpenterToolButton" title="Schreinerwerkzeug verbessern"><span class="icon">🔨</span> Lv. <span id="toolLevelCarpenter">1</span> (<span id="toolCostCarpenter">50</span><span class="icon">💰</span>)</button></td>
-              <td><button id="autoUpgradeCarpenterBtn" class="auto-toggle-btn" data-tool="carpenter" title="Automatische Schreinerwerkzeug-Upgrades aktivieren/deaktivieren">⚡ Auto</button></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div style="width:100%; display:flex; justify-content:center; margin-top:12px; gap: 12px;">
-        <!-- Buttons entfernt, da sie jetzt oben stehen -->
-      </div>
-    </div>
-    <div>
-      <div class="button-section-title">Möbelbau</div>
-      <div class="button-section" style="overflow-x: auto;">
-        <table style="width: 100%; border-collapse: collapse;">
-          <thead>
-            <tr>
-              <th style="text-align: left;">Möbel</th>
-              <th>🪵 Kosten</th>
-              <th>💰 Ertrag</th>
-              <th>Aktion</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>🪑 Stuhl</td>
-              <td>10</td>
-              <td>15</td>
-              <td><button id="chairButton">Bauen</button></td>
-            </tr>
-            <tr style="display:none" id="tableRow">
-              <td>🛋️ Tisch</td>
-              <td>20</td>
-              <td>40</td>
-              <td><button id="tableButton">Bauen</button></td>
-            </tr>
-            <tr style="display:none" id="cabinetRow">
-              <td>🚪 Schrank</td>
-              <td>50</td>
-              <td>100</td>
-              <td><button id="wardrobeButton">Bauen</button></td>
-            </tr>
-            <tr style="display:none" id="tableFurnitureRow"><td>🍽️ Tisch</td><td>20</td><td>40</td><td><button id="tableFurnitureButton">Bauen</button></td></tr>
-            <tr style="display:none" id="wardrobeRow"><td>🚪 Schrank</td><td>50</td><td>100</td><td><button id="wardrobeButton">Bauen</button></td></tr>
-            <tr style="display:none" id="bedRow"><td>🛏️ Bett</td><td>60</td><td>120</td><td><button id="bedButton">Bauen</button></td></tr>
-            <tr style="display:none" id="shelfRow"><td>📚 Regal</td><td>30</td><td>60</td><td><button id="shelfButton">Bauen</button></td></tr>
-            <tr style="display:none" id="dresserRow"><td>🗄️ Kommode</td><td>40</td><td>80</td><td><button id="dresserButton">Bauen</button></td></tr>
-            <tr style="display:none" id="sofaRow"><td>🛋️ Sofa</td><td>100</td><td>200</td><td><button id="sofaButton">Bauen</button></td></tr>
-          </tbody>
-        </table>
+      <div class="tab-container">
+        <div class="tab-buttons">
+          <button class="tab-btn active" data-tab="arbeitsamt" onclick="switchTab('arbeitsamt')">🏢 Arbeitsamt</button>
+          <button class="tab-btn" data-tab="moebelbau" onclick="switchTab('moebelbau')">🛋️ Möbelbau</button>
+        </div>
+        
+        <script>
+        // Tab-Wechsel-Funktion direkt hier definiert
+        function switchTab(tabName) {
+          console.log('[Tabs] switchTab aufgerufen:', tabName);
+          
+          // Alle Tab-Buttons deaktivieren
+          document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+          });
+          
+          // Alle Tab-Inhalte ausblenden
+          document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+          });
+          
+          // Aktuellen Tab aktivieren
+          const activeButton = document.querySelector(`[data-tab="${tabName}"]`);
+          const activeContent = document.getElementById(tabName + '-tab');
+          
+          if (activeButton && activeContent) {
+            activeButton.classList.add('active');
+            activeContent.classList.add('active');
+            console.log('[Tabs] Tab erfolgreich gewechselt zu:', tabName);
+            
+            // Tab im localStorage speichern
+            localStorage.setItem('activeTab', tabName);
+          } else {
+            console.error('[Tabs] Tab oder Inhalt nicht gefunden:', tabName);
+          }
+        }
+        
+        // Beim Laden den gespeicherten Tab wiederherstellen
+        document.addEventListener('DOMContentLoaded', function() {
+          const savedTab = localStorage.getItem('activeTab');
+          if (savedTab) {
+            switchTab(savedTab);
+          }
+        });
+        </script>
+        
+        <div id="arbeitsamt-tab" class="tab-content active">
+          <div class="button-section">
+            <table class="arbeitsamt-table">
+              <thead>
+                <tr>
+                  <th style="text-align: left;">Beruf</th>
+                  <th>Anzahl</th>
+                  <th>Kosten</th>
+                  <th>Aktion</th>
+                  <th>Werkzeug</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>🪓 Holzfäller</td>
+                  <td><span id="workerCount">1</span></td>
+                  <td>20💰</td>
+                  <td><button id="hireWorkerButton">Anstellen</button></td>
+                  <td><button id="upgradeToolButton" title="Axt verbessern"><span class="icon">🪓</span> Lv. <span id="toolLevelAxe">1</span> (<span id="toolCostAxe">50</span><span class="icon">💰</span>)</button></td>
+                </tr>
+                <tr>
+                  <td>🌱 Förster</td>
+                  <td><span id="foresterCount">1</span></td>
+                  <td>25💰</td>
+                  <td><button id="hireForesterButton">Anstellen</button></td>
+                  <td><button id="upgradePlantToolButton" title="Pflanzwerkzeug verbessern"><span class="icon">🌿</span> Lv. <span id="toolLevelPlant">1</span> (<span id="toolCostPlant">50</span><span class="icon">💰</span>)</button></td>
+                </tr>
+                <tr>
+                  <td>🪚 Schreiner</td>
+                  <td><span id="carpenterCount">0</span></td>
+                  <td>30💰</td>
+                  <td><button id="hireCarpenterButton">Anstellen</button></td>
+                  <td><button id="upgradeCarpenterToolButton" title="Schreinerwerkzeug verbessern"><span class="icon">🔨</span> Lv. <span id="toolLevelCarpenter">1</span> (<span id="toolCostCarpenter">50</span><span class="icon">💰</span>)</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <div id="moebelbau-tab" class="tab-content">
+          <div class="button-section" style="overflow-x: auto;">
+            <table class="moebelbau-table">
+              <thead>
+                <tr>
+                  <th style="text-align: left;">Möbel</th>
+                  <th>🪵 Kosten</th>
+                  <th>💰 Ertrag</th>
+                  <th>Aktion</th>
+                  <th>Produktion</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>🪑 Stuhl</td>
+                  <td>10</td>
+                  <td>15</td>
+                  <td><button id="chairButton">Bauen</button></td>
+                  <td><input type="radio" id="chairAutoRadio" class="auto-radio" name="autoFurniture" value="chair"></td>
+                </tr>
+                <tr style="display:none" id="tableRow">
+                  <td>🛋️ Tisch</td>
+                  <td>20</td>
+                  <td>40</td>
+                  <td><button id="tableButton">Bauen</button></td>
+                  <td><input type="radio" id="tableAutoRadio" class="auto-radio" name="autoFurniture" value="table"></td>
+                </tr>
+                <tr style="display:none" id="cabinetRow">
+                  <td>🚪 Schrank</td>
+                  <td>50</td>
+                  <td>100</td>
+                  <td><button id="wardrobeButton">Bauen</button></td>
+                  <td><input type="radio" id="wardrobeAutoRadio" class="auto-radio" name="autoFurniture" value="wardrobe"></td>
+                </tr>
+                <tr style="display:none" id="tableFurnitureRow">
+                  <td>🍽️ Tisch</td>
+                  <td>20</td>
+                  <td>40</td>
+                  <td><button id="tableFurnitureButton">Bauen</button></td>
+                  <td><input type="radio" id="tableFurnitureAutoRadio" class="auto-radio" name="autoFurniture" value="tableFurniture"></td>
+                </tr>
+                <tr style="display:none" id="wardrobeRow">
+                  <td>🚪 Schrank</td>
+                  <td>50</td>
+                  <td>100</td>
+                  <td><button id="wardrobeButton">Bauen</button></td>
+                  <td><input type="radio" id="wardrobeAutoRadio" class="auto-radio" name="autoFurniture" value="wardrobe"></td>
+                </tr>
+                <tr style="display:none" id="bedRow">
+                  <td>🛏️ Bett</td>
+                  <td>60</td>
+                  <td>120</td>
+                  <td><button id="bedButton">Bauen</button></td>
+                  <td><input type="radio" id="bedAutoRadio" class="auto-radio" name="autoFurniture" value="bed"></td>
+                </tr>
+                <tr style="display:none" id="shelfRow">
+                  <td>📚 Regal</td>
+                  <td>30</td>
+                  <td>60</td>
+                  <td><button id="shelfButton">Bauen</button></td>
+                  <td><input type="radio" id="shelfAutoRadio" class="auto-radio" name="autoFurniture" value="shelf"></td>
+                </tr>
+                <tr style="display:none" id="dresserRow">
+                  <td>🗄️ Kommode</td>
+                  <td>40</td>
+                  <td>80</td>
+                  <td><button id="dresserButton">Bauen</button></td>
+                  <td><input type="radio" id="dresserAutoRadio" class="auto-radio" name="autoFurniture" value="dresser"></td>
+                </tr>
+                <tr style="display:none" id="sofaRow">
+                  <td>🛋️ Sofa</td>
+                  <td>100</td>
+                  <td>200</td>
+                  <td><button id="sofaButton">Bauen</button></td>
+                  <td><input type="radio" id="sofaAutoRadio" class="auto-radio" name="autoFurniture" value="sofa"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -278,13 +375,13 @@ function updateDisplay() {
   // Möbel-Bauen-Buttons aktivieren/deaktivieren je nach Forschung und Ressourcen
   if (window.researchSystem) {
     const moebelButtons = [
-      {id: 'chairButton', research: 'chair', cost: 10},
-      {id: 'tableFurnitureButton', research: 'table_furniture', cost: 20},
-      {id: 'wardrobeButton', research: 'wardrobe', cost: 50},
-      {id: 'bedButton', research: 'bed', cost: 60},
-      {id: 'shelfButton', research: 'shelf', cost: 30},
-      {id: 'dresserButton', research: 'dresser', cost: 40},
-      {id: 'sofaButton', research: 'sofa', cost: 100}
+      {id: 'chairButton', research: 'Stuhl', cost: 10},
+      {id: 'tableFurnitureButton', research: 'Tisch', cost: 20},
+      {id: 'wardrobeButton', research: 'Schrank', cost: 50},
+      {id: 'bedButton', research: 'Bett', cost: 60},
+      {id: 'shelfButton', research: 'Regal', cost: 30},
+      {id: 'dresserButton', research: 'Kommode', cost: 40},
+      {id: 'sofaButton', research: 'Sofa', cost: 100}
     ];
     moebelButtons.forEach(btn => {
       const button = document.getElementById(btn.id);
@@ -369,47 +466,101 @@ function setAllProgressBars(barClass, value) {
   });
 }
 
+function updateProgressBarText(barClass, text) {
+  document.querySelectorAll(`progress-bar[barclass="${barClass}"]`).forEach(bar => {
+    bar.setAttribute('text', text);
+  });
+}
+
 function autoCollect() {
   // Holzfäller
   if (trees > 0 && workers > 0) {
-    progress += toolLevel * workers;
-    let barWidth = (progress / 10) * 100;
-    if (barWidth > 100) barWidth = 100;
-    setAllProgressBars('', progress);
-    if (progress >= 10) {
-      holz += (Math.floor(Math.random() * 11) + 5) * workers;
+    const productionSpeed = toolLevel * workers;
+    const resourcesPerHour = (Math.floor(Math.random() * 11) + 5) * workers;
+    
+    // Bei sehr schneller Produktion (mehr als 5 pro Tick) keine Animation
+    if (productionSpeed > 5) {
+      holz += resourcesPerHour;
       trees -= Math.min(trees, workers);
-      progress = 0;
+      // Zeige Ressourcen pro Stunde statt Progress-Bar
+      setAllProgressBars('', -1); // -1 bedeutet "zeige Text statt Bar"
+      updateProgressBarText('', `${resourcesPerHour}/h`);
+    } else {
+      progress += productionSpeed;
       setAllProgressBars('', progress);
-      showPlusOneAnimation(document.querySelector('progress-bar[barclass=""]'), (Math.floor(Math.random() * 11) + 5) * workers);
+      if (progress >= 10) {
+        holz += resourcesPerHour;
+        trees -= Math.min(trees, workers);
+        progress = 0;
+        setAllProgressBars('', progress);
+        showPlusOneAnimation(document.querySelector('progress-bar[barclass=""]'), resourcesPerHour);
+      }
     }
   }
   
   // Förster
   if (foresters > 0) {
-    foresterProgress += foresters * plantToolLevel;
-    let foresterBarWidth = (foresterProgress / 10) * 100;
-    if (foresterBarWidth > 100) foresterBarWidth = 100;
-    setAllProgressBars('forester', foresterProgress);
-    if (foresterProgress >= 10) {
-      trees += foresters * plantToolLevel;
-      foresterProgress = 0;
+    const productionSpeed = foresters * plantToolLevel;
+    const resourcesPerHour = foresters * plantToolLevel;
+    
+    if (productionSpeed > 5) {
+      trees += resourcesPerHour;
+      setAllProgressBars('forester', -1);
+      updateProgressBarText('forester', `${resourcesPerHour}/h`);
+    } else {
+      foresterProgress += productionSpeed;
       setAllProgressBars('forester', foresterProgress);
-      showPlusOneAnimation(document.querySelector('progress-bar[barclass="forester"]'), foresters * plantToolLevel);
+      if (foresterProgress >= 10) {
+        trees += resourcesPerHour;
+        foresterProgress = 0;
+        setAllProgressBars('forester', foresterProgress);
+        showPlusOneAnimation(document.querySelector('progress-bar[barclass="forester"]'), resourcesPerHour);
+      }
     }
   }
   
   // Schreiner (sehr langsam)
   if (carpenters > 0 && holz >= 10 * carpenters) {
-    carpenterProgress += carpenters * carpenterToolLevel;
-    setAllProgressBars('carpenter', carpenterProgress);
+    const productionSpeed = carpenters * carpenterToolLevel;
+    const resourcesPerHour = 15 * carpenters * carpenterToolLevel;
     
-    if (carpenterProgress >= CARPENTER_MAX) {
+    if (productionSpeed > 5) {
       holz -= 10 * carpenters;
-      gold += 15 * carpenters * carpenterToolLevel;
-      carpenterProgress = 0;
+      gold += resourcesPerHour;
+      setAllProgressBars('carpenter', -1);
+      updateProgressBarText('carpenter', `${resourcesPerHour}/h`);
+    } else {
+      carpenterProgress += productionSpeed;
       setAllProgressBars('carpenter', carpenterProgress);
-      showPlusOneAnimation(document.querySelector('progress-bar[barclass="carpenter"]'), 15 * carpenters * carpenterToolLevel);
+      
+      if (carpenterProgress >= CARPENTER_MAX) {
+        holz -= 10 * carpenters;
+        gold += resourcesPerHour;
+        carpenterProgress = 0;
+        setAllProgressBars('carpenter', carpenterProgress);
+        showPlusOneAnimation(document.querySelector('progress-bar[barclass="carpenter"]'), resourcesPerHour);
+      }
+    }
+  }
+  
+  // Auto-Produktion für Möbel
+  if (carpenters > 0 && selectedAutoFurniture) {
+    const furnitureData = {
+      chair: { cost: 10, reward: 15 },
+      table: { cost: 20, reward: 40 },
+      wardrobe: { cost: 50, reward: 100 },
+      tableFurniture: { cost: 20, reward: 40 },
+      bed: { cost: 60, reward: 120 },
+      shelf: { cost: 30, reward: 60 },
+      dresser: { cost: 40, reward: 80 },
+      sofa: { cost: 100, reward: 200 }
+    };
+    
+    const data = furnitureData[selectedAutoFurniture];
+    if (holz >= data.cost) {
+      holz -= data.cost;
+      gold += data.reward;
+      console.log(`[Auto-Produktion] ${selectedAutoFurniture} gebaut: -${data.cost} Holz, +${data.reward} Gold`);
     }
   }
   
@@ -426,6 +577,9 @@ const autoUpgradeState = {
   carpenter: false
 };
 
+// Auto-production state tracking für Möbel (nur ein Möbel kann aktiv sein)
+let selectedAutoFurniture = null;
+
 // Load auto-upgrade state from localStorage
 function loadAutoUpgradeState() {
   const saved = localStorage.getItem('autoUpgradeState');
@@ -437,6 +591,19 @@ function loadAutoUpgradeState() {
 // Save auto-upgrade state to localStorage
 function saveAutoUpgradeState() {
   localStorage.setItem('autoUpgradeState', JSON.stringify(autoUpgradeState));
+}
+
+// Load auto-production state from localStorage
+function loadAutoProductionState() {
+  const saved = localStorage.getItem('selectedAutoFurniture');
+  if (saved) {
+    selectedAutoFurniture = saved;
+  }
+}
+
+// Save auto-production state to localStorage
+function saveAutoProductionState() {
+  localStorage.setItem('selectedAutoFurniture', selectedAutoFurniture);
 }
 
 // Update auto-upgrade button appearance
@@ -453,6 +620,17 @@ function updateAutoUpgradeButton(tool) {
       btn.style.color = '#333';
     }
   }
+}
+
+// Update auto-production radio button appearance
+function updateAutoProductionRadio() {
+  const furnitureList = ['chair', 'table', 'wardrobe', 'tableFurniture', 'bed', 'shelf', 'dresser', 'sofa'];
+  furnitureList.forEach(furniture => {
+    const radio = document.getElementById(`${furniture}AutoRadio`);
+    if (radio) {
+      radio.checked = (selectedAutoFurniture === furniture);
+    }
+  });
 }
 
 // Toggle auto-upgrade for a specific tool
@@ -474,6 +652,26 @@ function toggleAutoUpgrade(tool) {
       btn.style.transform = 'scale(1)';
     }, 100);
   }
+}
+
+// Set auto-production for a specific furniture
+function setAutoProduction(furniture) {
+  selectedAutoFurniture = furniture;
+  updateAutoProductionRadio();
+  saveAutoProductionState();
+  
+  // Show feedback
+  const furnitureName = {
+    chair: 'Stuhl',
+    table: 'Tisch',
+    wardrobe: 'Schrank',
+    tableFurniture: 'Tisch',
+    bed: 'Bett',
+    shelf: 'Regal',
+    dresser: 'Kommode',
+    sofa: 'Sofa'
+  }[furniture] || furniture;
+  showStatusToast(`Automatische ${furnitureName}-Produktion aktiviert`);
 }
 
 function autoUpgrade() {
@@ -556,46 +754,119 @@ function handleMoebelBauButton(btnId, researchId, holzKosten, goldErtrag) {
       holz -= holzKosten;
       gold += goldErtrag;
       updateDisplay();
+      
+      // Gold-Animation anzeigen
+      showGoldAnimation(btn, goldErtrag);
     }
   };
 }
-handleMoebelBauButton('chairButton', 'chair', 10, 15);
-handleMoebelBauButton('tableFurnitureButton', 'table_furniture', 20, 40);
-handleMoebelBauButton('wardrobeButton', 'wardrobe', 50, 100);
-handleMoebelBauButton('bedButton', 'bed', 60, 120);
-handleMoebelBauButton('shelfButton', 'shelf', 30, 60);
-handleMoebelBauButton('dresserButton', 'dresser', 40, 80);
-handleMoebelBauButton('sofaButton', 'sofa', 100, 200);
 
-document.getElementById("resetBtn").onclick = function() {
-  gold = 0; holz = 0; trees = 10;
-  workers = 1; foresters = 1; carpenters = 0;
-  toolLevel = 1; plantToolLevel = 1; carpenterToolLevel = 1;
-  progress = 0;
-  foresterProgress = 0;
-  localStorage.removeItem('research'); // Forschungsfortschritt zurücksetzen
-  localStorage.removeItem('autoUpgradeState'); // Auto-upgrade state zurücksetzen
+// Funktion für Gold-Animation
+function showGoldAnimation(button, goldAmount) {
+  // Animation-Element erstellen
+  const animElement = document.createElement('div');
+  animElement.className = 'gold-animation';
+  animElement.innerHTML = `+${goldAmount}💰`;
+  animElement.style.cssText = `
+    position: absolute;
+    color: #FFD700;
+    font-weight: bold;
+    font-size: 0.8em;
+    text-shadow: 2px 2px 0 #000, 0 0 1px #000;
+    pointer-events: none;
+    z-index: 1000;
+    animation: goldFloat 1.5s ease-out forwards;
+  `;
   
-  // Reset auto-upgrade state
-  autoUpgradeState.axe = false;
-  autoUpgradeState.plant = false;
-  autoUpgradeState.carpenter = false;
+  // Position relativ zum Button setzen mit zufälliger Variation
+  const buttonRect = button.getBoundingClientRect();
+  const randomOffsetX = (Math.random() - 0.5) * 40; // ±20px horizontal
+  const randomOffsetY = (Math.random() - 0.5) * 20; // ±10px vertikal
+  animElement.style.left = (buttonRect.left + buttonRect.width / 2 + randomOffsetX) + 'px';
+  animElement.style.top = (buttonRect.top - 10 + randomOffsetY) + 'px';
   
-  updateDisplay();
-  saveGameToServer();
-  if (window.updateMoebelVisibility) window.updateMoebelVisibility();
-};
+  // Animation zum Body hinzufügen
+  document.body.appendChild(animElement);
+  
+  // Animation nach Ablauf entfernen
+  setTimeout(() => {
+    if (animElement.parentNode) {
+      animElement.parentNode.removeChild(animElement);
+    }
+  }, 1500);
+}
+handleMoebelBauButton('chairButton', 'Stuhl', 10, 15);
+handleMoebelBauButton('tableFurnitureButton', 'Tisch', 20, 40);
+handleMoebelBauButton('wardrobeButton', 'Schrank', 50, 100);
+handleMoebelBauButton('bedButton', 'Bett', 60, 120);
+handleMoebelBauButton('shelfButton', 'Regal', 30, 60);
+handleMoebelBauButton('dresserButton', 'Kommode', 40, 80);
+handleMoebelBauButton('sofaButton', 'Sofa', 100, 200);
+
+const resetBtn = document.getElementById("resetBtn");
+if (resetBtn) {
+  resetBtn.onclick = function() {
+    gold = 0; holz = 0; trees = 10;
+    workers = 1; foresters = 1; carpenters = 0;
+    toolLevel = 1; plantToolLevel = 1; carpenterToolLevel = 1;
+    progress = 0;
+    foresterProgress = 0;
+    localStorage.removeItem('research'); // Forschungsfortschritt zurücksetzen
+    localStorage.removeItem('autoUpgradeState'); // Auto-upgrade state zurücksetzen
+    localStorage.removeItem('selectedAutoFurniture'); // Auto-Produktion zurücksetzen
+    
+    // Reset auto-upgrade state
+    autoUpgradeState.axe = false;
+    autoUpgradeState.plant = false;
+    autoUpgradeState.carpenter = false;
+    
+    // Reset auto-production state
+    selectedAutoFurniture = null;
+    
+    // Forschungssystem direkt zurücksetzen
+    if (window.researchSystem) {
+      window.researchSystem.resetResearch();
+      console.log('[Reset] Forschungssystem zurückgesetzt');
+    }
+    
+    updateDisplay();
+    saveGameToServer();
+    if (window.updateMoebelVisibility) window.updateMoebelVisibility();
+    updateAutoProductionRadio(); // Radiobuttons zurücksetzen
+  };
+}
 
 // Auto-upgrade button event listeners
-document.getElementById('autoUpgradeAxeBtn').onclick = () => toggleAutoUpgrade('axe');
-document.getElementById('autoUpgradePlantBtn').onclick = () => toggleAutoUpgrade('plant');
-document.getElementById('autoUpgradeCarpenterBtn').onclick = () => toggleAutoUpgrade('carpenter');
+const autoUpgradeAxeBtn = document.getElementById('autoUpgradeAxeBtn');
+const autoUpgradePlantBtn = document.getElementById('autoUpgradePlantBtn');
+const autoUpgradeCarpenterBtn = document.getElementById('autoUpgradeCarpenterBtn');
+
+if (autoUpgradeAxeBtn) autoUpgradeAxeBtn.onclick = () => toggleAutoUpgrade('axe');
+if (autoUpgradePlantBtn) autoUpgradePlantBtn.onclick = () => toggleAutoUpgrade('plant');
+if (autoUpgradeCarpenterBtn) autoUpgradeCarpenterBtn.onclick = () => toggleAutoUpgrade('carpenter');
 
 // Initialize auto-upgrade system
 loadAutoUpgradeState();
 updateAutoUpgradeButton('axe');
 updateAutoUpgradeButton('plant');
 updateAutoUpgradeButton('carpenter');
+
+// Initialize auto-production system
+loadAutoProductionState();
+updateAutoProductionRadio();
+
+// Add event listeners for auto-production radio buttons
+const furnitureList = ['chair', 'table', 'wardrobe', 'tableFurniture', 'bed', 'shelf', 'dresser', 'sofa'];
+furnitureList.forEach(furniture => {
+  const radio = document.getElementById(`${furniture}AutoRadio`);
+  if (radio) {
+    radio.addEventListener('change', (e) => {
+      if (e.target.checked) {
+        setAutoProduction(furniture);
+      }
+    });
+  }
+});
 
 setInterval(autoCollect, 2000);
 setInterval(autoUpgrade, 1000);
@@ -646,9 +917,12 @@ function showStatusToast(msg) {
   setTimeout(() => { toast.style.display = 'none'; }, 2600);
 }
 
-document.getElementById('musicPopoutBtn').onclick = function() {
-  window.open('musicplayer.html', 'MusicPlayer', 'width=340,height=120,menubar=no,toolbar=no,location=no,status=no');
-};
+const musicPopoutBtn = document.getElementById('musicPopoutBtn');
+if (musicPopoutBtn) {
+  musicPopoutBtn.onclick = function() {
+    window.open('musicplayer.html', 'MusicPlayer', 'width=340,height=120,menubar=no,toolbar=no,location=no,status=no');
+  };
+}
 
 // --- Möbelbau-Freischaltung nach Forschung ---
 // Erweitere die Funktion updateMoebelVisibility für alle Möbelstücke
@@ -673,25 +947,61 @@ function updateMoebelVisibility(retryCount = 0) {
 
   // NEU: Für alle Möbelstücke prüfen - KORRIGIERTE IDs
   const moebelIds = [
-    {id:'chair', row:'chairRow'},
-    {id:'table_furniture', row:'tableFurnitureRow'},
-    {id:'wardrobe', row:'wardrobeRow'},
-    {id:'bed', row:'bedRow'},
-    {id:'shelf', row:'shelfRow'},
-    {id:'dresser', row:'dresserRow'},
-    {id:'sofa', row:'sofaRow'}
+    {id:'Stuhl', row:'chairRow'},
+    {id:'Tisch', row:'tableFurnitureRow'},
+    {id:'Schrank', row:'wardrobeRow'},
+    {id:'Bett', row:'bedRow'},
+    {id:'Regal', row:'shelfRow'},
+    {id:'Kommode', row:'dresserRow'},
+    {id:'Sofa', row:'sofaRow'}
   ];
   
   moebelIds.forEach(m => {
     const row = document.getElementById(m.row);
     if (row) {
-      const unlocked = window.researchSystem.research.find(r => (r.id === m.id || r.id === 'furniture') && r.completed);
+      const unlocked = window.researchSystem.research.find(r => r.id === m.id && r.completed);
       row.style.display = unlocked ? '' : 'none';
       console.log(`[Möbelbau] Zeile ${m.row}: ${unlocked ? 'sichtbar' : 'ausgeblendet'} (Forschung abgeschlossen: ${unlocked ? 'true' : 'false'})`);
+      
+      // Debug: Zeige alle Forschungen mit diesem Namen
+      const allResearch = window.researchSystem.research.filter(r => r.id === m.id);
+      if (allResearch.length > 0) {
+        console.log(`[Möbelbau] DEBUG ${m.id}:`, allResearch.map(r => ({id: r.id, completed: r.completed})));
+      }
     }
   });
 }
 window.updateMoebelVisibility = updateMoebelVisibility;
+
+// Globale Funktion zum manuellen Debuggen der Möbelbau-Sichtbarkeit
+window.debugMoebelVisibility = function() {
+  console.log('[Möbelbau] DEBUG: Alle Forschungen:');
+  window.researchSystem.research.forEach(r => {
+    if (['Stuhl', 'Tisch', 'Schrank', 'Bett', 'Regal', 'Kommode', 'Sofa'].includes(r.id)) {
+      console.log(`[Möbelbau] ${r.id}: completed=${r.completed}`);
+    }
+  });
+  updateMoebelVisibility();
+  
+  // Debug: Prüfe Möbelbau-Buttons
+  const moebelButtons = [
+    {id: 'chairButton', research: 'Stuhl', cost: 10},
+    {id: 'tableFurnitureButton', research: 'Tisch', cost: 20},
+    {id: 'wardrobeButton', research: 'Schrank', cost: 50},
+    {id: 'bedButton', research: 'Bett', cost: 60},
+    {id: 'shelfButton', research: 'Regal', cost: 30},
+    {id: 'dresserButton', research: 'Kommode', cost: 40},
+    {id: 'sofaButton', research: 'Sofa', cost: 100}
+  ];
+  
+  moebelButtons.forEach(btn => {
+    const button = document.getElementById(btn.id);
+    const unlocked = window.researchSystem.research.find(r => r.id === btn.research && r.completed);
+    const hasResources = holz >= btn.cost;
+    const isDisabled = button ? button.disabled : 'Button nicht gefunden';
+    console.log(`[Möbelbau] ${btn.id}: Forschung=${btn.research}, unlocked=${unlocked}, hatRessourcen=${hasResources}, disabled=${isDisabled}`);
+  });
+};
 // Nach Forschung und beim Laden aufrufen
 if (window.researchSystem) {
   const origApplyResearchEffects = researchSystem.applyResearchEffects.bind(researchSystem);
@@ -706,7 +1016,46 @@ document.addEventListener('DOMContentLoaded', updateMoebelVisibility);
 document.addEventListener('DOMContentLoaded', function() {
   // Kurze Verzögerung, um sicherzustellen, dass das Forschungssystem geladen ist
   setTimeout(updateMoebelVisibility, 100);
+  
+  // Tab-Funktionalität initialisieren
+  initializeTabs();
 });
+
+// Tab-Funktionalität
+function initializeTabs() {
+  const tabButtons = document.querySelectorAll('.tab-btn');
+  const tabContents = document.querySelectorAll('.tab-content');
+  
+  console.log('[Tabs] Initialisiere Tabs...');
+  console.log('[Tabs] Gefundene Tab-Buttons:', tabButtons.length);
+  console.log('[Tabs] Gefundene Tab-Inhalte:', tabContents.length);
+  
+  tabButtons.forEach((button, index) => {
+    console.log(`[Tabs] Button ${index}:`, button.textContent, 'data-tab:', button.getAttribute('data-tab'));
+    
+    button.addEventListener('click', function() {
+      const targetTab = this.getAttribute('data-tab');
+      console.log('[Tabs] Tab geklickt:', targetTab);
+      
+      // Alle Tab-Buttons deaktivieren
+      tabButtons.forEach(btn => btn.classList.remove('active'));
+      // Alle Tab-Inhalte ausblenden
+      tabContents.forEach(content => content.classList.remove('active'));
+      
+      // Aktuellen Tab aktivieren
+      this.classList.add('active');
+      const targetContent = document.getElementById(targetTab + '-tab');
+      if (targetContent) {
+        targetContent.classList.add('active');
+        console.log('[Tabs] Tab aktiviert:', targetTab);
+      } else {
+        console.error('[Tabs] Tab-Inhalt nicht gefunden:', targetTab + '-tab');
+      }
+    });
+  });
+}
+
+
 
 });
 
@@ -716,7 +1065,7 @@ class ProgressBar extends HTMLElement {
     const template = document.getElementById('progress-bar-template').content.cloneNode(true);
     this.attachShadow({mode: 'open'}).appendChild(template);
   }
-  static get observedAttributes() { return ['icon', 'value', 'max', 'barclass']; }
+  static get observedAttributes() { return ['icon', 'value', 'max', 'barclass', 'text']; }
   attributeChangedCallback(name, oldValue, newValue) { this.render(); }
   connectedCallback() { this.render(); }
   render() {
@@ -724,11 +1073,41 @@ class ProgressBar extends HTMLElement {
     const value = parseFloat(this.getAttribute('value')) || 0;
     const max = parseFloat(this.getAttribute('max')) || 10;
     const barClass = this.getAttribute('barclass') || '';
-    const percent = Math.min(100, Math.max(0, (value / max) * 100));
+    const text = this.getAttribute('text') || '';
+    
     this.shadowRoot.querySelector('.bar-icon').textContent = icon;
     const barInner = this.shadowRoot.querySelector('.bar-inner');
+    const textElement = this.shadowRoot.querySelector('.bar-text');
+    
+    // Progress-Bar aktualisieren
+    const percent = Math.min(100, Math.max(0, (value / max) * 100));
     barInner.style.width = percent + '%';
     barInner.className = 'bar-inner' + (barClass ? ' ' + barClass : '');
+    
+    // Text setzen - zeige Ressourcenmenge bei voller Bar
+    if (value === -1 && text) {
+      // Bei schneller Produktion: Zeige Text (z.B. "100/h")
+      textElement.textContent = text;
+    } else {
+      // Berechne ungefähre Ressourcenmenge basierend auf Bar-Typ
+      let resourceAmount = 0;
+      if (barClass === '') {
+        // Holzfäller: ungefähr 10 * workers (Durchschnitt von 5-15)
+        const workers = parseInt(document.getElementById('workerCount')?.textContent || '1');
+        resourceAmount = 10 * workers;
+      } else if (barClass === 'forester') {
+        // Förster: foresters * plantToolLevel
+        const foresters = parseInt(document.getElementById('foresterCount')?.textContent || '1');
+        const plantToolLevel = parseInt(document.getElementById('toolLevelPlant')?.textContent || '1');
+        resourceAmount = foresters * plantToolLevel;
+      } else if (barClass === 'carpenter') {
+        // Schreiner: 15 * carpenters * carpenterToolLevel
+        const carpenters = parseInt(document.getElementById('carpenterCount')?.textContent || '0');
+        const carpenterToolLevel = parseInt(document.getElementById('toolLevelCarpenter')?.textContent || '1');
+        resourceAmount = 15 * carpenters * carpenterToolLevel;
+      }
+      textElement.innerHTML = `<span style="font-size: 26px; position: relative; top: -4px;">≈</span><span style="font-size: 12px; margin-left: 4px; position: relative; top: -4px;">${resourceAmount}</span>`;
+    }
   }
 }
 customElements.define('progress-bar', ProgressBar);
@@ -741,6 +1120,17 @@ customElements.define('progress-bar', ProgressBar);
       <span class="close-button" onclick="closeResearchModal()">&times;</span>
     </div>
     <div class="modal-body">
+      <!-- Ressourcenanzeige -->
+      <div id="research-resources" class="research-resources">
+        <div class="resource-item">
+          <span class="resource-icon">💰</span>
+          <span id="research-gold" class="resource-value">0</span>
+        </div>
+        <div class="resource-item">
+          <span class="resource-icon">🪵</span>
+          <span id="research-wood" class="resource-value">0</span>
+        </div>
+      </div>
       <div class="research-tabs" style="display:flex;gap:12px;margin-bottom:12px;">
         <button class="tab-button" data-tab="lumberjack" onclick="showResearchTab('lumberjack')">🪓 Holzfäller</button>
         <button class="tab-button" data-tab="forester" onclick="showResearchTab('forester')">🌱 Förster</button>

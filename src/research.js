@@ -55,7 +55,7 @@ const researchOptions = [
         name: 'Säge',
         description: 'Produziert mehr Holz pro Baum',
         cost: { wood: 300, gold: 150 },
-        requirements: [],
+        requirements: ['Werkzeug'],
         effects: { wood_per_tree: 2 },
         progress: 0,
         completed: false
@@ -191,12 +191,13 @@ const researchOptions = [
         progress: 0,
         completed: false
     },
-    // --- NEUER ZWEIG: Möbel ---
+
+    // --- MÖBEL-FORSCHUNG ---
     {
         id: 'Möbel',
         name: 'Möbel',
         description: 'Ermöglicht die Erforschung und den Bau verschiedener Möbelstücke.',
-        cost: { wood: 100, gold: 50 },
+        cost: { wood: 0, gold: 0 },
         requirements: ['Säge'],
         effects: {},
         progress: 0,
@@ -217,8 +218,8 @@ const researchOptions = [
         id: 'Tisch',
         name: 'Tisch',
         description: 'Ermöglicht den Bau von Tischen.',
-        cost: { wood: 60, gold: 30 },
-        requirements: ['Möbel'],
+        cost: { wood: 120, gold: 60 },
+        requirements: ['Säge'],
         effects: { can_build_table: true },
         progress: 0,
         completed: false
@@ -227,18 +228,18 @@ const researchOptions = [
         id: 'Schrank',
         name: 'Schrank',
         description: 'Ermöglicht den Bau von Schränken.',
-        cost: { wood: 80, gold: 40 },
-        requirements: ['Möbel'],
+        cost: { wood: 200, gold: 100 },
+        requirements: ['Säge'],
         effects: { can_build_wardrobe: true },
-        progress: 100,
-        completed: true
+        progress: 0,
+        completed: false
     },
     {
         id: 'Bett',
         name: 'Bett',
         description: 'Ermöglicht den Bau von Betten.',
         cost: { wood: 100, gold: 50 },
-        requirements: ['Möbel','Tisch'],
+        requirements: ['Säge','Tisch'],
         effects: { can_build_bed: true },
         progress: 0,
         completed: false
@@ -248,7 +249,7 @@ const researchOptions = [
         name: 'Regal',
         description: 'Ermöglicht den Bau von Regalen.',
         cost: { wood: 50, gold: 25 },
-        requirements: ['Möbel','Tisch'],
+        requirements: ['Säge','Tisch'],
         effects: { can_build_shelf: true },
         progress: 0,
         completed: false
@@ -258,7 +259,7 @@ const researchOptions = [
         name: 'Kommode',
         description: 'Ermöglicht den Bau von Kommoden.',
         cost: { wood: 70, gold: 35 },
-        requirements: ['Möbel','Schrank'],
+        requirements: ['Säge','Schrank'],
         effects: { can_build_dresser: true },
         progress: 0,
         completed: false
@@ -268,7 +269,7 @@ const researchOptions = [
         name: 'Sofa',
         description: 'Ermöglicht den Bau von Sofas.',
         cost: { wood: 120, gold: 60 },
-        requirements: ['Möbel','Bett','Kommode'],
+        requirements: ['Säge','Bett','Kommode'],
         effects: { can_build_sofa: true },
         progress: 0,
         completed: false
@@ -303,20 +304,15 @@ if (typeof window !== 'undefined') {
 
 // Globale Ressourcen-Funktion für ResearchSystem
 window.getCurrentResources = function() {
-    console.log(`📊 DEBUG: getCurrentResources() aufgerufen`);
-    
     // Versuche, die Werte direkt aus der Anzeige zu lesen
     const scoreDiv = document.querySelector('.score.status');
     if (scoreDiv) {
         // Format: 💰 208.9 Tsd. | 🪵 5.3 Tsd. | ...
         const text = scoreDiv.textContent;
-        console.log(`📊 DEBUG: Score-Text gefunden: "${text}"`);
         
+        // Verbesserte Regex für verschiedene Formate
         const goldMatch = text.match(/💰\s*([\d.,]+)(?:\s*(Tsd\.|Mio\.|Mrd\.|))/);
         const woodMatch = text.match(/🪵\s*([\d.,]+)(?:\s*(Tsd\.|Mio\.|Mrd\.|))/);
-        
-        console.log(`📊 DEBUG: Gold-Match:`, goldMatch);
-        console.log(`📊 DEBUG: Wood-Match:`, woodMatch);
         
         function parseNum(val, unit) {
             let n = parseFloat(val.replace(',', '.'));
@@ -325,28 +321,43 @@ window.getCurrentResources = function() {
             if (unit === 'Mrd.') return n * 1000000000;
             return n;
         }
-        const gold = goldMatch ? parseNum(goldMatch[1], goldMatch[2]) : 0;
-        const wood = woodMatch ? parseNum(woodMatch[1], woodMatch[2]) : 0;
         
-        console.log(`📊 DEBUG: Geparste Ressourcen - Gold: ${gold}, Holz: ${wood}`);
+        let gold = 0, wood = 0;
         
-        // Zusätzlich: Vergleiche mit globalen Variablen
-        if (typeof window.gold !== 'undefined' && typeof window.holz !== 'undefined') {
-            console.log(`📊 DEBUG: Globale Variablen - Gold: ${window.gold}, Holz: ${window.holz}`);
+        if (goldMatch) {
+            gold = parseNum(goldMatch[1], goldMatch[2]);
+        }
+        if (woodMatch) {
+            wood = parseNum(woodMatch[1], woodMatch[2]);
         }
         
-        return { wood, gold };
-    } else {
-        console.log(`❌ DEBUG: Score-Div nicht gefunden!`);
-        
-        // Fallback: Verwende globale Variablen direkt
-        if (typeof window.gold !== 'undefined' && typeof window.holz !== 'undefined') {
-            console.log(`📊 DEBUG: Fallback auf globale Variablen - Gold: ${window.gold}, Holz: ${window.holz}`);
-            return { wood: window.holz, gold: window.gold };
+        // Wenn die Werte erfolgreich gelesen wurden, verwende sie
+        if (gold > 0 || wood > 0) {
+            return { wood, gold };
         }
     }
     
-    console.log(`❌ DEBUG: Kann keine Ressourcen lesen, returniere 0/0`);
+    // Fallback: Verwende globale Variablen direkt
+    if (typeof window.holz !== 'undefined' && typeof window.gold !== 'undefined') {
+        return { wood: window.holz, gold: window.gold };
+    }
+    
+    // Zusätzlicher Fallback für gameState
+    if (window.game && window.game.gameState) {
+        return { 
+            wood: window.game.gameState.wood || 0, 
+            gold: window.game.gameState.gold || 0 
+        };
+    }
+    
+    // Fallback für UI-Objekte
+    if (window.game && window.game.ui) {
+        return { 
+            wood: window.game.ui.wood || 0, 
+            gold: window.game.ui.gold || 0 
+        };
+    }
+    
     return { wood: 0, gold: 0 };
 };
 
@@ -388,56 +399,46 @@ class ResearchSystem {
 
     // Prüfen ob eine Forschung verfügbar ist
     isResearchAvailable(research) {
-        console.log(`🔍 DEBUG: Prüfe Verfügbarkeit für ${research.name} (${research.id})`);
-        console.log(`🔍 DEBUG: Benötigte Forschungen:`, research.requirements);
-        
         const result = research.requirements.every(reqId => {
             const requiredResearch = this.research.find(r => r.id === reqId);
             const isCompleted = requiredResearch?.completed;
-            console.log(`🔍 DEBUG: Voraussetzung ${reqId}: ${isCompleted ? 'ERFÜLLT' : 'NICHT ERFÜLLT'}`);
             return isCompleted;
         });
         
-        console.log(`🔍 DEBUG: Forschung ${research.name} verfügbar: ${result}`);
+        // Debug für Möbel-Forschungen
+        if (research.id === 'Tisch' || research.id === 'Schrank') {
+            console.log(`🔍 DEBUG isResearchAvailable(${research.id}): requirements=${research.requirements}, result=${result}`);
+            research.requirements.forEach(reqId => {
+                const req = this.research.find(r => r.id === reqId);
+                console.log(`🔍 DEBUG ${research.id} -> ${reqId}: ${req ? req.completed : 'nicht gefunden'}`);
+            });
+        }
+        
         return result;
     }
 
     // Forschung starten oder fortsetzen
     startResearch(researchId) {
-        console.log(`🚀 DEBUG: Starte Forschung für ${researchId}`);
-        
         const research = this.research.find(r => r.id === researchId);
         if (!research) {
-            console.log(`❌ DEBUG: Forschung ${researchId} nicht gefunden`);
             return { success: false, error: 'Forschung nicht gefunden' };
         }
         
         if (research.completed) {
-            console.log(`❌ DEBUG: Forschung ${research.name} bereits abgeschlossen`);
             return { success: false, error: 'Forschung bereits abgeschlossen' };
         }
 
         // Prüfen ob Anforderungen erfüllt sind
         const available = this.isResearchAvailable(research);
         if (!available) {
-            console.log(`❌ DEBUG: Anforderungen für ${research.name} nicht erfüllt`);
             return { success: false, error: 'Voraussetzungen nicht erfüllt' };
         }
 
         // Prüfen ob genügend Ressourcen vorhanden sind
         const hasResources = this.hasEnoughResources(research.cost);
         if (!hasResources) {
-            console.log(`❌ DEBUG: Nicht genügend Ressourcen für ${research.name}`);
-            console.log('❌ DEBUG: Ressourcenprüfung:', {
-                required: research.cost,
-                current: window.getCurrentResources ? window.getCurrentResources() : 'unbekannt',
-                window_gold: typeof window.gold !== 'undefined' ? window.gold : 'undefined',
-                window_holz: typeof window.holz !== 'undefined' ? window.holz : 'undefined',
-            });
             return { success: false, error: 'Nicht genügend Ressourcen' };
         }
-
-        console.log(`✅ DEBUG: Alle Bedingungen erfüllt für ${research.name}, starte Forschung...`);
 
         // Ressourcen abziehen
         this.deductResources(research.cost);
@@ -453,148 +454,94 @@ class ResearchSystem {
         
         // Skilltree-SVG immer sofort neu rendern
         if (typeof window.renderSkilltreeSVG === 'function') {
-            console.log('🔄 DEBUG: Rufe renderSkilltreeSVG() auf...');
-            const svgElement = document.getElementById('skilltree-svg');
-            console.log('🔄 DEBUG: SVG-Element gefunden:', !!svgElement);
-            if (svgElement) {
-                console.log('🔄 DEBUG: SVG-Sichtbarkeit:', svgElement.style.display, svgElement.offsetParent);
-            }
             window.renderSkilltreeSVG();
-            console.log('🔄 DEBUG: renderSkilltreeSVG() abgeschlossen');
-        } else {
-            console.log('❌ DEBUG: renderSkilltreeSVG Funktion nicht gefunden!');
         }
         
         // Tab-Skilltrees auch sofort neu rendern
         if (typeof window.renderResearchTreeTab === 'function') {
-            console.log('🔄 DEBUG: Rendere Tab-Skilltrees neu...');
             window.renderResearchTreeTab('lumberjack');
             window.renderResearchTreeTab('forester');
             window.renderResearchTreeTab('carpenter');
-            console.log('🔄 DEBUG: Tab-Skilltrees neu gerendert');
-        } else {
-            console.log('❌ DEBUG: renderResearchTreeTab Funktion nicht gefunden!');
         }
         
-        console.log(`🎉 DEBUG: Forschung ${research.name} erfolgreich abgeschlossen!`);
         return { success: true, research: research };
     }
 
     // Prüfen ob genügend Ressourcen vorhanden sind
     hasEnoughResources(cost) {
         const res = window.getCurrentResources();
-        console.log(`💰 DEBUG: Aktuelle Ressourcen - Gold: ${res.gold}, Holz: ${res.wood}`);
-        console.log(`💰 DEBUG: Benötigte Ressourcen - Gold: ${cost.gold || 0}, Holz: ${cost.wood || 0}`);
         
+        // Debug-Ausgabe für bessere Fehlerdiagnose
         const hasGold = res.gold >= (cost.gold || 0);
         const hasWood = res.wood >= (cost.wood || 0);
         
-        console.log(`💰 DEBUG: Genug Gold: ${hasGold}, Genug Holz: ${hasWood}`);
-        if (!hasGold || !hasWood) {
-            console.log('❌ DEBUG: Ressourcen reichen nicht!', {res, cost});
-        }
         return hasGold && hasWood;
     }
 
     // Ressourcen abziehen
     deductResources(cost) {
-        console.log(`💸 DEBUG: Versuche Ressourcen abzuziehen:`, cost);
-        
         const res = window.getCurrentResources();
-        console.log(`💸 DEBUG: Aktuelle Ressourcen vor Abzug:`, res);
         
         // Mehrere Methoden versuchen, um sicherzustellen, dass Ressourcen abgezogen werden
         let success = false;
         
         // Methode 1: Direkt auf die globalen Hauptspiel-Variablen zugreifen
         if (typeof window.gold !== 'undefined' && typeof window.holz !== 'undefined') {
-            console.log(`💸 DEBUG: Verwende globale window.gold und window.holz`);
-            
-            const oldGold = window.gold;
-            const oldHolz = window.holz;
-            
             if (typeof cost.gold === 'number') {
                 window.gold -= cost.gold;
-                console.log(`💸 DEBUG: Gold: ${oldGold} -> ${window.gold} (${-cost.gold})`);
             }
             if (typeof cost.wood === 'number') {
                 window.holz -= cost.wood;
-                console.log(`💸 DEBUG: Holz: ${oldHolz} -> ${window.holz} (${-cost.wood})`);
             }
             success = true;
         }
         
         // Methode 2: Über das Hauptspiel-Objekt
         if (window.game && window.game.ui) {
-            console.log(`💸 DEBUG: Verwende window.game.ui`);
             if (typeof cost.gold === 'number') {
                 window.game.ui.gold -= cost.gold;
-                console.log(`💸 DEBUG: game.ui.gold abgezogen: ${cost.gold}`);
             }
             if (typeof cost.wood === 'number') {
                 window.game.ui.wood -= cost.wood;
-                console.log(`💸 DEBUG: game.ui.wood abgezogen: ${cost.wood}`);
             }
             success = true;
         }
         
         // Methode 3: Über gameState
         if (window.game && window.game.gameState) {
-            console.log(`💸 DEBUG: Verwende window.game.gameState`);
             if (typeof cost.gold === 'number') {
                 window.game.gameState.gold -= cost.gold;
-                console.log(`💸 DEBUG: game.gameState.gold abgezogen: ${cost.gold}`);
             }
             if (typeof cost.wood === 'number') {
                 window.game.gameState.wood -= cost.wood;
-                console.log(`💸 DEBUG: game.gameState.wood abgezogen: ${cost.wood}`);
             }
             success = true;
         }
         
         // UI aktualisieren - mehrere Methoden versuchen
         if (typeof window.updateDisplay === 'function') {
-            console.log(`💸 DEBUG: Rufe window.updateDisplay() auf`);
             window.updateDisplay();
         }
         
         if (typeof window.updateScoreStatus === 'function') {
-            console.log(`💸 DEBUG: Rufe window.updateScoreStatus() auf`);
             window.updateScoreStatus();
         }
         
         if (window.game && typeof window.game.updateDisplay === 'function') {
-            console.log(`💸 DEBUG: Rufe window.game.updateDisplay() auf`);
             window.game.updateDisplay();
         }
-        
-        if (!success) {
-            console.log(`❌ DEBUG: Keine Methode zum Abziehen der Ressourcen gefunden!`);
-            console.log(`❌ DEBUG: window.gold verfügbar:`, typeof window.gold !== 'undefined');
-            console.log(`❌ DEBUG: window.holz verfügbar:`, typeof window.holz !== 'undefined');
-            console.log(`❌ DEBUG: window.game verfügbar:`, typeof window.game !== 'undefined');
-        }
-        
-        const newRes = window.getCurrentResources();
-        console.log(`💸 DEBUG: Ressourcen nach Abzug:`, newRes);
     }
 
     // Forschungseffekte anwenden
     applyResearchEffects(research) {
-        console.log(`🔬 DEBUG: Wende Effekte an für ${research.name}:`, research.effects);
-        
         // Diese Funktion muss an dein Spielsystem angepasst werden
-        console.log(`Forschung abgeschlossen: ${research.name}`);
-        console.log('Effekte:', research.effects);
         
         // Möbelbau aktualisieren, falls es sich um Möbel-Forschung handelt
         if (typeof window.updateMoebelVisibility === 'function') {
-            console.log(`🏠 DEBUG: Aktualisiere Möbelbau nach Forschung ${research.id}`);
             window.updateMoebelVisibility();
         }
         
         // TODO: Hier müssen die tatsächlichen Effekte implementiert werden
-        console.log(`⚠️ DEBUG: applyResearchEffects noch nicht vollständig implementiert!`);
     }
 
     // UI aktualisieren
@@ -644,67 +591,66 @@ window.researchSystem = researchSystem; // Fix: Forschungssystem global für all
 
 // Globale Test-Funktion für Button-Klick
 window.testButtonClick = function(tab) {
-    console.log(`🧪 DEBUG: Teste Button-Klick für Tab ${tab}`);
     const button = document.getElementById(`research-btn-${tab}`);
     if (button) {
-        console.log(`🧪 DEBUG: Button gefunden, simuliere Klick`);
         button.click();
-    } else {
-        console.log(`❌ DEBUG: Button nicht gefunden für Tab ${tab}`);
     }
 };
 
 // Globale Funktion zum Testen aller Forschungsbuttons
 window.testAllResearchButtons = function() {
-    console.log(`🧪 DEBUG: Teste alle Forschungsbuttons auf der Seite`);
-    
     // Teste Tab-Buttons
     const tabButtons = document.querySelectorAll('.tab-button');
-    console.log(`🧪 DEBUG: Gefundene Tab-Buttons: ${tabButtons.length}`);
-    tabButtons.forEach((btn, index) => {
-        console.log(`🧪 DEBUG: Tab-Button ${index}: ${btn.textContent}, disabled: ${btn.disabled}`);
-    });
     
     // Teste Forschungsbuttons
     const researchButtons = document.querySelectorAll('.research-button');
-    console.log(`🧪 DEBUG: Gefundene Forschungsbuttons: ${researchButtons.length}`);
-    researchButtons.forEach((btn, index) => {
-        console.log(`🧪 DEBUG: Forschungsbutton ${index}: ${btn.textContent}, disabled: ${btn.disabled}`);
-    });
 };
 
 // Globale Funktion zum manuellen Testen einer Forschung
 window.testResearch = function(researchId) {
-    console.log(`🧪 DEBUG: Teste Forschung ${researchId} manuell`);
     const result = researchSystem.startResearch(researchId);
-    console.log(`🧪 DEBUG: Forschung ${researchId} Ergebnis: ${result.success ? 'ERFOLG' : 'FEHLGESCHLAGEN'}`);
     return result.success;
 };
 
 // Globale Funktion zum Anzeigen aller verfügbaren Forschungen
 window.showAvailableResearch = function() {
-    console.log(`📋 DEBUG: Verfügbare Forschungen:`);
     researchSystem.research.forEach(research => {
         const available = researchSystem.isResearchAvailable(research);
         const completed = research.completed;
         const enoughResources = researchSystem.hasEnoughResources(research.cost);
-        console.log(`📋 ${research.name} (${research.id}): verfügbar=${available}, abgeschlossen=${completed}, genugRessourcen=${enoughResources}`);
     });
 };
 
 // Globale Funktion zum Debuggen der aktuellen Ressourcen
-// window.debugResources = function() {
-//     console.log(`🔍 DEBUG: Aktuelle Ressourcen-Debug:`);
-//     console.log(`🔍 window.gold:`, typeof window.gold !== 'undefined' ? window.gold : 'undefined');
-//     console.log(`🔍 window.holz:`, typeof window.holz !== 'undefined' ? window.holz : 'undefined');
-//     console.log(`🔍 window.game:`, typeof window.game !== 'undefined' ? 'available' : 'undefined');
-//     if (window.game) {
-//         console.log(`🔍 window.game.ui:`, window.game.ui ? 'available' : 'undefined');
-//         console.log(`🔍 window.game.gameState:`, window.game.gameState ? 'available' : 'undefined');
-//     }
-//     const currentRes = window.getCurrentResources();
-//     console.log(`🔍 getCurrentResources():`, currentRes);
-// };
+window.debugResources = function() {
+    console.log(`🔍 DEBUG: Aktuelle Ressourcen-Debug:`);
+    console.log(`🔍 window.gold:`, typeof window.gold !== 'undefined' ? window.gold : 'undefined');
+    console.log(`🔍 window.holz:`, typeof window.holz !== 'undefined' ? window.holz : 'undefined');
+    console.log(`🔍 window.game:`, typeof window.game !== 'undefined' ? 'available' : 'undefined');
+    if (window.game) {
+        console.log(`🔍 window.game.ui:`, window.game.ui ? 'available' : 'undefined');
+        console.log(`🔍 window.game.gameState:`, window.game.gameState ? 'available' : 'undefined');
+    }
+    const currentRes = window.getCurrentResources();
+    console.log(`🔍 getCurrentResources():`, currentRes);
+    
+    // Teste Möbelforschungstabelle
+    const moebelIds = ['Tisch', 'Schrank', 'Bett', 'Regal', 'Kommode', 'Sofa'];
+    moebelIds.forEach(id => {
+        const research = researchSystem.research.find(r => r.id===id);
+        if(research) {
+            const available = researchSystem.isResearchAvailable(research);
+            const completed = research.completed;
+            const resources = window.getCurrentResources();
+            const hasEnoughWood = resources.wood >= (research.cost.wood || 0);
+            const hasEnoughGold = resources.gold >= (research.cost.gold || 0);
+            const enoughResources = hasEnoughWood && hasEnoughGold;
+            
+            console.log(`🔍 ${id}: verfügbar=${available}, abgeschlossen=${completed}, genugRessourcen=${enoughResources}`);
+            console.log(`🔍 ${id}: benötigt ${research.cost.wood}🪵 ${research.cost.gold}💰, hat ${Math.floor(resources.wood)}🪵 ${Math.floor(resources.gold)}💰`);
+        }
+    });
+};
 
 // Modal Funktionen
 // 1. Wenn das Forschungsfenster geöffnet wird, immer Holzhacker-Tab auswählen
@@ -716,6 +662,37 @@ window.openResearchModal = function() {
     document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
     const firstTabBtn = document.querySelector('.tab-button[data-tab="lumberjack"]');
     if (firstTabBtn) firstTabBtn.classList.add('active');
+    
+    // Ressourcenanzeige aktualisieren
+    updateResearchResources();
+};
+
+// Funktion zum Aktualisieren der Ressourcenanzeige im Forschungsmodal
+function updateResearchResources() {
+    const resources = window.getCurrentResources();
+    const goldElement = document.getElementById('research-gold');
+    const woodElement = document.getElementById('research-wood');
+    
+    if (goldElement) {
+        goldElement.textContent = Math.floor(resources.gold).toLocaleString();
+    }
+    if (woodElement) {
+        woodElement.textContent = Math.floor(resources.wood).toLocaleString();
+    }
+    
+    // Möbelforschungstabelle neu rendern, falls sichtbar
+    const moebelTablePlaceholder = document.querySelector('#moebel-table-placeholder');
+    if (moebelTablePlaceholder) {
+        window.renderMoebelTable(moebelTablePlaceholder);
+    }
+}
+
+// Globale Funktion zum manuellen Aktualisieren der Möbelforschungstabelle
+window.refreshMoebelTable = function() {
+    const moebelTablePlaceholder = document.querySelector('#moebel-table-placeholder');
+    if (moebelTablePlaceholder) {
+        window.renderMoebelTable(moebelTablePlaceholder);
+    }
 };
 
 function closeResearchModal() {
@@ -765,10 +742,8 @@ let selectedResearchId = null;
 function renderSkilltreeSVG() {
     const svg = document.getElementById('skilltree-svg');
     if (!svg) {
-        console.log('❌ DEBUG: SVG-Element skilltree-svg nicht gefunden!');
         return;
     }
-    console.log('🔄 DEBUG: Rendere Skilltree-SVG...');
     svg.innerHTML = '';
     const nodes = researchSystem.research;
     // Nur Hauptzweige und keine Möbel-Kinder im Graphen anzeigen
@@ -848,8 +823,6 @@ function renderSkilltreeSVG() {
         const completed = node.completed;
         const selected = selectedResearchId === node.id;
         
-        console.log(`🔄 DEBUG: Rendere Skill ${node.id}: completed=${completed}, selected=${selected}, available=${available}`);
-        
         const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
         rect.setAttribute('x', positions[node.id].x - size/2);
         rect.setAttribute('y', positions[node.id].y - size/2);
@@ -860,13 +833,10 @@ function renderSkilltreeSVG() {
         // Setze Status-Klasse für das Styling
         if (completed) {
             rect.setAttribute('class', 'skilltree-rect skill-completed');
-            console.log(`✅ DEBUG: Skill ${node.id} als completed markiert`);
         } else if (selected) {
             rect.setAttribute('class', 'skilltree-rect skill-selected');
-            console.log(`🎯 DEBUG: Skill ${node.id} als selected markiert`);
         } else {
             rect.setAttribute('class', 'skilltree-rect skill-default');
-            console.log(`⚪ DEBUG: Skill ${node.id} als default markiert`);
         }
         rect.setAttribute('stroke', '#000');
         rect.setAttribute('stroke-width', '4');
@@ -896,122 +866,21 @@ function renderSkilltreeSVG() {
         g.appendChild(title);
         svg.appendChild(g);
     });
-    console.log('✅ DEBUG: Skilltree-SVG Rendering abgeschlossen');
 }
 function renderSkilltreeDetails(id) {
-    console.log(`🎨 DEBUG: renderSkilltreeDetails aufgerufen für ${id}`);
-    
     const details = document.getElementById('research-details');
-    console.log(`🎨 DEBUG: research-details Element:`, details);
     
     const node = researchSystem.research.find(r => r.id === id);
     if (!details || !node) {
-        console.log(`❌ DEBUG: Kann Details nicht rendern - details: ${!!details}, node: ${!!node}`);
-        
-        // Prüfe Tab-Details als Fallback
-        ['lumberjack', 'forester', 'carpenter'].forEach(tab => {
-            const tabDetails = document.getElementById(`tree-details-${tab}`);
-            console.log(`🎨 DEBUG: tree-details-${tab} existiert: ${!!tabDetails}`);
-        });
-        
         return;
     }
     
-    console.log(`🎨 DEBUG: renderSkilltreeDetails für ${node.name} (${id})`);
-    
-    // Spezielle Behandlung für Möbel-Knoten
-    if (id === 'Möbel') {
-        console.log(`🎨 DEBUG: Spezielle Möbel-Behandlung für ${id}`);
-        // Ursprüngliche children-Liste
-        let children = [
-            researchSystem.research.find(r => r.id === 'Stuhl'),
-            researchSystem.research.find(r => r.id === 'Tisch'),
-            researchSystem.research.find(r => r.id === 'Schrank'),
-            researchSystem.research.find(r => r.id === 'Bett'),
-            researchSystem.research.find(r => r.id === 'Regal'),
-            researchSystem.research.find(r => r.id === 'Kommode'),
-            researchSystem.research.find(r => r.id === 'Sofa')
-        ].filter(Boolean);
-        // Entferne den fehlerhaften Stuhl-Eintrag (z.B. den zweiten, falls doppelt)
-        // Wir nehmen nur den ersten Stuhl-Eintrag, falls mehrere vorhanden sind
-        let seenChair = false;
-        children = children.filter(child => {
-            if(child.id !== 'Stuhl') return true;
-            if(!seenChair) { seenChair = true; return true; }
-            return false; // alle weiteren "Stuhl" entfernen
-        });
-        let table = `<div style="padding:12px 0;">`;
-        table += `<h2 style="margin-top:0">${researchIcons[id]||''} ${node.name}</h2>`;
-        table += `<p style="color:#006400;font-size:1.1em">${node.description}</p>`;
-        table += `<table style="width:100%;border-collapse:collapse;margin-top:12px;">`;
-        table += `<thead><tr style="border-bottom:2px solid #333;"><th style="text-align:left;padding:8px 4px;">Möbel</th><th style="text-align:left;padding:8px 4px;">Kosten</th><th style="text-align:left;padding:8px 4px;">Aktion</th><th></th></tr></thead><tbody>`;
-        
-        for (const child of children) {
-            const available = researchSystem.isResearchAvailable(child);
-            const completed = child.completed;
-            const enoughResources = researchSystem.hasEnoughResources(child.cost);
-            
-            console.log(`🎨 DEBUG: Möbel ${child.name} - verfügbar: ${available}, abgeschlossen: ${completed}, genug Ressourcen: ${enoughResources}`);
-            
-            let buttonHtml = '';
-            if (completed) {
-                buttonHtml = '<span style="color:#2a2;font-size:1em;">Abgeschlossen</span>';
-            } else {
-                let disabled = '';
-                let tooltip = '';
-                if (!available) {
-                    disabled = 'disabled';
-                    tooltip = 'Voraussetzungen nicht erfüllt';
-                } else if (!enoughResources) {
-                    disabled = 'disabled';
-                    tooltip = 'Nicht genug Ressourcen';
-                }
-                buttonHtml = `<button class="furniture-unlock-btn" data-id="${child.id}" style="font-size:1em;padding:4px 10px;min-width:32px;" ${disabled} title="${tooltip}">🔓 Forschen</button>`;
-                console.log(`🎨 DEBUG: Button HTML für ${child.name}: ${buttonHtml}`);
-            }
-            table += `<tr>
-                <td style='white-space:nowrap;padding:8px 4px;font-size:1.1em;'>
-                  <span style="font-size:1.15em;vertical-align:middle;">${researchIcons[child.id]||''}</span> ${child.name}
-                </td>
-                <td style='white-space:nowrap;padding:8px 4px;font-size:1em;'>${Object.entries(child.cost).map(([r,a])=>`${a} <span style='font-size:1.1em;'>${r==='wood'?'🪵':'💰'}</span>`).join(' | ')}</td>
-                <td style='white-space:nowrap;padding:8px 4px;'>${buttonHtml}</td>
-                <td></td>
-            </tr>`;
-        }
-        table += `</tbody></table>`;
-        table += `</div>`;
-        details.innerHTML = table;
-        
-        // Event-Listener für alle Buttons
-        const buttons = details.querySelectorAll('.furniture-unlock-btn');
-        console.log(`🎨 DEBUG: Gefundene Möbel-Buttons: ${buttons.length}`);
-        
-        buttons.forEach((btn, index) => {
-            console.log(`🎨 DEBUG: Button ${index} - disabled: ${btn.disabled}, data-id: ${btn.getAttribute('data-id')}`);
-            if (!btn.disabled) {
-                btn.onclick = () => {
-                    const fid = btn.getAttribute('data-id');
-                    console.log(`🖱️ DEBUG: Möbel-Forschungsbutton geklickt für ${fid}`);
-                    const result = researchSystem.startResearch(fid);
-                    console.log(`🖱️ DEBUG: Forschung ${fid} Ergebnis: ${result.success ? 'ERFOLG' : 'FEHLGESCHLAGEN'}`);
-                                    if (result.success) {
-                    refreshResearchModal(fid);
-                }
-                };
-                console.log(`🎨 DEBUG: onClick-Handler registriert für Button ${index} (${btn.getAttribute('data-id')})`);
-            } else {
-                console.log(`🎨 DEBUG: Button ${index} ist deaktiviert`);
-            }
-        });
-        return;
-    }
+
     
     // Standard-Detailanzeige für alle anderen Forschungen
     const available = researchSystem.isResearchAvailable(node);
     const completed = node.completed;
     const enoughResources = researchSystem.hasEnoughResources(node.cost);
-    
-    console.log(`🎨 DEBUG: Standard-Details für ${node.name} - verfügbar: ${available}, abgeschlossen: ${completed}, genug Ressourcen: ${enoughResources}`);
     
     details.innerHTML = `
         <h2 style="margin-top:0"><span style="font-size:1.3em;">${researchIcons[node.id]||''}</span> ${node.name}</h2>
@@ -1023,21 +892,15 @@ function renderSkilltreeDetails(id) {
     `;
     if (!completed && available && enoughResources) {
         const button = document.getElementById('research-unlock-btn');
-        console.log(`🎨 DEBUG: Standard-Button erstellt für ${node.name}, disabled: ${button?.disabled}, exists: ${!!button}`);
         
         if (button) {
             button.onclick = () => {
-                console.log(`🖱️ DEBUG: Standard-Forschungsbutton geklickt für ${node.id}`);
                 const result = researchSystem.startResearch(node.id);
-                console.log(`🖱️ DEBUG: Forschung ${node.id} Ergebnis: ${result.success ? 'ERFOLG' : 'FEHLGESCHLAGEN'}`);
                 if (result.success) {
                     refreshResearchModal(node.id);
                 }
             };
-            console.log(`🎨 DEBUG: onClick-Handler registriert für Standard-Button ${node.name}`);
         }
-    } else {
-        console.log(`🎨 DEBUG: Kein Standard-Button erstellt für ${node.name} - completed: ${completed}, available: ${available}, enoughResources: ${enoughResources}`);
     }
 }
 // --- Skilltree SVG-Rendering ENDE ---
@@ -1051,10 +914,23 @@ function renderTreeDetails(tab, id) {
     }
     const details = document.getElementById(`tree-details-${tab}`);
     if (!details) return;
+
     if (tab === 'carpenter' && id === 'Möbel') {
-        // Direkt die Möbel-Tabelle als Teil der Infocard anzeigen (ohne Button)
-        details.innerHTML = `<div id="moebel-table-placeholder"></div>`;
-        window.renderMoebelTable(details.querySelector('#moebel-table-placeholder'));
+        // Prüfe ob die Säge erforscht wurde
+        const saegeResearch = researchSystem.research.find(r => r.id === 'Säge');
+        if (saegeResearch && saegeResearch.completed) {
+            // Direkt die Möbel-Tabelle als Teil der Infocard anzeigen (ohne Button)
+            details.innerHTML = `<div id="moebel-table-placeholder"></div>`;
+            window.renderMoebelTable(details.querySelector('#moebel-table-placeholder'));
+        } else {
+            // Zeige Nachricht, dass Säge erforscht werden muss
+            details.innerHTML = `
+                <h3 style='margin-top:0'>${researchIcons['Möbel']||''} Möbel</h3>
+                <p>Die Möbelforschung ist noch nicht verfügbar.</p>
+                <div style='margin-top:10px;'><b>Voraussetzung:</b> Säge erforschen</div>
+                <div style='margin-top:10px;color:#a22;'>❌ Säge-Forschung erforderlich</div>
+            `;
+        }
         return; // Sofortiger Abbruch, keine weitere Button-Logik!
     }
     if (!node) return;
@@ -1109,19 +985,11 @@ function renderTreeDetails(tab, id) {
                         else if (parent.id.includes('carpenter')) currentTab = 'carpenter';
                     }
                 }
-                console.log(`[Forschen-Button] Aktueller Tab:`, currentTab);
-                console.log(`🖱️ [Forschen-Button] Klick für ${id} in Tab ${currentTab}`);
-                console.log(`🖱️ [Forschen-Button] Aktuelle Ressourcen:`, window.getCurrentResources());
-                console.log(`🖱️ [Forschen-Button] Benötigte Ressourcen:`, research.cost);
                 const result = researchSystem.startResearch(id);
-                console.log(`🖱️ [Forschen-Button] Ergebnis:`, result);
                 if (result.success) {
-                    console.log(`✅ Forschung erfolgreich! Aktualisiere UI...`);
                     // Vollständigen Research-Modal Refresh durchführen
                     refreshResearchModal(id);
-                    console.log(`✅ UI-Update für ${id} abgeschlossen`);
                 } else {
-                    console.log(`❌ Forschung fehlgeschlagen!`);
                     if (result.error) {
                         alert(result.error);
                     } else {
@@ -1129,9 +997,6 @@ function renderTreeDetails(tab, id) {
                     }
                 }
             };
-            console.log('DEBUG: Button-Handler gesetzt', btn);
-        } else {
-            console.log('DEBUG: Kein Button zum Handler-Setzen gefunden!');
         }
     }, 0);
     // Debug: Zeige alle Voraussetzungen und deren Status
@@ -1153,21 +1018,6 @@ window.renderTreeDetails = renderTreeDetails;
 
 // Zentrale Funktion zum vollständigen Refresh des Research-Modals nach Forschung
 function refreshResearchModal(researchedId) {
-    console.log(`🔄 DEBUG: Vollständiger Research-Modal Refresh für ${researchedId}`);
-    // Debug: Zeige aktuellen Stand der Auswahl-Variablen
-    console.log('🔄 DEBUG: Auswahl-Status:', {
-        selectedResearchId,
-        selectedLumberjackSkill: window.selectedLumberjackSkill,
-        selectedForesterSkill: window.selectedForesterSkill,
-        selectedCarpenterSkill: window.selectedCarpenterSkill,
-        researchedId
-    });
-    // Debug: Zeige Status aller Skills
-    if (window.researchSystem && window.researchSystem.research) {
-        window.researchSystem.research.forEach(r => {
-            console.log(`🔄 DEBUG: Skill ${r.id} | completed: ${r.completed}`);
-        });
-    }
     // 1. Nur die globale selectedResearchId setzen, aber nicht die Tab-spezifischen
     selectedResearchId = researchedId;
     
@@ -1194,16 +1044,31 @@ function refreshResearchModal(researchedId) {
     if (typeof window.updateMoebelVisibility === 'function') {
         window.updateMoebelVisibility();
     }
-
-    // --- NEU: Möbeltabelle neu rendern, falls sichtbar ---
-    if (window.selectedCarpenterSkill === 'Möbel') {
-        const moebelPlaceholder = document.querySelector('#tree-details-carpenter #moebel-table-placeholder');
-        if (moebelPlaceholder && typeof window.renderMoebelTable === 'function') {
-            window.renderMoebelTable(moebelPlaceholder);
+    
+    // 6. Zusätzliche Verzögerung für Möbelbau-Update
+    setTimeout(() => {
+        if (typeof window.updateMoebelVisibility === 'function') {
+            window.updateMoebelVisibility();
         }
+    }, 100);
+    
+    // 6. Ressourcenanzeige aktualisieren
+    updateResearchResources();
+
+    
+    // --- ZUSÄTZLICH: Schreiner-Tab komplett neu rendern, falls Möbeltabelle sichtbar ---
+    const carpenterTab = document.getElementById('researchCarpenter');
+    if (carpenterTab && carpenterTab.style.display !== 'none') {
+        renderResearchTreeTab('carpenter');
     }
     
-    console.log(`✅ DEBUG: Research-Modal Refresh abgeschlossen für ${researchedId}`);
+    // --- SPEZIELLE BEHANDLUNG FÜR SÄGE-FORSCHUNG ---
+    if (researchedId === 'Säge') {
+        // Schreiner-Tab sofort neu rendern, falls sichtbar, um Möbel-Verfügbarkeit zu aktualisieren
+        if (carpenterTab && carpenterTab.style.display !== 'none') {
+            renderResearchTreeTab('carpenter');
+        }
+    }
 }
 
 // --- Skill-IDs und Positionen global ---
@@ -1216,9 +1081,10 @@ function refreshResearchModal(researchedId) {
         'Forst','Management','Wetter'
     ];
     const CARPENTER_SKILL_IDS = [
-        'Möbel',
+        'Werkzeug',
         'Säge',
-        'Veredelung'
+        'Veredelung',
+        'Möbel'
     ];
     const MOEBEL_IDS = [
     //'Stuhl',
@@ -1254,9 +1120,10 @@ function refreshResearchModal(researchedId) {
             'Wetter': {x: 180, y: 304},
         },
         carpenter: {
-            'Säge': {x: 160, y: 64},
-            'Veredelung': {x: 100, y: 184},
-            'Möbel': {x: 220, y: 184},
+            'Werkzeug': {x: 160, y: 64},
+            'Säge': {x: 160, y: 184},
+            'Veredelung': {x: 100, y: 304},
+            'Möbel': {x: 220, y: 304},
         }
 };
 
@@ -1265,8 +1132,6 @@ function renderMoebelTable(container) {
     // Entferne alte Tabelle, falls vorhanden
     const old = container.querySelector('.moebel-table-wrap');
     if (old) old.remove();
-    // Debug-Log
-    console.log('[Möbel] renderMoebelTable aufgerufen, füge Tabelle ein');
     // Erzeuge neuen Wrapper
     const wrap = document.createElement('div');
     wrap.className = 'moebel-table-wrap';
@@ -1275,6 +1140,30 @@ function renderMoebelTable(container) {
     html += renderMoebelResearchTable();
     wrap.innerHTML = html;
     container.appendChild(wrap);
+    
+    // Event-Listener für alle Möbel-Buttons hinzufügen
+    const buttons = wrap.querySelectorAll('.moebel-unlock-btn');
+    
+    buttons.forEach((btn, index) => {
+        if (!btn.disabled) {
+            btn.onclick = () => {
+                const fid = btn.getAttribute('data-id');
+                const result = researchSystem.startResearch(fid);
+                if (result.success) {
+                    refreshResearchModal(fid);
+                } else {
+                    if (result.error) {
+                        alert(result.error);
+                    } else {
+                        alert('Forschung konnte nicht gestartet werden. Prüfe Ressourcen und Voraussetzungen!');
+                    }
+                }
+            };
+        }
+    });
+    
+    // Debug: Zeige aktuelle Ressourcen
+    console.log(`🔍 DEBUG: Möbelforschungstabelle gerendert. Aktuelle Ressourcen:`, window.getCurrentResources());
 }
 
 function renderMoebelResearchTable() {
@@ -1286,7 +1175,52 @@ function renderMoebelResearchTable() {
         if(!research) return;
         const available = researchSystem.isResearchAvailable(research);
         const completed = research.completed;
-        const enoughResources = researchSystem.hasEnoughResources(research.cost);
+        
+        // Direkte Ressourcenprüfung - Priorität auf globale Variablen
+        let currentResources = { wood: 0, gold: 0 };
+        
+        // Methode 1: Direkt globale Variablen verwenden (höchste Priorität)
+        if (typeof window.holz !== 'undefined') currentResources.wood = window.holz;
+        if (typeof window.gold !== 'undefined') currentResources.gold = window.gold;
+        
+        // Methode 2: Fallback auf getCurrentResources()
+        if (currentResources.wood === 0 && currentResources.gold === 0) {
+            try {
+                currentResources = window.getCurrentResources();
+            } catch (e) {
+                console.warn('getCurrentResources() fehlgeschlagen:', e);
+            }
+        }
+        
+        // Methode 3: Fallback auf gameState
+        if (currentResources.wood === 0 && currentResources.gold === 0) {
+            if (window.game && window.game.gameState) {
+                currentResources.wood = window.game.gameState.wood || 0;
+                currentResources.gold = window.game.gameState.gold || 0;
+            }
+        }
+        
+        // Methode 4: Fallback auf UI-Objekte
+        if (currentResources.wood === 0 && currentResources.gold === 0) {
+            if (window.game && window.game.ui) {
+                currentResources.wood = window.game.ui.wood || 0;
+                currentResources.gold = window.game.ui.gold || 0;
+            }
+        }
+        
+        const hasEnoughWood = currentResources.wood >= (research.cost.wood || 0);
+        const hasEnoughGold = currentResources.gold >= (research.cost.gold || 0);
+        const enoughResources = hasEnoughWood && hasEnoughGold;
+        
+        // Debug-Ausgabe für die ersten paar Möbel
+        if (id === 'Tisch' || id === 'Schrank') {
+            console.log(`🔍 DEBUG ${id}: Holz=${currentResources.wood}, Gold=${currentResources.gold}, Benötigt=${research.cost.wood}🪵 ${research.cost.gold}💰, Genug=${enoughResources}, Verfügbar=${available}, ButtonAktiv=${available && enoughResources}`);
+            
+            // Prüfe Säge-Status
+            const saegeResearch = researchSystem.research.find(r => r.id === 'Säge');
+            console.log(`🔍 DEBUG Säge-Status: ${saegeResearch ? saegeResearch.completed : 'nicht gefunden'}`);
+        }
+        
         let buttonHtml = '';
         if (completed) {
             buttonHtml = '<span style="color:#2a2;font-size:1em;">Abgeschlossen</span>';
@@ -1298,9 +1232,11 @@ function renderMoebelResearchTable() {
                 tooltip = 'Voraussetzungen nicht erfüllt';
             } else if (!enoughResources) {
                 disabled = 'disabled';
-                tooltip = 'Nicht genug Ressourcen';
+                tooltip = `Nicht genug Ressourcen (Benötigt: ${research.cost.wood || 0}🪵 ${research.cost.gold || 0}💰, Hat: ${Math.floor(currentResources.wood)}🪵 ${Math.floor(currentResources.gold)}💰)`;
             }
-            buttonHtml = `<button class="moebel-unlock-btn" data-id="${research.id}" style="font-size:1em;padding:4px 10px;min-width:32px;" ${disabled} title="${tooltip}">🔓 Forschen</button>`;
+            // Button ist aktiv wenn verfügbar UND genug Ressourcen
+            const buttonActive = available && enoughResources;
+            buttonHtml = `<button class="moebel-unlock-btn" data-id="${research.id}" style="font-size:1em;padding:4px 10px;min-width:32px;${!buttonActive ? 'opacity:0.5;' : ''}" ${buttonActive ? '' : 'disabled'} title="${tooltip}">🔓 Forschen</button>`;
         }
         html += `<tr>
             <td style='white-space:nowrap;padding:8px 4px;font-size:1.1em;font-family:"Press Start 2P", "VT323", "Pixel", monospace;text-shadow:none;color:#000 !important;'>${researchIcons[research.id]||''} ${research.name}</td>
@@ -1313,7 +1249,6 @@ function renderMoebelResearchTable() {
 }
 // --- Funktion global ---
 function renderResearchTreeTab(tab, selectedIdOverride) {
-    console.log(`🌲 DEBUG: renderResearchTreeTab aufgerufen für ${tab}`);
     let ids, positions;
     if(tab==='lumberjack') { ids = LUMBERJACK_IDS; positions = TREE_POSITIONS.lumberjack; }
     else if(tab==='forester') { ids = FORESTER_IDS; positions = TREE_POSITIONS.forester; }
@@ -1324,10 +1259,8 @@ function renderResearchTreeTab(tab, selectedIdOverride) {
         'researchCarpenter'
     );
     if(!container) {
-        console.log(`❌ DEBUG: Container für ${tab} nicht gefunden!`);
         return;
     }
-    console.log(` DEBUG: Container für ${tab} gefunden, rendere ${ids.length} Forschungen`);
     // Layout: Skilltree links, Details rechts
     let html = `<div style='display:flex;gap:64px;align-items:flex-start;width:100%;'>`;
     // Dynamische SVG-Höhe basierend auf den Positionen
@@ -1338,10 +1271,8 @@ function renderResearchTreeTab(tab, selectedIdOverride) {
     html += `<div id='tree-details-${tab}' style='flex:1;min-width:60px;margin-top:0;margin-left:-100px;'></div>`;
     html += `</div>`;
     container.innerHTML = html;
-    console.log(` DEBUG: HTML für ${tab} erstellt, tree-details-${tab} sollte jetzt existieren`);
     const svg = container.querySelector(`#tree-svg-${tab}`);
     if (!svg) {
-        console.log(`❌ DEBUG: SVG für ${tab} nicht gefunden!`);
         return;
     }
     // SVG-Inhalt rendern
@@ -1375,9 +1306,48 @@ function renderResearchTreeTab(tab, selectedIdOverride) {
     ids.forEach(id => {
         const research = researchSystem.research.find(r => r.id === id);
         if (!research && id !== 'Möbel') {
-            console.log(`❌ DEBUG: Forschung ${id} nicht gefunden!`);
             return;
         }
+        
+        // Spezielle Behandlung für Möbel-Forschung: Immer anzeigen, aber Status basierend auf Säge-Forschung
+        if (id === 'Möbel') {
+            const saegeResearch = researchSystem.research.find(r => r.id === 'Säge');
+            if (!saegeResearch || !saegeResearch.completed) {
+                // Möbel-Skill anzeigen, aber als nicht verfügbar markieren
+                const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+                g.setAttribute('data-skill-id', id);
+                
+                const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+                rect.setAttribute('x', positions[id].x - size/2 + 2);
+                rect.setAttribute('y', positions[id].y - size/2 + 2);
+                rect.setAttribute('width', size - 4);
+                rect.setAttribute('height', size - 4);
+                rect.setAttribute('rx', '0');
+                rect.setAttribute('ry', '0');
+                rect.setAttribute('class', 'skilltree-rect skill-default');
+                rect.style.cursor = 'pointer';
+                rect.addEventListener('click', () => {
+                    if(tab==='carpenter') window.selectedCarpenterSkill = id;
+                    renderResearchTreeTab(tab);
+                });
+                g.appendChild(rect);
+                
+                const icon = document.createElementNS('http://www.w3.org/2000/svg','text');
+                icon.setAttribute('x', positions[id].x);
+                icon.setAttribute('y', positions[id].y + 2);
+                icon.setAttribute('text-anchor', 'middle');
+                icon.setAttribute('dominant-baseline', 'middle');
+                icon.setAttribute('font-size', '32');
+                icon.setAttribute('font-family', 'Segoe UI Emoji, Arial Unicode MS, sans-serif');
+                icon.textContent = researchIcons[id] || '❓';
+                icon.setAttribute('pointer-events', 'none');
+                g.appendChild(icon);
+                
+                svg.appendChild(g);
+                return; // Weiter zum nächsten Skill
+            }
+        }
+        
         const completed = research ? research.completed : false;
         const selected = (tab==='lumberjack' ? window.selectedLumberjackSkill : tab==='forester' ? window.selectedForesterSkill : window.selectedCarpenterSkill) === id;
         // SVG-Gruppe erstellen
@@ -1403,15 +1373,10 @@ function renderResearchTreeTab(tab, selectedIdOverride) {
         rect.removeAttribute('filter');
         rect.style.cursor = 'pointer';
         rect.addEventListener('click', () => {
-            if(tab==='carpenter' && id==='Möbel') {
-                window.selectedCarpenterSkill = 'Möbel';
-                renderResearchTreeTab('carpenter', 'Möbel');
-            } else {
-                if(tab==='carpenter') window.selectedCarpenterSkill = id;
-                if(tab==='lumberjack') window.selectedLumberjackSkill = id;
-                if(tab==='forester') window.selectedForesterSkill = id;
-                renderResearchTreeTab(tab);
-            }
+            if(tab==='carpenter') window.selectedCarpenterSkill = id;
+            if(tab==='lumberjack') window.selectedLumberjackSkill = id;
+            if(tab==='forester') window.selectedForesterSkill = id;
+            renderResearchTreeTab(tab);
         });
         g.appendChild(rect);
         // Icon
@@ -1443,7 +1408,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 2. Beim Klick auf einen Berufstab: Tab-Button aktiv setzen
     window.showResearchTab = function(tabName) {
-        console.log(`📋 DEBUG: showResearchTab aufgerufen für ${tabName}`);
         document.querySelectorAll('.research-tab-content').forEach(tab => {
             tab.style.display = 'none';
         });
@@ -1452,43 +1416,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (activeBtn) activeBtn.classList.add('active');
         if(tabName==='lumberjack') { 
             document.getElementById('researchLumberjack').style.display = 'block'; 
-            console.log(`📋 DEBUG: Lumberjack-Tab aktiviert`);
             renderResearchTreeTab('lumberjack'); 
         }
         if(tabName==='forester') { 
             document.getElementById('researchForester').style.display = 'block'; 
-            console.log(`📋 DEBUG: Forester-Tab aktiviert`);
             renderResearchTreeTab('forester'); 
         }
         if(tabName==='carpenter') { 
             document.getElementById('researchCarpenter').style.display = 'block'; 
-            console.log('📋 DEBUG: Verarbeitung-Tab aktiviert');
-            renderResearchTreeTab('carpenter'); 
-        }
-    }
-
-    // 2. Beim Klick auf einen Berufstab: Tab-Button aktiv setzen
-    window.showResearchTab = function(tabName) {
-        console.log(`📋 DEBUG: showResearchTab aufgerufen für ${tabName}`);
-        document.querySelectorAll('.research-tab-content').forEach(tab => {
-            tab.style.display = 'none';
-        });
-        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-        const activeBtn = document.querySelector(`.tab-button[data-tab="${tabName}"]`);
-        if (activeBtn) activeBtn.classList.add('active');
-        if(tabName==='lumberjack') { 
-            document.getElementById('researchLumberjack').style.display = 'block'; 
-            console.log(`📋 DEBUG: Lumberjack-Tab aktiviert`);
-            renderResearchTreeTab('lumberjack'); 
-        }
-        if(tabName==='forester') { 
-            document.getElementById('researchForester').style.display = 'block'; 
-            console.log(`📋 DEBUG: Forester-Tab aktiviert`);
-            renderResearchTreeTab('forester'); 
-        }
-        if(tabName==='carpenter') { 
-            document.getElementById('researchCarpenter').style.display = 'block'; 
-            console.log('📋 DEBUG: Verarbeitung-Tab aktiviert');
             renderResearchTreeTab('carpenter'); 
         }
     }

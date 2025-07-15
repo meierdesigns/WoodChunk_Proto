@@ -158,15 +158,23 @@ function updateLocalTime() {
   gameTime = (gameTime + elapsed * 60) % 1440; // 1 Sekunde = 1 Stunde (60 Minuten)
   lastTimeUpdate = now;
 
-  // Wetterwechsel und Tag/Jahreszeit-Wechsel bei Tageswechsel (0 Uhr)
+  // Berechne Tag und Jahreszeit basierend auf der verstrichenen Zeit
+  const totalMinutes = Math.floor(gameTime);
+  const daysSinceStart = Math.floor(totalMinutes / 1440);
+  const newDayCounter = (daysSinceStart % 30) + 1;
+  const newSeasonCounter = Math.floor(daysSinceStart / 30) % 4;
+  
+  // Aktualisiere Tag und Jahreszeit wenn sich geändert
+  if (newDayCounter !== dayCounter || newSeasonCounter !== seasonCounter) {
+    dayCounter = newDayCounter;
+    seasonCounter = newSeasonCounter;
+    console.log(`[Wetter] Tag ${dayCounter}, Jahreszeit ${seasonCounter}`);
+  }
+
+  // Wetterwechsel bei Tageswechsel (0 Uhr)
   const currentHour = Math.floor(gameTime / 60) % 24;
   if (lastHour !== null && currentHour === 0 && lastHour !== 0) {
     advanceWeather();
-    dayCounter++;
-    if (dayCounter > 30) {
-      dayCounter = 1;
-      seasonCounter = (seasonCounter + 1) % 4;
-    }
   }
   lastHour = currentHour;
 
