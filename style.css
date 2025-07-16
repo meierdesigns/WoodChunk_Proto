@@ -592,6 +592,18 @@ th .icon, td .icon {
   padding: 6px 14px;
   font-size: 0.9em;
   box-shadow: 4px 4px 0 #000 !important;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tab-button::before {
+  content: attr(data-icon);
+  font-size: 1.2em;
+  margin-right: 4px;
+  display: inline-block;
+  min-width: 1.2em;
+  text-align: center;
 }
 .tab-button:hover {
   background: rgba(0,0,0,0.5);
@@ -795,7 +807,7 @@ svg line:hover {
 } 
 
 /* Arbeitsamt-Tabelle größere Schrift */
-.arbeitsamt-table, .arbeitsamt-table th, .arbeitsamt-table td, .moebelbau-table, .moebelbau-table th, .moebelbau-table td {
+.arbeitsamt-table, .arbeitsamt-table th, .arbeitsamt-table td, .arbeitsamt-table-external, .arbeitsamt-table-external th, .arbeitsamt-table-external td, .moebelbau-table, .moebelbau-table th, .moebelbau-table td {
   width: 100%;
   border-collapse: collapse;
   text-align: center;
@@ -804,45 +816,55 @@ svg line:hover {
 }
 
 /* Entferne alle Tabellenumrandungen */
-.arbeitsamt-table, .moebelbau-table {
+.arbeitsamt-table, .arbeitsamt-table-external, .moebelbau-table {
   border: none !important;
 }
 
-.arbeitsamt-table th, .moebelbau-table th {
+.arbeitsamt-table th, .arbeitsamt-table-external th, .moebelbau-table th {
   border: none !important;
 }
 
-.arbeitsamt-table td, .moebelbau-table td {
+.arbeitsamt-table td, .arbeitsamt-table-external td, .moebelbau-table td {
   border: none !important;
 }
 
 /* Berufe-Spalte schmaler */
 .arbeitsamt-table th:first-child,
-.arbeitsamt-table td:first-child {
+.arbeitsamt-table td:first-child,
+.arbeitsamt-table-external th:first-child,
+.arbeitsamt-table-external td:first-child {
   width: 40px;
 }
 
 /* Anzahl-Spalte schmaler */
 .arbeitsamt-table th:nth-child(2),
-.arbeitsamt-table td:nth-child(2) {
+.arbeitsamt-table td:nth-child(2),
+.arbeitsamt-table-external th:nth-child(2),
+.arbeitsamt-table-external td:nth-child(2) {
   width: 60px;
 }
 
 /* Kosten-Spalte breiter */
 .arbeitsamt-table th:nth-child(3),
-.arbeitsamt-table td:nth-child(3) {
+.arbeitsamt-table td:nth-child(3),
+.arbeitsamt-table-external th:nth-child(3),
+.arbeitsamt-table-external td:nth-child(3) {
   width: 150px;
 }
 
 /* Aktion-Spalte schmaler */
 .arbeitsamt-table th:nth-child(4),
-.arbeitsamt-table td:nth-child(4) {
+.arbeitsamt-table td:nth-child(4),
+.arbeitsamt-table-external th:nth-child(4),
+.arbeitsamt-table-external td:nth-child(4) {
   width: 80px;
 }
 
 /* Werkzeug-Spalte schmaler */
 .arbeitsamt-table th:nth-child(5),
-.arbeitsamt-table td:nth-child(5) {
+.arbeitsamt-table td:nth-child(5),
+.arbeitsamt-table-external th:nth-child(5),
+.arbeitsamt-table-external td:nth-child(5) {
   width: 100px;
 }
 

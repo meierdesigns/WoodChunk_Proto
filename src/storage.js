@@ -32,7 +32,7 @@ export class Storage {
                     lastSaveText.textContent = `Letzter Speicherpunkt: ${data.timestamp}`;
                 }
             } catch (e) {
-                console.error('Fehler beim Laden des Spielstands:', e);
+                // Fehler beim Laden des Spielstands
             }
         }
     }
