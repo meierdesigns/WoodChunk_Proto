@@ -405,14 +405,7 @@ class ResearchSystem {
             return isCompleted;
         });
         
-        // Debug für Möbel-Forschungen
-        if (research.id === 'Tisch' || research.id === 'Schrank') {
-            console.log(`🔍 DEBUG isResearchAvailable(${research.id}): requirements=${research.requirements}, result=${result}`);
-            research.requirements.forEach(reqId => {
-                const req = this.research.find(r => r.id === reqId);
-                console.log(`🔍 DEBUG ${research.id} -> ${reqId}: ${req ? req.completed : 'nicht gefunden'}`);
-            });
-        }
+
         
         return result;
     }
@@ -471,7 +464,6 @@ class ResearchSystem {
     hasEnoughResources(cost) {
         const res = window.getCurrentResources();
         
-        // Debug-Ausgabe für bessere Fehlerdiagnose
         const hasGold = res.gold >= (cost.gold || 0);
         const hasWood = res.wood >= (cost.wood || 0);
         
@@ -621,36 +613,7 @@ window.showAvailableResearch = function() {
     });
 };
 
-// Globale Funktion zum Debuggen der aktuellen Ressourcen
-window.debugResources = function() {
-    console.log(`🔍 DEBUG: Aktuelle Ressourcen-Debug:`);
-    console.log(`🔍 window.gold:`, typeof window.gold !== 'undefined' ? window.gold : 'undefined');
-    console.log(`🔍 window.holz:`, typeof window.holz !== 'undefined' ? window.holz : 'undefined');
-    console.log(`🔍 window.game:`, typeof window.game !== 'undefined' ? 'available' : 'undefined');
-    if (window.game) {
-        console.log(`🔍 window.game.ui:`, window.game.ui ? 'available' : 'undefined');
-        console.log(`🔍 window.game.gameState:`, window.game.gameState ? 'available' : 'undefined');
-    }
-    const currentRes = window.getCurrentResources();
-    console.log(`🔍 getCurrentResources():`, currentRes);
-    
-    // Teste Möbelforschungstabelle
-    const moebelIds = ['Tisch', 'Schrank', 'Bett', 'Regal', 'Kommode', 'Sofa'];
-    moebelIds.forEach(id => {
-        const research = researchSystem.research.find(r => r.id===id);
-        if(research) {
-            const available = researchSystem.isResearchAvailable(research);
-            const completed = research.completed;
-            const resources = window.getCurrentResources();
-            const hasEnoughWood = resources.wood >= (research.cost.wood || 0);
-            const hasEnoughGold = resources.gold >= (research.cost.gold || 0);
-            const enoughResources = hasEnoughWood && hasEnoughGold;
-            
-            console.log(`🔍 ${id}: verfügbar=${available}, abgeschlossen=${completed}, genugRessourcen=${enoughResources}`);
-            console.log(`🔍 ${id}: benötigt ${research.cost.wood}🪵 ${research.cost.gold}💰, hat ${Math.floor(resources.wood)}🪵 ${Math.floor(resources.gold)}💰`);
-        }
-    });
-};
+
 
 // Modal Funktionen
 // 1. Wenn das Forschungsfenster geöffnet wird, immer Holzhacker-Tab auswählen
@@ -960,7 +923,6 @@ function renderTreeDetails(tab, id) {
             button.disabled = !enoughResources;
             button.title = enoughResources ? 'Forschung starten' : 'Nicht genug Ressourcen';
             btnContainer.appendChild(button);
-            console.log('DEBUG: Button wurde ins DOM eingefügt', button);
         } else if (completed) {
             btnContainer.innerHTML = `<div class="research-status research-status-completed">✅ Abgeschlossen</div>`;
         } else {
@@ -1162,8 +1124,7 @@ function renderMoebelTable(container) {
         }
     });
     
-    // Debug: Zeige aktuelle Ressourcen
-    console.log(`🔍 DEBUG: Möbelforschungstabelle gerendert. Aktuelle Ressourcen:`, window.getCurrentResources());
+
 }
 
 function renderMoebelResearchTable() {
@@ -1212,14 +1173,7 @@ function renderMoebelResearchTable() {
         const hasEnoughGold = currentResources.gold >= (research.cost.gold || 0);
         const enoughResources = hasEnoughWood && hasEnoughGold;
         
-        // Debug-Ausgabe für die ersten paar Möbel
-        if (id === 'Tisch' || id === 'Schrank') {
-            console.log(`🔍 DEBUG ${id}: Holz=${currentResources.wood}, Gold=${currentResources.gold}, Benötigt=${research.cost.wood}🪵 ${research.cost.gold}💰, Genug=${enoughResources}, Verfügbar=${available}, ButtonAktiv=${available && enoughResources}`);
-            
-            // Prüfe Säge-Status
-            const saegeResearch = researchSystem.research.find(r => r.id === 'Säge');
-            console.log(`🔍 DEBUG Säge-Status: ${saegeResearch ? saegeResearch.completed : 'nicht gefunden'}`);
-        }
+
         
         let buttonHtml = '';
         if (completed) {

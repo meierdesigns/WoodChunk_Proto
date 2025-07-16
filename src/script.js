@@ -318,9 +318,9 @@ class MedievalEconomyGame {
                 this.updateUI();
                 this.lastSaveText.textContent = `Letzter Speicherpunkt: ${data.timestamp || 'Unbekannt'}`;
                 
-                console.log('Spiel erfolgreich geladen');
+            
             } catch (error) {
-                console.error('Fehler beim Laden des Spiels:', error);
+                // Fehler beim Laden des Spiels
             }
         }
     }

@@ -1,15 +1,16 @@
 {
-  "gold": 695,
-  "holz": 1073,
-  "trees": 0,
-  "workers": 8,
-  "foresters": 5,
-  "carpenters": 3,
+  "gold": 729,
+  "holz": 163,
+  "trees": 10,
+  "workers": 4,
+  "foresters": 4,
+  "carpenters": 4,
   "toolLevel": 1,
   "plantToolLevel": 1,
   "carpenterToolLevel": 1,
   "progress": 0,
-  "foresterProgress": 5,
-  "timestamp": "2025-07-15T23:02:32.698Z",
-  "gameTime": 248
+  "foresterProgress": 0,
+  "carpenterProgress": 8,
+  "timestamp": "2025-07-16T23:49:19.064Z",
+  "gameTime": 267
 }

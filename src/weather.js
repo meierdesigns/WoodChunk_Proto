@@ -120,7 +120,6 @@ function updateWeatherFrames() {
   const seasonDisplays = document.querySelectorAll('.weather-season');
 
   if (currentContainers.length === 0 || forecastContainers.length === 0 || seasonDisplays.length === 0) {
-    console.error('Wetter-Container nicht gefunden');
     return;
   }
 
@@ -168,7 +167,6 @@ function updateLocalTime() {
   if (newDayCounter !== dayCounter || newSeasonCounter !== seasonCounter) {
     dayCounter = newDayCounter;
     seasonCounter = newSeasonCounter;
-    console.log(`[Wetter] Tag ${dayCounter}, Jahreszeit ${seasonCounter}`);
   }
 
   // Wetterwechsel bei Tageswechsel (0 Uhr)
@@ -198,13 +196,11 @@ async function syncWithServerTime() {
       // Setze die lokale Zeit und den Offset
       gameTime = data.gameTime;
       lastTimeUpdate = Date.now();
-      console.log('Zeit mit Server synchronisiert:', formatGameTime(gameTime));
     } else {
-      console.error('Ungültige Serverantwort:', data);
+      // Ungültige Serverantwort
     }
   } catch (error) {
-    console.log('Server nicht verfügbar, verwende lokale Zeit');
-    // Bei Fehlern weiterlaufen mit lokaler Zeit
+    // Server nicht verfügbar, verwende lokale Zeit
   }
 }
 

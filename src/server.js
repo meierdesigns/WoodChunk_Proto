@@ -36,7 +36,7 @@ try {
     }
   }
 } catch (error) {
-  console.error('Fehler beim Laden der initialen Spielzeit:', error);
+  // Fehler beim Laden der initialen Spielzeit
 }
 
 // Berechne aktuelle Spielzeit
@@ -61,7 +61,6 @@ app.post('/save', (req, res) => {
     fs.writeFileSync(SAVE_FILE, JSON.stringify(saveData, null, 2));
     res.json({ success: true, message: 'Spielstand gespeichert' });
   } catch (error) {
-    console.error('Fehler beim Speichern:', error);
     res.status(500).json({ success: false, message: 'Fehler beim Speichern' });
   }
 });
@@ -78,7 +77,6 @@ app.get('/load', (req, res) => {
       res.json(null);
     }
   } catch (error) {
-    console.error('Fehler beim Laden:', error);
     res.status(500).json({ success: false, message: 'Fehler beim Laden' });
   }
 });
@@ -90,6 +88,5 @@ app.get('/', (req, res) => {
 
 // Server starten
 app.listen(PORT, () => {
-  console.log(`Server läuft auf http://localhost:${PORT}`);
-  console.log('Spielstand wird in savegame.json gespeichert');
+  // Server gestartet
 }); 

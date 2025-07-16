@@ -109,8 +109,6 @@
         <script>
         // Tab-Wechsel-Funktion direkt hier definiert
         function switchTab(tabName) {
-          console.log('[Tabs] switchTab aufgerufen:', tabName);
-          
           // Alle Tab-Buttons deaktivieren
           document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.classList.remove('active');
@@ -128,12 +126,9 @@
           if (activeButton && activeContent) {
             activeButton.classList.add('active');
             activeContent.classList.add('active');
-            console.log('[Tabs] Tab erfolgreich gewechselt zu:', tabName);
             
             // Tab im localStorage speichern
             localStorage.setItem('activeTab', tabName);
-          } else {
-            console.error('[Tabs] Tab oder Inhalt nicht gefunden:', tabName);
           }
         }
         
@@ -143,127 +138,358 @@
           if (savedTab) {
             switchTab(savedTab);
           }
+          
+          // Lade externe Arbeitsamt-Tabelle
+          loadExternalArbeitsamtTable();
+          
+          // Lade externe Möbelbau-Tabelle
+          loadExternalMoebelbauTable();
         });
+        
+        // Funktion zum Laden der externen Arbeitsamt-Tabelle
+        function loadExternalArbeitsamtTable() {
+          fetch('arbeitsamt-table.html')
+            .then(response => response.text())
+            .then(html => {
+              const container = document.getElementById('external-arbeitsamt-container');
+              if (container) {
+                container.innerHTML = html;
+                
+                // Nach dem Laden der externen Tabelle: Event-Handler neu setzen
+                // Warten bis das Spiel vollständig geladen ist
+                setTimeout(() => {
+                  setupArbeitsamtEventHandlers();
+                }, 100);
+              }
+            })
+            .catch(error => {
+              // Fehler beim Laden der externen Tabelle
+            });
+        }
+        
+        // Funktion zum Laden der externen Möbelbau-Tabelle
+        function loadExternalMoebelbauTable() {
+          fetch('moebelbau-table.html')
+            .then(response => response.text())
+            .then(html => {
+              const container = document.getElementById('external-moebelbau-container');
+              if (container) {
+                container.innerHTML = html;
+                
+                // Event-Handler für Möbelbau-Buttons setzen
+                const moebelbauButtons = [
+                  {id: 'chairButton', cost: 10, reward: 15, research: 'Stuhl'},
+                  {id: 'tableButton', cost: 20, reward: 40, research: 'Tisch'},
+                  {id: 'wardrobeButton', cost: 50, reward: 100, research: 'Schrank'},
+                  {id: 'tableFurnitureButton', cost: 20, reward: 40, research: 'Tisch'},
+                  {id: 'wardrobeButton2', cost: 50, reward: 100, research: 'Schrank'},
+                  {id: 'bedButton', cost: 60, reward: 120, research: 'Bett'},
+                  {id: 'shelfButton', cost: 30, reward: 60, research: 'Regal'},
+                  {id: 'dresserButton', cost: 40, reward: 80, research: 'Kommode'},
+                  {id: 'sofaButton', cost: 100, reward: 200, research: 'Sofa'}
+                ];
+                
+                moebelbauButtons.forEach(button => {
+                  const element = document.getElementById(button.id);
+                  if (element) {
+                    console.log(`Setting up ${button.id} in index.html`);
+                    element.onclick = function() {
+                      console.log(`=== BUILD ${button.research} CLICKED ===`);
+                      console.log("Window variables:", {
+                        holz: window.holz,
+                        gold: window.gold
+                      });
+                      
+                      if (window.holz && window.gold !== undefined) {
+                        console.log(`${button.research} cost:`, button.cost, "reward:", button.reward, "research:", button.research);
+                        
+                        // Forschungsprüfung
+                        if (!window.researchSystem) {
+                          console.log("Research system not available!");
+                          return;
+                        }
+                        const unlocked = window.researchSystem.research.find(r => r.id === button.research && r.completed);
+                        if (!unlocked) {
+                          console.log("Research not completed for:", button.research);
+                          return;
+                        }
+                        
+                        if (window.holz >= button.cost) {
+                          console.log("Enough wood, proceeding with build");
+                          window.holz -= button.cost;
+                          window.gold += button.reward;
+                          console.log("After build - holz:", window.holz, "gold:", window.gold);
+                          
+                          // Lokale Variablen in index.html aktualisieren
+                          if (window.updateLocalVariables) {
+                            window.updateLocalVariables();
+                          }
+                          
+                          if (window.updateDisplay) {
+                            window.updateDisplay();
+                          }
+                          
+                          // Gold-Animation anzeigen
+                          if (window.showGoldAnimation) {
+                            window.showGoldAnimation(element, button.reward);
+                          }
+                          
+                          console.log(`${button.research} built successfully!`);
+                        } else {
+                          console.log("Not enough wood! Need:", button.cost, "Have:", window.holz);
+                        }
+                      } else {
+                        console.log("Window variables not available!");
+                      }
+                    };
+                  }
+                });
+                
+                // Radio-Button Event-Handler für Auto-Produktion
+                const furnitureList = ['chair', 'table', 'wardrobe', 'tableFurniture', 'bed', 'shelf', 'dresser', 'sofa'];
+                furnitureList.forEach(furniture => {
+                  const radio = document.getElementById(`${furniture}AutoRadio`);
+                  if (radio) {
+                    radio.addEventListener('change', (e) => {
+                      if (e.target.checked && window.setAutoProduction) {
+                        window.setAutoProduction(furniture);
+                      }
+                    });
+                  }
+                });
+                
+                // Nach dem Laden der externen Tabelle: Möbel-Sichtbarkeit aktualisieren
+                setTimeout(() => {
+                  if (window.updateMoebelVisibility) {
+                    window.updateMoebelVisibility();
+                  }
+                }, 100);
+              }
+            })
+            .catch(error => {
+              // Fehler beim Laden der externen Tabelle
+            });
+        }
+        
+        // Event-Handler werden jetzt direkt in der externen moebelbau-table.html gesetzt
+        
+        // Funktion zum Setzen der Event-Handler für die Arbeitsamt-Tabelle
+        function setupArbeitsamtEventHandlers() {
+          console.log("Setting up Arbeitsamt event handlers...");
+          
+          // Test: Alle Variablen ausgeben
+          console.log("Current state:", {
+            gold: gold,
+            toolLevel: toolLevel,
+            plantToolLevel: plantToolLevel,
+            carpenterToolLevel: carpenterToolLevel,
+            workers: workers,
+            foresters: foresters,
+            carpenters: carpenters,
+            workerBaseCost: workerBaseCost,
+            foresterBaseCost: foresterBaseCost,
+            carpenterBaseCost: carpenterBaseCost
+          });
+          
+          // Upgrade-Buttons
+          const btnUpgradeTool = document.getElementById("upgradeToolButton");
+          if (btnUpgradeTool) {
+            console.log("Found upgradeToolButton, setting onclick");
+            btnUpgradeTool.onclick = function() {
+              console.log("=== UPGRADE TOOL CLICKED ===");
+              console.log("Before upgrade - gold:", gold, "toolLevel:", toolLevel);
+              
+              const cost = toolLevel * 50;
+              console.log("Calculated cost:", cost);
+              
+              if (gold >= cost) {
+                console.log("Enough gold, proceeding with upgrade");
+                gold -= cost;
+                toolLevel++;
+                console.log("After upgrade - gold:", gold, "toolLevel:", toolLevel);
+                
+                // Lokale Variablen auf globale window. Variablen kopieren
+                window.gold = gold;
+                window.toolLevel = toolLevel;
+                
+                window.updateDisplay();
+                console.log("Tool upgraded to level:", window.toolLevel);
+              } else {
+                console.log("Not enough gold! Need:", cost, "Have:", gold);
+              }
+            };
+          } else {
+            console.log("upgradeToolButton not found");
+          }
+          
+          const btnUpgradePlantTool = document.getElementById("upgradePlantToolButton");
+          if (btnUpgradePlantTool) {
+            console.log("Found upgradePlantToolButton, setting onclick");
+            btnUpgradePlantTool.onclick = function() {
+              console.log("=== UPGRADE PLANT TOOL CLICKED ===");
+              console.log("Before upgrade - gold:", gold, "plantToolLevel:", plantToolLevel);
+              
+              const cost = plantToolLevel * 50;
+              console.log("Calculated cost:", cost);
+              
+              if (gold >= cost) {
+                console.log("Enough gold, proceeding with upgrade");
+                gold -= cost;
+                plantToolLevel++;
+                console.log("After upgrade - gold:", gold, "plantToolLevel:", plantToolLevel);
+                
+                // Lokale Variablen auf globale window. Variablen kopieren
+                window.gold = gold;
+                window.plantToolLevel = plantToolLevel;
+                
+                window.updateDisplay();
+                console.log("Plant tool upgraded to level:", window.plantToolLevel);
+              } else {
+                console.log("Not enough gold! Need:", cost, "Have:", gold);
+              }
+            };
+          } else {
+            console.log("upgradePlantToolButton not found");
+          }
+          
+          const btnUpgradeCarpenterTool = document.getElementById("upgradeCarpenterToolButton");
+          if (btnUpgradeCarpenterTool) {
+            console.log("Found upgradeCarpenterToolButton, setting onclick");
+            btnUpgradeCarpenterTool.onclick = function() {
+              console.log("=== UPGRADE CARPENTER TOOL CLICKED ===");
+              console.log("Before upgrade - gold:", gold, "carpenterToolLevel:", carpenterToolLevel);
+              
+              const cost = carpenterToolLevel * 50;
+              console.log("Calculated cost:", cost);
+              
+              if (gold >= cost) {
+                console.log("Enough gold, proceeding with upgrade");
+                gold -= cost;
+                carpenterToolLevel++;
+                console.log("After upgrade - gold:", gold, "carpenterToolLevel:", carpenterToolLevel);
+                
+                // Lokale Variablen auf globale window. Variablen kopieren
+                window.gold = gold;
+                window.carpenterToolLevel = carpenterToolLevel;
+                
+                window.updateDisplay();
+                console.log("Carpenter tool upgraded to level:", window.carpenterToolLevel);
+              } else {
+                console.log("Not enough gold! Need:", cost, "Have:", gold);
+              }
+            };
+          } else {
+            console.log("upgradeCarpenterToolButton not found");
+          }
+          
+          // Hire-Buttons
+          const btnHireWorker = document.getElementById("hireWorkerButton");
+          if (btnHireWorker) {
+            console.log("Found hireWorkerButton, setting onclick");
+            btnHireWorker.onclick = function() {
+              console.log("=== HIRE WORKER CLICKED ===");
+              console.log("Before hire - gold:", gold, "workers:", workers);
+              
+              const price = calculateWorkerPrice(workerBaseCost, workers - 1);
+              console.log("Calculated price:", price);
+              
+              if (gold >= price) {
+                console.log("Enough gold, proceeding with hire");
+                gold -= price;
+                workers++;
+                console.log("After hire - gold:", gold, "workers:", workers);
+                
+                // Lokale Variablen auf globale window. Variablen kopieren
+                window.gold = gold;
+                window.workers = workers;
+                
+                window.updateDisplay();
+                console.log("Worker hired, total workers:", window.workers);
+              } else {
+                console.log("Not enough gold! Need:", price, "Have:", gold);
+              }
+            };
+          } else {
+            console.log("hireWorkerButton not found");
+          }
+          
+          const btnHireForester = document.getElementById("hireForesterButton");
+          if (btnHireForester) {
+            console.log("Found hireForesterButton, setting onclick");
+            btnHireForester.onclick = function() {
+              console.log("=== HIRE FORESTER CLICKED ===");
+              console.log("Before hire - gold:", gold, "foresters:", foresters);
+              
+              const price = calculateWorkerPrice(foresterBaseCost, foresters - 1);
+              console.log("Calculated price:", price);
+              
+              if (gold >= price) {
+                console.log("Enough gold, proceeding with hire");
+                gold -= price;
+                foresters++;
+                console.log("After hire - gold:", gold, "foresters:", foresters);
+                
+                // Lokale Variablen auf globale window. Variablen kopieren
+                window.gold = gold;
+                window.foresters = foresters;
+                
+                window.updateDisplay();
+                console.log("Forester hired, total foresters:", window.foresters);
+              } else {
+                console.log("Not enough gold! Need:", price, "Have:", gold);
+              }
+            };
+          } else {
+            console.log("hireForesterButton not found");
+          }
+          
+          const btnHireCarpenter = document.getElementById("hireCarpenterButton");
+          if (btnHireCarpenter) {
+            console.log("Found hireCarpenterButton, setting onclick");
+            btnHireCarpenter.onclick = function() {
+              console.log("=== HIRE CARPENTER CLICKED ===");
+              console.log("Before hire - gold:", gold, "carpenters:", carpenters);
+              
+              const price = calculateWorkerPrice(carpenterBaseCost, carpenters);
+              console.log("Calculated price:", price);
+              
+              if (gold >= price) {
+                console.log("Enough gold, proceeding with hire");
+                gold -= price;
+                carpenters++;
+                console.log("After hire - gold:", gold, "carpenters:", carpenters);
+                
+                // Lokale Variablen auf globale window. Variablen kopieren
+                window.gold = gold;
+                window.carpenters = carpenters;
+                
+                window.updateDisplay();
+                console.log("Carpenter hired, total carpenters:", window.carpenters);
+              } else {
+                console.log("Not enough gold! Need:", price, "Have:", gold);
+              }
+            };
+          } else {
+            console.log("hireCarpenterButton not found");
+          }
+          
+          console.log("Arbeitsamt event handlers setup complete");
+        }
+        
+        // Update-Funktionen für die externe Arbeitsamt-Tabelle
+
+        
+
         </script>
         
         <div id="arbeitsamt-tab" class="tab-content active">
-          <div class="button-section">
-            <table class="arbeitsamt-table">
-              <thead>
-                <tr>
-                  <th style="text-align: left;">Beruf</th>
-                  <th>Anzahl</th>
-                  <th>Kosten</th>
-                  <th>Aktion</th>
-                  <th>Werkzeug</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>🪓 Holzfäller</td>
-                  <td><span id="workerCount">1</span></td>
-                  <td>20💰</td>
-                  <td><button id="hireWorkerButton">Anstellen</button></td>
-                  <td><button id="upgradeToolButton" title="Axt verbessern"><span class="icon">🪓</span> Lv. <span id="toolLevelAxe">1</span> (<span id="toolCostAxe">50</span><span class="icon">💰</span>)</button></td>
-                </tr>
-                <tr>
-                  <td>🌱 Förster</td>
-                  <td><span id="foresterCount">1</span></td>
-                  <td>25💰</td>
-                  <td><button id="hireForesterButton">Anstellen</button></td>
-                  <td><button id="upgradePlantToolButton" title="Pflanzwerkzeug verbessern"><span class="icon">🌿</span> Lv. <span id="toolLevelPlant">1</span> (<span id="toolCostPlant">50</span><span class="icon">💰</span>)</button></td>
-                </tr>
-                <tr>
-                  <td>🪚 Schreiner</td>
-                  <td><span id="carpenterCount">0</span></td>
-                  <td>30💰</td>
-                  <td><button id="hireCarpenterButton">Anstellen</button></td>
-                  <td><button id="upgradeCarpenterToolButton" title="Schreinerwerkzeug verbessern"><span class="icon">🔨</span> Lv. <span id="toolLevelCarpenter">1</span> (<span id="toolCostCarpenter">50</span><span class="icon">💰</span>)</button></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          <!-- Externe Arbeitsamt-Tabelle (wird geladen) -->
+          <div id="external-arbeitsamt-container"></div>
         </div>
         
         <div id="moebelbau-tab" class="tab-content">
-          <div class="button-section" style="overflow-x: auto;">
-            <table class="moebelbau-table">
-              <thead>
-                <tr>
-                  <th style="text-align: left;">Möbel</th>
-                  <th>🪵 Kosten</th>
-                  <th>💰 Ertrag</th>
-                  <th>Aktion</th>
-                  <th>Produktion</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>🪑 Stuhl</td>
-                  <td>10</td>
-                  <td>15</td>
-                  <td><button id="chairButton">Bauen</button></td>
-                  <td><input type="radio" id="chairAutoRadio" class="auto-radio" name="autoFurniture" value="chair"></td>
-                </tr>
-                <tr style="display:none" id="tableRow">
-                  <td>🛋️ Tisch</td>
-                  <td>20</td>
-                  <td>40</td>
-                  <td><button id="tableButton">Bauen</button></td>
-                  <td><input type="radio" id="tableAutoRadio" class="auto-radio" name="autoFurniture" value="table"></td>
-                </tr>
-                <tr style="display:none" id="cabinetRow">
-                  <td>🚪 Schrank</td>
-                  <td>50</td>
-                  <td>100</td>
-                  <td><button id="wardrobeButton">Bauen</button></td>
-                  <td><input type="radio" id="wardrobeAutoRadio" class="auto-radio" name="autoFurniture" value="wardrobe"></td>
-                </tr>
-                <tr style="display:none" id="tableFurnitureRow">
-                  <td>🍽️ Tisch</td>
-                  <td>20</td>
-                  <td>40</td>
-                  <td><button id="tableFurnitureButton">Bauen</button></td>
-                  <td><input type="radio" id="tableFurnitureAutoRadio" class="auto-radio" name="autoFurniture" value="tableFurniture"></td>
-                </tr>
-                <tr style="display:none" id="wardrobeRow">
-                  <td>🚪 Schrank</td>
-                  <td>50</td>
-                  <td>100</td>
-                  <td><button id="wardrobeButton">Bauen</button></td>
-                  <td><input type="radio" id="wardrobeAutoRadio" class="auto-radio" name="autoFurniture" value="wardrobe"></td>
-                </tr>
-                <tr style="display:none" id="bedRow">
-                  <td>🛏️ Bett</td>
-                  <td>60</td>
-                  <td>120</td>
-                  <td><button id="bedButton">Bauen</button></td>
-                  <td><input type="radio" id="bedAutoRadio" class="auto-radio" name="autoFurniture" value="bed"></td>
-                </tr>
-                <tr style="display:none" id="shelfRow">
-                  <td>📚 Regal</td>
-                  <td>30</td>
-                  <td>60</td>
-                  <td><button id="shelfButton">Bauen</button></td>
-                  <td><input type="radio" id="shelfAutoRadio" class="auto-radio" name="autoFurniture" value="shelf"></td>
-                </tr>
-                <tr style="display:none" id="dresserRow">
-                  <td>🗄️ Kommode</td>
-                  <td>40</td>
-                  <td>80</td>
-                  <td><button id="dresserButton">Bauen</button></td>
-                  <td><input type="radio" id="dresserAutoRadio" class="auto-radio" name="autoFurniture" value="dresser"></td>
-                </tr>
-                <tr style="display:none" id="sofaRow">
-                  <td>🛋️ Sofa</td>
-                  <td>100</td>
-                  <td>200</td>
-                  <td><button id="sofaButton">Bauen</button></td>
-                  <td><input type="radio" id="sofaAutoRadio" class="auto-radio" name="autoFurniture" value="sofa"></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          <!-- Externe Möbelbau-Tabelle (wird geladen) -->
+          <div id="external-moebelbau-container"></div>
         </div>
       </div>
     </div>
@@ -299,22 +525,22 @@ function formatNumber(num) {
   return num.toString();
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+// Globale Variablen außerhalb des Event-Listeners definieren
 let gold = 0, holz = 0, trees = 10;
 let workers = 1, foresters = 1, carpenters = 0;
 let toolLevel = 1, plantToolLevel = 1, carpenterToolLevel = 1;
 let progress = 0;
 let foresterProgress = 0;
-let carpenterTimer = 0;
 let carpenterProgress = 0;
+let carpenterTimer = 0;
 const CARPENTER_MAX = 40;
+
+document.addEventListener('DOMContentLoaded', function() {
 
 // Ressourcen global verfügbar machen für das Forschungssystem
 window.gold = gold;
 window.holz = holz;
 window.trees = trees;
-
-console.log('🎮 DEBUG: Hauptspiel initialisiert, Ressourcen global verfügbar gemacht');
 
 // Basis-Preise für Arbeiter
 let workerBaseCost = 20;
@@ -323,50 +549,118 @@ let carpenterBaseCost = 30;
 
 // Preis-Multiplikator (1.5 = 50% teurer pro Kauf)
 const PRICE_MULTIPLIER = 1.5;
+window.PRICE_MULTIPLIER = PRICE_MULTIPLIER;
 
 // Aktuelle Preise berechnen
 function calculateWorkerPrice(basePrice, count) {
   return Math.floor(basePrice * Math.pow(PRICE_MULTIPLIER, count));
 }
 
+// Funktion global verfügbar machen
+window.calculateWorkerPrice = calculateWorkerPrice;
+
+// Funktion zum Aktualisieren der lokalen Variablen von window. Variablen
+function updateLocalVariables() {
+  gold = window.gold;
+  holz = window.holz;
+  trees = window.trees;
+  workers = window.workers;
+  foresters = window.foresters;
+  carpenters = window.carpenters;
+  toolLevel = window.toolLevel;
+  plantToolLevel = window.plantToolLevel;
+  carpenterToolLevel = window.carpenterToolLevel;
+}
+
+// Funktion global verfügbar machen
+window.updateLocalVariables = updateLocalVariables;
+
 function updateDisplay() {
-  // Globale Variablen aktualisieren
-  window.gold = gold;
-  window.holz = holz;
-  window.trees = trees;
+  // Globale Variablen aktualisieren (nur wenn lokale Variablen neuer sind)
+  if (gold !== undefined) window.gold = gold;
+  if (holz !== undefined) window.holz = holz;
+  if (trees !== undefined) window.trees = trees;
+  if (workers !== undefined) window.workers = workers;
+  if (foresters !== undefined) window.foresters = foresters;
+  if (carpenters !== undefined) window.carpenters = carpenters;
+  if (toolLevel !== undefined) window.toolLevel = toolLevel;
+  if (plantToolLevel !== undefined) window.plantToolLevel = plantToolLevel;
+  if (carpenterToolLevel !== undefined) window.carpenterToolLevel = carpenterToolLevel;
+  if (workerBaseCost !== undefined) window.workerBaseCost = workerBaseCost;
+  if (foresterBaseCost !== undefined) window.foresterBaseCost = foresterBaseCost;
+  if (carpenterBaseCost !== undefined) window.carpenterBaseCost = carpenterBaseCost;
+  
+  // Lokale Variablen von globalen Variablen synchronisieren (falls globale neuer sind)
+  if (window.gold !== undefined) gold = window.gold;
+  if (window.holz !== undefined) holz = window.holz;
+  if (window.trees !== undefined) trees = window.trees;
+  if (window.workers !== undefined) workers = window.workers;
+  if (window.foresters !== undefined) foresters = window.foresters;
+  if (window.carpenters !== undefined) carpenters = window.carpenters;
+  if (window.toolLevel !== undefined) toolLevel = window.toolLevel;
+  if (window.plantToolLevel !== undefined) plantToolLevel = window.plantToolLevel;
+  if (window.carpenterToolLevel !== undefined) carpenterToolLevel = window.carpenterToolLevel;
+  
+  // updateDisplay Funktion global verfügbar machen
+  window.updateDisplay = updateDisplay;
   
   document.querySelectorAll('.score').forEach(scoreElem => {
     scoreElem.innerHTML = 
-      `<span class="icon">🪵</span> ${formatNumber(holz)} | ` +
-      `<span class="icon">🌲</span> <span id="treeCount">${formatNumber(trees)}</span> | ` +
-      `<span class="icon">💰</span> ${formatNumber(gold)}`;
+      `<span class="icon">🪵</span> ${formatNumber(window.holz)} | ` +
+      `<span class="icon">🌲</span> <span id="treeCount">${formatNumber(window.trees)}</span> | ` +
+      `<span class="icon">💰</span> ${formatNumber(window.gold)}`;
   });
-  // Update worker counts
-  document.getElementById("workerCount").textContent = workers;
-  document.getElementById("foresterCount").textContent = foresters;
-  document.getElementById("carpenterCount").textContent = carpenters;
+  // Update worker counts - nur wenn die Elemente existieren
+  const workerCountElement = document.getElementById("workerCount");
+  const foresterCountElement = document.getElementById("foresterCount");
+  const carpenterCountElement = document.getElementById("carpenterCount");
+  
+  if (workerCountElement) workerCountElement.textContent = window.workers;
+  if (foresterCountElement) foresterCountElement.textContent = window.foresters;
+  if (carpenterCountElement) carpenterCountElement.textContent = window.carpenters;
   // Preise für normale Arbeiter
   const workerPrice = calculateWorkerPrice(workerBaseCost, workers - 1);
   const foresterPrice = calculateWorkerPrice(foresterBaseCost, foresters - 1);
   const carpenterPrice = calculateWorkerPrice(carpenterBaseCost, carpenters);
-  // Tabelle aktualisieren
-  document.querySelector('tr:nth-child(1) td:nth-child(3)').textContent = formatNumber(workerPrice) + '💰';
-  document.querySelector('tr:nth-child(2) td:nth-child(3)').textContent = formatNumber(foresterPrice) + '💰';
-  document.querySelector('tr:nth-child(3) td:nth-child(3)').textContent = formatNumber(carpenterPrice) + '💰';
+  // Tabelle aktualisieren (externe Tabelle) - nur wenn sie geladen ist
+  const externalContainer = document.querySelector('#external-arbeitsamt-container');
+  if (externalContainer && externalContainer.children.length > 0) {
+    const workerCostElement = document.querySelector('#external-arbeitsamt-container tr:nth-child(1) td:nth-child(3) span');
+    const foresterCostElement = document.querySelector('#external-arbeitsamt-container tr:nth-child(2) td:nth-child(3) span');
+    const carpenterCostElement = document.querySelector('#external-arbeitsamt-container tr:nth-child(3) td:nth-child(3) span');
+    
+    if (workerCostElement) workerCostElement.textContent = formatNumber(workerPrice);
+    if (foresterCostElement) foresterCostElement.textContent = formatNumber(foresterPrice);
+    if (carpenterCostElement) carpenterCostElement.textContent = formatNumber(carpenterPrice);
+  }
   // Buttons aktivieren/deaktivieren basierend auf den neuen Preisen
-  document.getElementById("hireWorkerButton").disabled = gold < workerPrice;
-  document.getElementById("hireForesterButton").disabled = gold < foresterPrice;
-  document.getElementById("hireCarpenterButton").disabled = gold < carpenterPrice;
+  const hireWorkerBtn = document.getElementById("hireWorkerButton");
+  const hireForesterBtn = document.getElementById("hireForesterButton");
+  const hireCarpenterBtn = document.getElementById("hireCarpenterButton");
+  
+  if (hireWorkerBtn) hireWorkerBtn.disabled = window.gold < workerPrice;
+  if (hireForesterBtn) hireForesterBtn.disabled = window.gold < foresterPrice;
+  if (hireCarpenterBtn) hireCarpenterBtn.disabled = window.gold < carpenterPrice;
   // Rest der updateDisplay Funktion bleibt gleich
-  document.getElementById("toolLevelAxe").innerText = toolLevel;
-  document.getElementById("toolLevelPlant").innerText = plantToolLevel;
-  document.getElementById("toolLevelCarpenter").innerText = carpenterToolLevel;
-  document.getElementById("toolCostAxe").innerText = formatNumber(toolLevel * 50);
-  document.getElementById("toolCostPlant").innerText = formatNumber(plantToolLevel * 50);
-  document.getElementById("toolCostCarpenter").innerText = formatNumber(carpenterToolLevel * 50);
-  document.getElementById("upgradeToolButton").disabled = gold < toolLevel * 50;
-  document.getElementById("upgradePlantToolButton").disabled = gold < plantToolLevel * 50;
-  document.getElementById("upgradeCarpenterToolButton").disabled = gold < carpenterToolLevel * 50;
+  const toolLevelAxeElement = document.getElementById("toolLevelAxe");
+  const toolLevelPlantElement = document.getElementById("toolLevelPlant");
+  const toolLevelCarpenterElement = document.getElementById("toolLevelCarpenter");
+  const toolCostAxeElement = document.getElementById("toolCostAxe");
+  const toolCostPlantElement = document.getElementById("toolCostPlant");
+  const toolCostCarpenterElement = document.getElementById("toolCostCarpenter");
+  const upgradeToolBtn = document.getElementById("upgradeToolButton");
+  const upgradePlantToolBtn = document.getElementById("upgradePlantToolButton");
+  const upgradeCarpenterToolBtn = document.getElementById("upgradeCarpenterToolButton");
+  
+  if (toolLevelAxeElement) toolLevelAxeElement.innerText = window.toolLevel;
+  if (toolLevelPlantElement) toolLevelPlantElement.innerText = window.plantToolLevel;
+  if (toolLevelCarpenterElement) toolLevelCarpenterElement.innerText = window.carpenterToolLevel;
+  if (toolCostAxeElement) toolCostAxeElement.innerText = formatNumber(window.toolLevel * 50);
+  if (toolCostPlantElement) toolCostPlantElement.innerText = formatNumber(window.plantToolLevel * 50);
+  if (toolCostCarpenterElement) toolCostCarpenterElement.innerText = formatNumber(window.carpenterToolLevel * 50);
+  if (upgradeToolBtn) upgradeToolBtn.disabled = window.gold < window.toolLevel * 50;
+  if (upgradePlantToolBtn) upgradePlantToolBtn.disabled = window.gold < window.plantToolLevel * 50;
+  if (upgradeCarpenterToolBtn) upgradeCarpenterToolBtn.disabled = window.gold < window.carpenterToolLevel * 50;
   
   // Update auto-upgrade button states
   updateAutoUpgradeButton('axe');
@@ -386,23 +680,36 @@ function updateDisplay() {
     moebelButtons.forEach(btn => {
       const button = document.getElementById(btn.id);
       const unlocked = window.researchSystem.research.find(r => r.id === btn.research && r.completed);
-      if (button) button.disabled = !(unlocked && holz >= btn.cost);
+      if (button) button.disabled = !(unlocked && window.holz >= btn.cost);
     });
   }
+  
+
 }
 
 function saveGameToServer() {
+  // Lokale Variablen mit window. Variablen synchronisieren
+  gold = window.gold;
+  holz = window.holz;
+  trees = window.trees;
+  workers = window.workers;
+  foresters = window.foresters;
+  carpenters = window.carpenters;
+  toolLevel = window.toolLevel;
+  plantToolLevel = window.plantToolLevel;
+  carpenterToolLevel = window.carpenterToolLevel;
+  
   fetch('/save', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ gold, holz, trees, workers, foresters, carpenters, toolLevel, plantToolLevel, carpenterToolLevel, progress, foresterProgress })
+    body: JSON.stringify({ gold, holz, trees, workers, foresters, carpenters, toolLevel, plantToolLevel, carpenterToolLevel, progress, foresterProgress, carpenterProgress })
   })
   .then(response => response.json())
   .then(data => {
-    // Kein Log mehr beim Speichern
+    // Spielstand gespeichert
   })
   .catch(error => {
-    console.error('Fehler beim Speichern:', error);
+    // Fehler beim Speichern
   });
 }
 function loadGameFromServer() {
@@ -410,12 +717,24 @@ function loadGameFromServer() {
     .then(res => res.json())
     .then(save => {
       if (save) {
-        console.log('Spielstand geladen:', save);
         gold = save.gold; holz = save.holz; trees = save.trees;
         workers = save.workers; foresters = save.foresters; carpenters = save.carpenters;
         toolLevel = save.toolLevel; plantToolLevel = save.plantToolLevel; carpenterToolLevel = save.carpenterToolLevel;
         progress = save.progress || 0;
         foresterProgress = save.foresterProgress || 0;
+        carpenterProgress = save.carpenterProgress || 0;
+        
+        // Window-Variablen synchronisieren
+        window.gold = gold;
+        window.holz = holz;
+        window.trees = trees;
+        window.workers = workers;
+        window.foresters = foresters;
+        window.carpenters = carpenters;
+        window.toolLevel = toolLevel;
+        window.plantToolLevel = plantToolLevel;
+        window.carpenterToolLevel = carpenterToolLevel;
+        
         // Fortschrittsbalken wiederherstellen
         setAllProgressBars('', progress);
         setAllProgressBars('forester', foresterProgress);
@@ -424,12 +743,10 @@ function loadGameFromServer() {
         updateDisplay();
         if (window.updateMoebelVisibility) window.updateMoebelVisibility();
       } else {
-        console.log('Kein gespeicherter Spielstand gefunden');
         if (window.updateMoebelVisibility) window.updateMoebelVisibility();
       }
     })
     .catch(error => {
-      console.error('Fehler beim Laden:', error);
       if (window.updateMoebelVisibility) window.updateMoebelVisibility();
     });
 }
@@ -474,14 +791,14 @@ function updateProgressBarText(barClass, text) {
 
 function autoCollect() {
   // Holzfäller
-  if (trees > 0 && workers > 0) {
-    const productionSpeed = toolLevel * workers;
-    const resourcesPerHour = (Math.floor(Math.random() * 11) + 5) * workers;
+  if (window.trees > 0 && window.workers > 0) {
+    const productionSpeed = window.toolLevel * window.workers;
+    const resourcesPerHour = (Math.floor(Math.random() * 11) + 5) * window.workers;
     
     // Bei sehr schneller Produktion (mehr als 5 pro Tick) keine Animation
     if (productionSpeed > 5) {
-      holz += resourcesPerHour;
-      trees -= Math.min(trees, workers);
+      window.holz += resourcesPerHour;
+      window.trees -= Math.min(window.trees, window.workers);
       // Zeige Ressourcen pro Stunde statt Progress-Bar
       setAllProgressBars('', -1); // -1 bedeutet "zeige Text statt Bar"
       updateProgressBarText('', `${resourcesPerHour}/h`);
@@ -489,8 +806,8 @@ function autoCollect() {
       progress += productionSpeed;
       setAllProgressBars('', progress);
       if (progress >= 10) {
-        holz += resourcesPerHour;
-        trees -= Math.min(trees, workers);
+        window.holz += resourcesPerHour;
+        window.trees -= Math.min(window.trees, window.workers);
         progress = 0;
         setAllProgressBars('', progress);
         showPlusOneAnimation(document.querySelector('progress-bar[barclass=""]'), resourcesPerHour);
@@ -499,19 +816,19 @@ function autoCollect() {
   }
   
   // Förster
-  if (foresters > 0) {
-    const productionSpeed = foresters * plantToolLevel;
-    const resourcesPerHour = foresters * plantToolLevel;
+  if (window.foresters > 0) {
+    const productionSpeed = window.foresters * window.plantToolLevel;
+    const resourcesPerHour = window.foresters * window.plantToolLevel;
     
     if (productionSpeed > 5) {
-      trees += resourcesPerHour;
+      window.trees += resourcesPerHour;
       setAllProgressBars('forester', -1);
       updateProgressBarText('forester', `${resourcesPerHour}/h`);
     } else {
       foresterProgress += productionSpeed;
       setAllProgressBars('forester', foresterProgress);
       if (foresterProgress >= 10) {
-        trees += resourcesPerHour;
+        window.trees += resourcesPerHour;
         foresterProgress = 0;
         setAllProgressBars('forester', foresterProgress);
         showPlusOneAnimation(document.querySelector('progress-bar[barclass="forester"]'), resourcesPerHour);
@@ -520,13 +837,13 @@ function autoCollect() {
   }
   
   // Schreiner (sehr langsam)
-  if (carpenters > 0 && holz >= 10 * carpenters) {
-    const productionSpeed = carpenters * carpenterToolLevel;
-    const resourcesPerHour = 15 * carpenters * carpenterToolLevel;
+  if (window.carpenters > 0 && window.holz >= 10 * window.carpenters) {
+    const productionSpeed = window.carpenters * window.carpenterToolLevel;
+    const resourcesPerHour = 15 * window.carpenters * window.carpenterToolLevel;
     
     if (productionSpeed > 5) {
-      holz -= 10 * carpenters;
-      gold += resourcesPerHour;
+      window.holz -= 10 * window.carpenters;
+      window.gold += resourcesPerHour;
       setAllProgressBars('carpenter', -1);
       updateProgressBarText('carpenter', `${resourcesPerHour}/h`);
     } else {
@@ -534,8 +851,8 @@ function autoCollect() {
       setAllProgressBars('carpenter', carpenterProgress);
       
       if (carpenterProgress >= CARPENTER_MAX) {
-        holz -= 10 * carpenters;
-        gold += resourcesPerHour;
+        window.holz -= 10 * window.carpenters;
+        window.gold += resourcesPerHour;
         carpenterProgress = 0;
         setAllProgressBars('carpenter', carpenterProgress);
         showPlusOneAnimation(document.querySelector('progress-bar[barclass="carpenter"]'), resourcesPerHour);
@@ -544,7 +861,7 @@ function autoCollect() {
   }
   
   // Auto-Produktion für Möbel
-  if (carpenters > 0 && selectedAutoFurniture) {
+  if (window.carpenters > 0 && selectedAutoFurniture) {
     const furnitureData = {
       chair: { cost: 10, reward: 15 },
       table: { cost: 20, reward: 40 },
@@ -557,17 +874,35 @@ function autoCollect() {
     };
     
     const data = furnitureData[selectedAutoFurniture];
-    if (holz >= data.cost) {
-      holz -= data.cost;
-      gold += data.reward;
-      console.log(`[Auto-Produktion] ${selectedAutoFurniture} gebaut: -${data.cost} Holz, +${data.reward} Gold`);
+    if (window.holz >= data.cost) {
+      window.holz -= data.cost;
+      window.gold += data.reward;
     }
   }
   
-  gold = Math.max(0, gold);
-  holz = Math.max(0, holz);
-  trees = Math.max(0, trees);
-  updateDisplay();
+  window.gold = Math.max(0, window.gold);
+  window.holz = Math.max(0, window.holz);
+  window.trees = Math.max(0, window.trees);
+  
+  // Lokale Variablen synchronisieren
+  gold = window.gold;
+  holz = window.holz;
+  trees = window.trees;
+  workers = window.workers;
+  foresters = window.foresters;
+  carpenters = window.carpenters;
+  toolLevel = window.toolLevel;
+  plantToolLevel = window.plantToolLevel;
+  carpenterToolLevel = window.carpenterToolLevel;
+  
+  // updateDisplay() ohne erneute Synchronisation aufrufen
+  // Direkt die Anzeige aktualisieren
+  document.querySelectorAll('.score').forEach(scoreElem => {
+    scoreElem.innerHTML = 
+      `<span class="icon">🪵</span> ${formatNumber(window.holz)} | ` +
+      `<span class="icon">🌲</span> <span id="treeCount">${formatNumber(window.trees)}</span> | ` +
+      `<span class="icon">💰</span> ${formatNumber(window.gold)}`;
+  });
 }
 
 // Auto-upgrade state tracking
@@ -656,6 +991,8 @@ function toggleAutoUpgrade(tool) {
 
 // Set auto-production for a specific furniture
 function setAutoProduction(furniture) {
+  // Globale Funktion verfügbar machen
+  window.setAutoProduction = setAutoProduction;
   selectedAutoFurniture = furniture;
   updateAutoProductionRadio();
   saveAutoProductionState();
@@ -681,67 +1018,76 @@ function autoUpgrade() {
 }
 
 function upgradeTool() {
-  const cost = toolLevel * 50;
-  if (gold >= cost) {
-    gold -= cost;
-    toolLevel++;
-    updateDisplay();
+  const cost = window.toolLevel * 50;
+  if (window.gold >= cost) {
+    window.gold -= cost;
+    window.toolLevel++;
+    
+    // Lokale Variablen synchronisieren
+    gold = window.gold;
+    toolLevel = window.toolLevel;
+    
+    // Direkt die Anzeige aktualisieren ohne updateDisplay()
+    document.querySelectorAll('.score').forEach(scoreElem => {
+      scoreElem.innerHTML = 
+        `<span class="icon">🪵</span> ${formatNumber(window.holz)} | ` +
+        `<span class="icon">🌲</span> <span id="treeCount">${formatNumber(window.trees)}</span> | ` +
+        `<span class="icon">💰</span> ${formatNumber(window.gold)}`;
+    });
+    
+    // Tool-Level-Anzeige aktualisieren
+    const toolLevelElement = document.getElementById("toolLevelAxe");
+    if (toolLevelElement) toolLevelElement.innerText = window.toolLevel;
   }
 }
 function upgradePlantTool() {
-  const cost = plantToolLevel * 50;
-  if (gold >= cost) {
-    gold -= cost;
-    plantToolLevel++;
-    updateDisplay();
+  const cost = window.plantToolLevel * 50;
+  if (window.gold >= cost) {
+    window.gold -= cost;
+    window.plantToolLevel++;
+    
+    // Lokale Variablen synchronisieren
+    gold = window.gold;
+    plantToolLevel = window.plantToolLevel;
+    
+    // Direkt die Anzeige aktualisieren ohne updateDisplay()
+    document.querySelectorAll('.score').forEach(scoreElem => {
+      scoreElem.innerHTML = 
+        `<span class="icon">🪵</span> ${formatNumber(window.holz)} | ` +
+        `<span class="icon">🌲</span> <span id="treeCount">${formatNumber(window.trees)}</span> | ` +
+        `<span class="icon">💰</span> ${formatNumber(window.gold)}`;
+    });
+    
+    // Tool-Level-Anzeige aktualisieren
+    const toolLevelElement = document.getElementById("toolLevelPlant");
+    if (toolLevelElement) toolLevelElement.innerText = window.plantToolLevel;
   }
 }
 function upgradeCarpenterTool() {
-  const cost = carpenterToolLevel * 50;
-  if (gold >= cost) {
-    gold -= cost;
-    carpenterToolLevel++;
-    updateDisplay();
+  const cost = window.carpenterToolLevel * 50;
+  if (window.gold >= cost) {
+    window.gold -= cost;
+    window.carpenterToolLevel++;
+    
+    // Lokale Variablen synchronisieren
+    gold = window.gold;
+    carpenterToolLevel = window.carpenterToolLevel;
+    
+    // Direkt die Anzeige aktualisieren ohne updateDisplay()
+    document.querySelectorAll('.score').forEach(scoreElem => {
+      scoreElem.innerHTML = 
+        `<span class="icon">🪵</span> ${formatNumber(window.holz)} | ` +
+        `<span class="icon">🌲</span> <span id="treeCount">${formatNumber(window.trees)}</span> | ` +
+        `<span class="icon">💰</span> ${formatNumber(window.gold)}`;
+    });
+    
+    // Tool-Level-Anzeige aktualisieren
+    const toolLevelElement = document.getElementById("toolLevelCarpenter");
+    if (toolLevelElement) toolLevelElement.innerText = window.carpenterToolLevel;
   }
 }
 
-const btnUpgradeTool = document.getElementById("upgradeToolButton");
-if (btnUpgradeTool) btnUpgradeTool.onclick = upgradeTool;
-const btnUpgradePlantTool = document.getElementById("upgradePlantToolButton");
-if (btnUpgradePlantTool) btnUpgradePlantTool.onclick = upgradePlantTool;
-const btnUpgradeCarpenterTool = document.getElementById("upgradeCarpenterToolButton");
-if (btnUpgradeCarpenterTool) btnUpgradeCarpenterTool.onclick = upgradeCarpenterTool;
 
-// Kauflogik für Arbeiter aktualisieren
-const btnHireWorker = document.getElementById("hireWorkerButton");
-if (btnHireWorker) btnHireWorker.onclick = function() {
-  const price = calculateWorkerPrice(workerBaseCost, workers - 1);
-  if (gold >= price) {
-    gold -= price;
-    workers++;
-    updateDisplay();
-  }
-};
-
-const btnHireForester = document.getElementById("hireForesterButton");
-if (btnHireForester) btnHireForester.onclick = function() {
-  const price = calculateWorkerPrice(foresterBaseCost, foresters - 1);
-  if (gold >= price) {
-    gold -= price;
-    foresters++;
-    updateDisplay();
-  }
-};
-
-const btnHireCarpenter = document.getElementById("hireCarpenterButton");
-if (btnHireCarpenter) btnHireCarpenter.onclick = function() {
-  const price = calculateWorkerPrice(carpenterBaseCost, carpenters);
-  if (gold >= price) {
-    gold -= price;
-    carpenters++;
-    updateDisplay();
-  }
-};
 
 // Möbel-Bauen-Buttons: Korrekte Event-Handler für alle erforschten Möbel
 function handleMoebelBauButton(btnId, researchId, holzKosten, goldErtrag) {
@@ -763,6 +1109,8 @@ function handleMoebelBauButton(btnId, researchId, holzKosten, goldErtrag) {
 
 // Funktion für Gold-Animation
 function showGoldAnimation(button, goldAmount) {
+  // Globale Funktion verfügbar machen
+  window.showGoldAnimation = showGoldAnimation;
   // Animation-Element erstellen
   const animElement = document.createElement('div');
   animElement.className = 'gold-animation';
@@ -795,13 +1143,23 @@ function showGoldAnimation(button, goldAmount) {
     }
   }, 1500);
 }
-handleMoebelBauButton('chairButton', 'Stuhl', 10, 15);
-handleMoebelBauButton('tableFurnitureButton', 'Tisch', 20, 40);
-handleMoebelBauButton('wardrobeButton', 'Schrank', 50, 100);
-handleMoebelBauButton('bedButton', 'Bett', 60, 120);
-handleMoebelBauButton('shelfButton', 'Regal', 30, 60);
-handleMoebelBauButton('dresserButton', 'Kommode', 40, 80);
-handleMoebelBauButton('sofaButton', 'Sofa', 100, 200);
+        // Möbelbau-Buttons werden jetzt in der externen Datei moebelbau-table.html verwaltet
+        
+        // Globale Funktion für lokale Variablen-Synchronisation
+        window.updateLocalVariables = function() {
+          // Lokale Variablen aus globalen Variablen aktualisieren
+          gold = window.gold || 0;
+          holz = window.holz || 0;
+          trees = window.trees || 10;
+          workers = window.workers || 1;
+          foresters = window.foresters || 1;
+          carpenters = window.carpenters || 0;
+          toolLevel = window.toolLevel || 1;
+          plantToolLevel = window.plantToolLevel || 1;
+          carpenterToolLevel = window.carpenterToolLevel || 1;
+          progress = window.progress || 0;
+          foresterProgress = window.foresterProgress || 0;
+        };
 
 const resetBtn = document.getElementById("resetBtn");
 if (resetBtn) {
@@ -811,6 +1169,18 @@ if (resetBtn) {
     toolLevel = 1; plantToolLevel = 1; carpenterToolLevel = 1;
     progress = 0;
     foresterProgress = 0;
+    
+    // Window-Variablen synchronisieren
+    window.gold = gold;
+    window.holz = holz;
+    window.trees = trees;
+    window.workers = workers;
+    window.foresters = foresters;
+    window.carpenters = carpenters;
+    window.toolLevel = toolLevel;
+    window.plantToolLevel = plantToolLevel;
+    window.carpenterToolLevel = carpenterToolLevel;
+    
     localStorage.removeItem('research'); // Forschungsfortschritt zurücksetzen
     localStorage.removeItem('autoUpgradeState'); // Auto-upgrade state zurücksetzen
     localStorage.removeItem('selectedAutoFurniture'); // Auto-Produktion zurücksetzen
@@ -826,7 +1196,6 @@ if (resetBtn) {
     // Forschungssystem direkt zurücksetzen
     if (window.researchSystem) {
       window.researchSystem.resetResearch();
-      console.log('[Reset] Forschungssystem zurückgesetzt');
     }
     
     updateDisplay();
@@ -876,6 +1245,70 @@ setInterval(saveGameToServer, 2000);
 loadGameFromServer();
 updateDisplay();
 
+// TEMPORÄR: Forschungen für Tests freischalten
+if (window.researchSystem) {
+  // Werkzeug freischalten
+  const werkzeug = window.researchSystem.research.find(r => r.id === 'Werkzeug');
+  if (werkzeug) {
+    werkzeug.completed = true;
+    werkzeug.progress = 100;
+  }
+  
+  // Säge freischalten
+  const saege = window.researchSystem.research.find(r => r.id === 'Säge');
+  if (saege) {
+    saege.completed = true;
+    saege.progress = 100;
+  }
+  
+  // Tisch freischalten
+  const tisch = window.researchSystem.research.find(r => r.id === 'Tisch');
+  if (tisch) {
+    tisch.completed = true;
+    tisch.progress = 100;
+  }
+  
+  // Schrank freischalten
+  const schrank = window.researchSystem.research.find(r => r.id === 'Schrank');
+  if (schrank) {
+    schrank.completed = true;
+    schrank.progress = 100;
+  }
+  
+  // Bett freischalten
+  const bett = window.researchSystem.research.find(r => r.id === 'Bett');
+  if (bett) {
+    bett.completed = true;
+    bett.progress = 100;
+  }
+  
+  // Regal freischalten
+  const regal = window.researchSystem.research.find(r => r.id === 'Regal');
+  if (regal) {
+    regal.completed = true;
+    regal.progress = 100;
+  }
+  
+  // Kommode freischalten
+  const kommode = window.researchSystem.research.find(r => r.id === 'Kommode');
+  if (kommode) {
+    kommode.completed = true;
+    kommode.progress = 100;
+  }
+  
+  // Sofa freischalten
+  const sofa = window.researchSystem.research.find(r => r.id === 'Sofa');
+  if (sofa) {
+    sofa.completed = true;
+    sofa.progress = 100;
+  }
+  
+  // Möbelbau-Sichtbarkeit aktualisieren
+  if (window.updateMoebelVisibility) {
+    window.updateMoebelVisibility();
+  }
+}
+
 // Wetter-Modul initialisieren
 weatherModule.initWeather();
 
@@ -907,6 +1340,16 @@ sidecardOverlay.onclick = closeSidecardFn;
 // ESC schließt Sidecard
 window.addEventListener('keydown', e => { if (sidecardOpen && e.key === 'Escape') closeSidecardFn(); });
 
+// ESC schließt Research Modal
+window.addEventListener('keydown', e => { 
+  if (e.key === 'Escape') {
+    const researchModal = document.getElementById('researchModal');
+    if (researchModal && researchModal.style.display === 'block') {
+      closeResearchModal();
+    }
+  }
+});
+
 // Toast-Logik für Statusmeldungen (wird für Fehler genutzt)
 function showStatusToast(msg) {
   const toast = document.getElementById('statusToast');
@@ -929,10 +1372,7 @@ if (musicPopoutBtn) {
 function updateMoebelVisibility(retryCount = 0) {
   if (!window.researchSystem || !window.researchSystem.research) {
     if (retryCount < 10) {
-      console.log(`[Möbelbau] Forschungssystem noch nicht bereit, versuche erneut... (${retryCount+1})`);
       setTimeout(() => updateMoebelVisibility(retryCount + 1), 100);
-    } else {
-      console.warn('[Möbelbau] Forschungssystem konnte nicht initialisiert werden!');
     }
     return;
   }
@@ -973,35 +1413,7 @@ function updateMoebelVisibility(retryCount = 0) {
 }
 window.updateMoebelVisibility = updateMoebelVisibility;
 
-// Globale Funktion zum manuellen Debuggen der Möbelbau-Sichtbarkeit
-window.debugMoebelVisibility = function() {
-  console.log('[Möbelbau] DEBUG: Alle Forschungen:');
-  window.researchSystem.research.forEach(r => {
-    if (['Stuhl', 'Tisch', 'Schrank', 'Bett', 'Regal', 'Kommode', 'Sofa'].includes(r.id)) {
-      console.log(`[Möbelbau] ${r.id}: completed=${r.completed}`);
-    }
-  });
-  updateMoebelVisibility();
-  
-  // Debug: Prüfe Möbelbau-Buttons
-  const moebelButtons = [
-    {id: 'chairButton', research: 'Stuhl', cost: 10},
-    {id: 'tableFurnitureButton', research: 'Tisch', cost: 20},
-    {id: 'wardrobeButton', research: 'Schrank', cost: 50},
-    {id: 'bedButton', research: 'Bett', cost: 60},
-    {id: 'shelfButton', research: 'Regal', cost: 30},
-    {id: 'dresserButton', research: 'Kommode', cost: 40},
-    {id: 'sofaButton', research: 'Sofa', cost: 100}
-  ];
-  
-  moebelButtons.forEach(btn => {
-    const button = document.getElementById(btn.id);
-    const unlocked = window.researchSystem.research.find(r => r.id === btn.research && r.completed);
-    const hasResources = holz >= btn.cost;
-    const isDisabled = button ? button.disabled : 'Button nicht gefunden';
-    console.log(`[Möbelbau] ${btn.id}: Forschung=${btn.research}, unlocked=${unlocked}, hatRessourcen=${hasResources}, disabled=${isDisabled}`);
-  });
-};
+
 // Nach Forschung und beim Laden aufrufen
 if (window.researchSystem) {
   const origApplyResearchEffects = researchSystem.applyResearchEffects.bind(researchSystem);
@@ -1026,16 +1438,9 @@ function initializeTabs() {
   const tabButtons = document.querySelectorAll('.tab-btn');
   const tabContents = document.querySelectorAll('.tab-content');
   
-  console.log('[Tabs] Initialisiere Tabs...');
-  console.log('[Tabs] Gefundene Tab-Buttons:', tabButtons.length);
-  console.log('[Tabs] Gefundene Tab-Inhalte:', tabContents.length);
-  
   tabButtons.forEach((button, index) => {
-    console.log(`[Tabs] Button ${index}:`, button.textContent, 'data-tab:', button.getAttribute('data-tab'));
-    
     button.addEventListener('click', function() {
       const targetTab = this.getAttribute('data-tab');
-      console.log('[Tabs] Tab geklickt:', targetTab);
       
       // Alle Tab-Buttons deaktivieren
       tabButtons.forEach(btn => btn.classList.remove('active'));
@@ -1047,9 +1452,6 @@ function initializeTabs() {
       const targetContent = document.getElementById(targetTab + '-tab');
       if (targetContent) {
         targetContent.classList.add('active');
-        console.log('[Tabs] Tab aktiviert:', targetTab);
-      } else {
-        console.error('[Tabs] Tab-Inhalt nicht gefunden:', targetTab + '-tab');
       }
     });
   });
@@ -1093,17 +1495,17 @@ class ProgressBar extends HTMLElement {
       let resourceAmount = 0;
       if (barClass === '') {
         // Holzfäller: ungefähr 10 * workers (Durchschnitt von 5-15)
-        const workers = parseInt(document.getElementById('workerCount')?.textContent || '1');
+        const workers = window.workers || parseInt(document.getElementById('workerCount')?.textContent || '1');
         resourceAmount = 10 * workers;
       } else if (barClass === 'forester') {
         // Förster: foresters * plantToolLevel
-        const foresters = parseInt(document.getElementById('foresterCount')?.textContent || '1');
-        const plantToolLevel = parseInt(document.getElementById('toolLevelPlant')?.textContent || '1');
+        const foresters = window.foresters || parseInt(document.getElementById('foresterCount')?.textContent || '1');
+        const plantToolLevel = window.plantToolLevel || parseInt(document.getElementById('toolLevelPlant')?.textContent || '1');
         resourceAmount = foresters * plantToolLevel;
       } else if (barClass === 'carpenter') {
         // Schreiner: 15 * carpenters * carpenterToolLevel
-        const carpenters = parseInt(document.getElementById('carpenterCount')?.textContent || '0');
-        const carpenterToolLevel = parseInt(document.getElementById('toolLevelCarpenter')?.textContent || '1');
+        const carpenters = window.carpenters || parseInt(document.getElementById('carpenterCount')?.textContent || '0');
+        const carpenterToolLevel = window.carpenterToolLevel || parseInt(document.getElementById('toolLevelCarpenter')?.textContent || '1');
         resourceAmount = 15 * carpenters * carpenterToolLevel;
       }
       textElement.innerHTML = `<span style="font-size: 26px; position: relative; top: -4px;">≈</span><span style="font-size: 12px; margin-left: 4px; position: relative; top: -4px;">${resourceAmount}</span>`;
@@ -1132,9 +1534,9 @@ customElements.define('progress-bar', ProgressBar);
         </div>
       </div>
       <div class="research-tabs" style="display:flex;gap:12px;margin-bottom:12px;">
-        <button class="tab-button" data-tab="lumberjack" onclick="showResearchTab('lumberjack')">🪓 Holzfäller</button>
-        <button class="tab-button" data-tab="forester" onclick="showResearchTab('forester')">🌱 Förster</button>
-        <button class="tab-button" data-tab="carpenter" onclick="showResearchTab('carpenter')">🏭 Verarbeitung</button>
+        <button class="tab-button" data-tab="lumberjack" data-icon="🪓" onclick="showResearchTab('lumberjack')">Holzfäller</button>
+        <button class="tab-button" data-tab="forester" data-icon="🌱" onclick="showResearchTab('forester')">Förster</button>
+        <button class="tab-button" data-tab="carpenter" data-icon="🏭" onclick="showResearchTab('carpenter')">Verarbeitung</button>
       </div>
       <div id="researchLumberjack" class="research-tab-content" style="display:none;"></div>
       <div id="researchForester" class="research-tab-content" style="display:none;"></div>
