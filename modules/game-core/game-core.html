@@ -1,0 +1,49 @@
+<div id="gameContainer">
+  <div class="topbar-flex">
+    <div class="topbar-left">
+      <div class="score status">
+        <span class="icon">🪵</span> 0 | 
+        <span class="icon">🌲</span> <span id="treeCount">10</span> | 
+        <span class="icon">💰</span> 0
+      </div>
+      <div class="topbar-progress">
+        <progress-bar icon="🪓" value="0" max="10" barClass=""></progress-bar>
+        <progress-bar icon="🌱" value="0" max="10" barClass="forester"></progress-bar>
+        <progress-bar icon="🪑" value="0" max="40" barClass="carpenter"></progress-bar>
+      </div>
+    </div>
+    <div class="topbar-weather weather-group status">
+      <div class="weather-row">
+        <span class="weather-icon-current"></span>
+        <div class="divider"></div>
+        <div class="forecast-section">
+          <div class="forecast-text">Forecast</div>
+          <div class="forecast-icons">
+            <span class="weather-icon-forecast"></span>
+          </div>
+        </div>
+      </div>
+      <div class="weather-info">
+        <span class="weather-time">00:00</span>
+        <span class="weather-season">Summer</span>
+      </div>
+    </div>
+  </div>
+  
+  <div id="workerVisuals"></div>
+  
+  <div class="button-group" style="flex-direction: column; gap: 20px;">
+    <div class="topbar-actions">
+      <button id="researchButton" onclick="openResearchModal()">🔬 Forschung</button>
+    </div>
+    
+    <div id="tab-system-container">
+      <!-- Tab system will be loaded here -->
+    </div>
+  </div>
+  
+  <button id="resetBtn">🔄 Spiel zurücksetzen</button>
+  <button id="resetResearchBtn" style="font-size:0.95em;padding:6px 14px;margin-left:8px;">
+    Forschungen zurücksetzen
+  </button>
+</div>
