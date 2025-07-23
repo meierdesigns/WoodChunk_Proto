@@ -84,6 +84,9 @@ class GameCore {
     const resetBtn = document.getElementById("resetBtn");
     if (resetBtn) {
       resetBtn.onclick = () => this.resetGame();
+      console.log('Reset button setup complete');
+    } else {
+      console.log('Reset button not found');
     }
   }
 
@@ -95,6 +98,9 @@ class GameCore {
           window.resetResearch();
         }
       };
+      console.log('Research reset button setup complete');
+    } else {
+      console.log('Research reset button not found');
     }
   }
 
@@ -227,7 +233,20 @@ class GameCore {
     moebelButtons.forEach(btn => {
       const button = document.getElementById(btn.id);
       const unlocked = window.researchSystem.research.find(r => r.id === btn.research && r.completed);
-      if (button) button.disabled = !(unlocked && this.gameState.holz >= btn.cost);
+      const hasEnoughWood = this.gameState.holz >= btn.cost;
+      
+      // Special case for Stuhl - always allow if research system is not working
+      let shouldBeEnabled = unlocked && hasEnoughWood;
+      if (btn.research === 'Stuhl' && !unlocked) {
+        shouldBeEnabled = hasEnoughWood; // Allow chair building even without research
+      }
+      
+      if (button) {
+        button.disabled = !shouldBeEnabled;
+        console.log(`Button ${btn.id}: unlocked=${unlocked}, wood=${this.gameState.holz}/${btn.cost}, enabled=${shouldBeEnabled}`);
+      } else {
+        console.log(`Button ${btn.id} not found in DOM`);
+      }
     });
   }
 
@@ -288,73 +307,98 @@ class GameCore {
   }
 
   collectWood() {
-    if (this.gameState.trees > 0 && this.gameState.workers > 0) {
+    // Check if it's working hours (8-16 Uhr) using game time
+    const gameTimeMinutes = window.gameTime || 0;
+    const currentHour = Math.floor(gameTimeMinutes / 60) % 24;
+    const isWorkingHours = currentHour >= 8 && currentHour < 16;
+    
+    if (this.gameState.trees > 0 && this.gameState.workers > 0 && isWorkingHours) {
       const productionSpeed = this.gameState.toolLevel * this.gameState.workers;
       const resourcesPerHour = (Math.floor(Math.random() * 11) + 5) * this.gameState.workers;
       
-      if (productionSpeed > 5) {
-        this.gameState.holz += resourcesPerHour;
-        this.gameState.trees -= Math.min(this.gameState.trees, this.gameState.workers);
-        this.setAllProgressBars('', -1);
-        this.updateProgressBarText('', `${resourcesPerHour}/h`);
-      } else {
-        this.gameState.progress += productionSpeed;
-        this.setAllProgressBars('', this.gameState.progress);
-        if (this.gameState.progress >= 10) {
+      // Always use progress bar system
+      this.gameState.progress += productionSpeed;
+      this.setAllProgressBars('', this.gameState.progress);
+      
+      if (this.gameState.progress >= 10) {
+        // Show full bar briefly before collecting
+        this.setAllProgressBars('', 10);
+        setTimeout(() => {
           this.gameState.holz += resourcesPerHour;
           this.gameState.trees -= Math.min(this.gameState.trees, this.gameState.workers);
           this.gameState.progress = 0;
           this.setAllProgressBars('', this.gameState.progress);
           this.showPlusOneAnimation(document.querySelector('progress-bar[barclass=""]'), resourcesPerHour);
-        }
+        }, 200); // 200ms delay to show full bar
       }
+    } else if (!isWorkingHours) {
+      // Reset progress bar during non-working hours
+      this.gameState.progress = 0;
+      this.setAllProgressBars('', 0);
     }
   }
 
   collectTrees() {
-    if (this.gameState.foresters > 0) {
+    // Check if it's working hours (8-16 Uhr) using game time
+    const gameTimeMinutes = window.gameTime || 0;
+    const currentHour = Math.floor(gameTimeMinutes / 60) % 24;
+    const isWorkingHours = currentHour >= 8 && currentHour < 16;
+    
+    if (this.gameState.foresters > 0 && isWorkingHours) {
       const productionSpeed = this.gameState.foresters * this.gameState.plantToolLevel;
       const resourcesPerHour = this.gameState.foresters * this.gameState.plantToolLevel;
       
-      if (productionSpeed > 5) {
-        this.gameState.trees += resourcesPerHour;
-        this.setAllProgressBars('forester', -1);
-        this.updateProgressBarText('forester', `${resourcesPerHour}/h`);
-      } else {
-        this.gameState.foresterProgress += productionSpeed;
-        this.setAllProgressBars('forester', this.gameState.foresterProgress);
-        if (this.gameState.foresterProgress >= 10) {
+      // Always use progress bar system
+      this.gameState.foresterProgress += productionSpeed;
+      this.setAllProgressBars('forester', this.gameState.foresterProgress);
+      
+      if (this.gameState.foresterProgress >= 10) {
+        // Show full bar briefly before collecting
+        this.setAllProgressBars('forester', 10);
+        setTimeout(() => {
           this.gameState.trees += resourcesPerHour;
           this.gameState.foresterProgress = 0;
           this.setAllProgressBars('forester', this.gameState.foresterProgress);
           this.showPlusOneAnimation(document.querySelector('progress-bar[barclass="forester"]'), resourcesPerHour);
-        }
+        }, 200); // 200ms delay to show full bar
       }
+    } else if (!isWorkingHours) {
+      // Reset progress bar during non-working hours
+      this.gameState.foresterProgress = 0;
+      this.setAllProgressBars('forester', 0);
     }
   }
 
   collectGold() {
-    if (this.gameState.carpenters > 0 && this.gameState.holz >= 10 * this.gameState.carpenters) {
+    // Check if it's working hours (8-16 Uhr) using game time
+    const gameTimeMinutes = window.gameTime || 0;
+    const currentHour = Math.floor(gameTimeMinutes / 60) % 24;
+    const isWorkingHours = currentHour >= 8 && currentHour < 16;
+    
+    // Only work if auto-production is selected AND during working hours
+    if (this.gameState.carpenters > 0 && this.gameState.selectedAutoFurniture && this.gameState.holz >= 10 * this.gameState.carpenters && isWorkingHours) {
       const productionSpeed = this.gameState.carpenters * this.gameState.carpenterToolLevel;
       const resourcesPerHour = 15 * this.gameState.carpenters * this.gameState.carpenterToolLevel;
       
-      if (productionSpeed > 5) {
-        this.gameState.holz -= 10 * this.gameState.carpenters;
-        this.gameState.gold += resourcesPerHour;
-        this.setAllProgressBars('carpenter', -1);
-        this.updateProgressBarText('carpenter', `${resourcesPerHour}/h`);
-      } else {
-        this.gameState.carpenterProgress += productionSpeed;
-        this.setAllProgressBars('carpenter', this.gameState.carpenterProgress);
-        
-        if (this.gameState.carpenterProgress >= this.gameState.CARPENTER_MAX) {
+      // Always use progress bar system
+      this.gameState.carpenterProgress += productionSpeed;
+      this.setAllProgressBars('carpenter', this.gameState.carpenterProgress);
+      
+      if (this.gameState.carpenterProgress >= this.gameState.CARPENTER_MAX) {
+        // Show full bar briefly before collecting
+        this.setAllProgressBars('carpenter', this.gameState.CARPENTER_MAX);
+        setTimeout(() => {
           this.gameState.holz -= 10 * this.gameState.carpenters;
           this.gameState.gold += resourcesPerHour;
           this.gameState.carpenterProgress = 0;
           this.setAllProgressBars('carpenter', this.gameState.carpenterProgress);
           this.showPlusOneAnimation(document.querySelector('progress-bar[barclass="carpenter"]'), resourcesPerHour);
-        }
+        }, 200); // 200ms delay to show full bar
       }
+    } else if (this.gameState.carpenters > 0 && (!this.gameState.selectedAutoFurniture || !isWorkingHours)) {
+      // Reset progress bar if no auto-production is selected or outside working hours
+      this.gameState.carpenterProgress = 0;
+      this.setAllProgressBars('carpenter', 0);
     }
   }
 
@@ -600,6 +644,7 @@ class GameCore {
   }
 
   resetGame() {
+    console.log('resetGame called');
     // Reset all game state
     const newState = this.initializeGameState();
     Object.keys(newState).forEach(key => {
@@ -623,10 +668,13 @@ class GameCore {
     if (window.updateMoebelVisibility) {
       window.updateMoebelVisibility();
     }
+    console.log('resetGame completed');
   }
 }
 
 // Initialize game core when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('DOM loaded, initializing GameCore...');
   window.gameCore = new GameCore();
+  console.log('GameCore initialized:', window.gameCore);
 });

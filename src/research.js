@@ -297,8 +297,14 @@ researchOptions.forEach(r => {
 // --- Reset-Button für Forschung ---
 if (typeof window !== 'undefined') {
     window.resetResearch = function() {
-        localStorage.removeItem('research');
-        location.reload();
+        console.log('resetResearch called');
+        if (window.researchSystem) {
+            window.researchSystem.resetResearch();
+            console.log('Research reset via researchSystem');
+        } else {
+            localStorage.removeItem('research');
+            console.log('Research reset via localStorage only');
+        }
     }
 }
 
@@ -574,6 +580,30 @@ class ResearchSystem {
         }
 
         return element;
+    }
+
+    resetResearch() {
+        // Reset all research progress and completion
+        this.research.forEach(research => {
+            research.progress = 0;
+            research.completed = false;
+        });
+        
+        // Clear research from localStorage
+        localStorage.removeItem('research');
+        
+        // Save the reset state
+        this.saveResearch();
+        
+        // Update UI if research modal is open
+        if (typeof window.refreshResearchModal === 'function') {
+            window.refreshResearchModal();
+        }
+        
+        // Update furniture visibility
+        if (typeof window.updateMoebelVisibility === 'function') {
+            window.updateMoebelVisibility();
+        }
     }
 }
 

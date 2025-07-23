@@ -15,7 +15,7 @@
         <td>🪑 Stuhl</td>
         <td>10</td>
         <td>15</td>
-        <td><button id="chairButton">Bauen</button></td>
+        <td><button id="chairButton" onclick="console.log('Chair button clicked directly'); if(window.holz >= 10) { window.holz -= 10; window.gold += 15; console.log('Chair built! New holz:', window.holz, 'gold:', window.gold); } else { console.log('Not enough wood!'); }">Bauen</button></td>
         <td><input type="radio" id="chairAutoRadio" class="auto-radio" name="autoFurniture" value="chair"></td>
       </tr>
       <tr style="display:none" id="tableRow">

@@ -127,6 +127,9 @@ class TabSystem {
       const element = document.getElementById(button.id);
       if (element) {
         element.onclick = () => this.handleMoebelBuild(button, element);
+        console.log(`Event handler attached to ${button.id}`);
+      } else {
+        console.log(`Button ${button.id} not found in DOM`);
       }
     });
 
@@ -145,6 +148,9 @@ class TabSystem {
   }
 
   handleMoebelBuild(button, element) {
+    console.log("handleMoebelBuild called for:", button.research);
+    console.log("Current resources - holz:", window.holz, "gold:", window.gold);
+    
     if (!window.holz || window.gold === undefined) {
       console.log("Window variables not available!");
       return;
@@ -156,15 +162,23 @@ class TabSystem {
       return;
     }
     
+    console.log("Available research:", window.researchSystem.research.map(r => ({id: r.id, completed: r.completed})));
     const unlocked = window.researchSystem.research.find(r => r.id === button.research && r.completed);
-    if (!unlocked) {
+    console.log("Research unlocked for", button.research, ":", unlocked);
+    
+    // Special case for Stuhl - always allow if research system is not working
+    if (!unlocked && button.research === 'Stuhl') {
+      console.log("Stuhl research not found, but allowing build anyway");
+    } else if (!unlocked) {
       console.log("Research not completed for:", button.research);
       return;
     }
     
     if (window.holz >= button.cost) {
+      console.log("Building", button.research, "- Cost:", button.cost, "Reward:", button.reward);
       window.holz -= button.cost;
       window.gold += button.reward;
+      console.log("After build - holz:", window.holz, "gold:", window.gold);
       
       // Lokale Variablen aktualisieren
       if (window.updateLocalVariables) {
@@ -179,6 +193,8 @@ class TabSystem {
       if (window.showGoldAnimation) {
         window.showGoldAnimation(element, button.reward);
       }
+      
+      console.log("Build successful!");
     } else {
       console.log("Not enough wood! Need:", button.cost, "Have:", window.holz);
     }

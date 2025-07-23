@@ -10,6 +10,15 @@ const weatherTypes = [
   { name: 'Soft Rain', file: 'Graphics/Weathers/Soft Rain.svg', season: 'Spring' }
 ];
 
+// Background images for different times of day
+const backgroundImages = [
+  { time: 'early-morning', file: 'Graphics/BGs/1_EarlyMorning.png', hours: [5, 6, 7] },
+  { time: 'morning', file: 'Graphics/BGs/2_Morning.png', hours: [8, 9, 10, 11] },
+  { time: 'midday', file: 'Graphics/BGs/3_MidDay.png', hours: [12, 13, 14, 15] },
+  { time: 'late-afternoon', file: 'Graphics/BGs/4_LateAfterNoon.png', hours: [16, 17, 18, 19] },
+  { time: 'night', file: 'Graphics/BGs/5_Night.png', hours: [20, 21, 22, 23, 0, 1, 2, 3, 4] }
+];
+
 let currentFrameIndex = 0;
 let weatherQueue = [];
 let gameTime = 0; // Zeit in Minuten
@@ -19,6 +28,7 @@ let localTimeOffset = 0;
 let lastHour = null;
 let dayCounter = 1;
 let seasonCounter = 0; // 0: Frühling, 1: Sommer, 2: Herbst, 3: Winter
+let currentBackground = null;
 
 // Deterministische Wetter-Queue pro Tag
 function getDailySeed() {
@@ -37,6 +47,34 @@ function seededRandom(seed) {
 function formatGameTime(minutes) {
   const hours = Math.floor(minutes / 60) % 24;
   return `${hours} Uhr`;
+}
+
+function updateBackground() {
+  const hours = Math.floor(gameTime / 60) % 24;
+  
+  // Find the appropriate background for current time
+  const background = backgroundImages.find(bg => bg.hours.includes(hours));
+  
+  if (background && background.file !== currentBackground) {
+    currentBackground = background.file;
+    
+    // Set background with fallback
+    const img = new Image();
+    img.onload = function() {
+      document.body.style.backgroundImage = `url('${background.file}')`;
+      document.body.style.backgroundSize = 'cover';
+      document.body.style.backgroundPosition = 'center center';
+      document.body.style.backgroundRepeat = 'no-repeat';
+      document.body.style.backgroundAttachment = 'fixed';
+      console.log(`Background changed to: ${background.time} (${background.file})`);
+    };
+    img.onerror = function() {
+      // Fallback to blue gradient if image fails to load
+      document.body.style.background = 'linear-gradient(135deg, #000080 0%, #0000a0 50%, #000080 100%)';
+      console.log(`Background image failed to load, using fallback`);
+    };
+    img.src = background.file;
+  }
 }
 
 function fillWeatherQueue() {
@@ -181,6 +219,12 @@ function updateLocalTime() {
   timeDisplays.forEach(timeDisplay => {
     timeDisplay.textContent = formatGameTime(Math.floor(gameTime));
   });
+  
+  // Update background based on time of day
+  updateBackground();
+  
+  // Update global game time for other modules
+  window.gameTime = gameTime;
 }
 
 // Server-Zeit abrufen und lokale Zeit synchronisieren (optional)
@@ -229,6 +273,9 @@ function initWeather() {
   updateWeatherFrames();
   updateLocalTime();
   
+  // Initialize background
+  updateBackground();
+  
   // Hole IMMER die Serverzeit (kein Fallback auf lokale Zeit)
   syncWithServerTime().then(() => {
     // Nach Synchronisation ggf. Anzeige aktualisieren
@@ -254,4 +301,7 @@ window.weatherModule = {
   initWeather,
   updateWeatherFrames,
   advanceWeather
-}; 
+};
+
+// Expose game time globally for other modules
+window.gameTime = gameTime; 

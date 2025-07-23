@@ -4,21 +4,26 @@
 
 html, body {
   overflow-y: auto;
-  height: 100dvh;
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
 }
 body {
   margin: 0;
   padding: 0;
-  background: linear-gradient(135deg, #000080 0%, #0000a0 50%, #000080 100%);
   font-family: 'Press Start 2P', monospace;
   image-rendering: pixelated;
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 100dvh;
+  height: 100vh;
+  width: 100vw;
   color: #ffffff;
   overflow-x: hidden;
   text-shadow: none !important;
+  transition: background-image 0.5s ease-in-out;
+  min-height: 100vh;
 }
 
 #gameContainer { 
