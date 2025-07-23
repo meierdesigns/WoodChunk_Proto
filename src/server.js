@@ -36,7 +36,7 @@ try {
     }
   }
 } catch (error) {
-  // Fehler beim Laden der initialen Spielzeit
+  console.warn('Warning: Could not load initial game time:', error.message);
 }
 
 // Berechne aktuelle Spielzeit
@@ -48,8 +48,13 @@ function getCurrentGameTime() {
 
 // Aktuelle Spielzeit abrufen
 app.get('/time', (req, res) => {
-  const currentGameTime = getCurrentGameTime();
-  res.json({ gameTime: currentGameTime });
+  try {
+    const currentGameTime = getCurrentGameTime();
+    res.json({ gameTime: currentGameTime });
+  } catch (error) {
+    console.error('Error getting current time:', error);
+    res.status(500).json({ success: false, message: 'Error getting time', error: error.message });
+  }
 });
 
 // Spielstand speichern
@@ -58,10 +63,17 @@ app.post('/save', (req, res) => {
     const saveData = req.body;
     saveData.timestamp = new Date().toISOString();
     saveData.gameTime = getCurrentGameTime(); // Speichere aktuelle Spielzeit
+    
+    // Validate save data
+    if (typeof saveData.holz !== 'number' || typeof saveData.gold !== 'number') {
+      throw new Error('Invalid save data: holz and gold must be numbers');
+    }
+    
     fs.writeFileSync(SAVE_FILE, JSON.stringify(saveData, null, 2));
     res.json({ success: true, message: 'Spielstand gespeichert' });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Fehler beim Speichern' });
+    console.error('Save error:', error);
+    res.status(500).json({ success: false, message: 'Fehler beim Speichern', error: error.message });
   }
 });
 
@@ -77,16 +89,29 @@ app.get('/load', (req, res) => {
       res.json(null);
     }
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Fehler beim Laden' });
+    console.error('Load error:', error);
+    res.status(500).json({ success: false, message: 'Fehler beim Laden', error: error.message });
   }
 });
 
 // Standard-Route für die Hauptseite
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'index.html'));
+  try {
+    res.sendFile(path.join(__dirname, '..', 'index.html'));
+  } catch (error) {
+    console.error('Error serving index.html:', error);
+    res.status(500).send('Error loading game');
+  }
+});
+
+// Error handling middleware
+app.use((error, req, res, next) => {
+  console.error('Unhandled error:', error);
+  res.status(500).json({ success: false, message: 'Internal server error' });
 });
 
 // Server starten
 app.listen(PORT, () => {
-  // Server gestartet
+  console.log(`🎮 WoodChunk_Proto game server running on port ${PORT}`);
+  console.log(`🌐 Access the game at: http://localhost:${PORT}`);
 }); 

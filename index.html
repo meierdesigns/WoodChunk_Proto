@@ -161,8 +161,10 @@
       });
     }
 
-    // Initialize weather system
+    // Initialize systems and update document title
     document.addEventListener('DOMContentLoaded', () => {
+      document.title = '🪵 WoodChunk Proto - Furniture Clicker Game';
+      
       if (window.weatherModule) {
         window.weatherModule.initWeather();
       }
