@@ -1,0 +1,16 @@
+<div class="tab-container">
+  <div class="tab-buttons">
+    <button class="tab-btn active" data-tab="arbeitsamt" onclick="switchTab('arbeitsamt')">🏢 Arbeitsamt</button>
+    <button class="tab-btn" data-tab="moebelbau" onclick="switchTab('moebelbau')">🛋️ Möbelbau</button>
+  </div>
+  
+  <div id="arbeitsamt-tab" class="tab-content active">
+    <!-- Externe Arbeitsamt-Tabelle (wird geladen) -->
+    <div id="external-arbeitsamt-container"></div>
+  </div>
+  
+  <div id="moebelbau-tab" class="tab-content">
+    <!-- Externe Möbelbau-Tabelle (wird geladen) -->
+    <div id="external-moebelbau-container"></div>
+  </div>
+</div>
