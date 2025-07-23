@@ -544,31 +544,45 @@ class GameCore {
     try {
       const response = await fetch('/save', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify({
-          gold: this.gameState.gold,
           holz: this.gameState.holz,
-          trees: this.gameState.trees,
+          gold: this.gameState.gold,
+          treeCount: this.gameState.treeCount,
           workers: this.gameState.workers,
           foresters: this.gameState.foresters,
           carpenters: this.gameState.carpenters,
-          toolLevel: this.gameState.toolLevel,
-          plantToolLevel: this.gameState.plantToolLevel,
-          carpenterToolLevel: this.gameState.carpenterToolLevel,
           progress: this.gameState.progress,
           foresterProgress: this.gameState.foresterProgress,
           carpenterProgress: this.gameState.carpenterProgress
         })
       });
-      await response.json();
+      
+      if (!response.ok) {
+        throw new Error(`Server error: ${response.status}`);
+      }
+      
+      const result = await response.json();
+      if (window.statusSystem && result.success) {
+        window.statusSystem.showToast("💾 Game saved successfully", "success");
+      }
     } catch (error) {
       console.error('Save error:', error);
+      if (window.statusSystem) {
+        window.statusSystem.showToast("❌ Failed to save game", "error");
+      }
     }
   }
 
   async loadGameFromServer() {
     try {
       const response = await fetch('/load');
+      if (!response.ok) {
+        throw new Error(`Server error: ${response.status}`);
+      }
+      
       const save = await response.json();
       
       if (save) {
@@ -586,6 +600,10 @@ class GameCore {
         this.setAllProgressBars('carpenter', this.gameState.carpenterProgress || 0);
         
         this.updateDisplay();
+        
+        if (window.statusSystem) {
+          window.statusSystem.showToast("📁 Game loaded successfully", "success");
+        }
       }
 
       // Update furniture visibility regardless
@@ -596,6 +614,9 @@ class GameCore {
       }, 100);
     } catch (error) {
       console.error('Load error:', error);
+      if (window.statusSystem) {
+        window.statusSystem.showToast("❌ Failed to load game", "error");
+      }
     }
   }
 

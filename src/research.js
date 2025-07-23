@@ -526,14 +526,127 @@ class ResearchSystem {
 
     // Forschungseffekte anwenden
     applyResearchEffects(research) {
-        // Diese Funktion muss an dein Spielsystem angepasst werden
+        if (!research.effects) return;
         
         // Möbelbau aktualisieren, falls es sich um Möbel-Forschung handelt
         if (typeof window.updateMoebelVisibility === 'function') {
             window.updateMoebelVisibility();
         }
         
-        // TODO: Hier müssen die tatsächlichen Effekte implementiert werden
+        // Apply each effect based on its type
+        Object.keys(research.effects).forEach(effectType => {
+            const effectValue = research.effects[effectType];
+            
+            switch(effectType) {
+                case 'wood_multiplier':
+                    // Apply wood collection multiplier
+                    if (!window.gameEffects) window.gameEffects = {};
+                    window.gameEffects.woodMultiplier = (window.gameEffects.woodMultiplier || 1) * effectValue;
+                    break;
+                    
+                case 'chop_speed':
+                    // Apply chopping speed multiplier
+                    if (!window.gameEffects) window.gameEffects = {};
+                    window.gameEffects.chopSpeed = (window.gameEffects.chopSpeed || 1) * effectValue;
+                    break;
+                    
+                case 'tree_growth_rate':
+                    // Apply tree regeneration speed
+                    if (!window.gameEffects) window.gameEffects = {};
+                    window.gameEffects.treeGrowthRate = (window.gameEffects.treeGrowthRate || 1) * effectValue;
+                    break;
+                    
+                case 'wood_per_tree':
+                    // Apply wood per tree multiplier
+                    if (!window.gameEffects) window.gameEffects = {};
+                    window.gameEffects.woodPerTree = (window.gameEffects.woodPerTree || 1) * effectValue;
+                    break;
+                    
+                case 'wood_value':
+                    // Apply wood value multiplier
+                    if (!window.gameEffects) window.gameEffects = {};
+                    window.gameEffects.woodValue = (window.gameEffects.woodValue || 1) * effectValue;
+                    break;
+                    
+                case 'forest_efficiency':
+                    // Apply forest efficiency
+                    if (!window.gameEffects) window.gameEffects = {};
+                    window.gameEffects.forestEfficiency = (window.gameEffects.forestEfficiency || 1) * effectValue;
+                    break;
+                    
+                case 'transport_speed':
+                    // Apply transport speed multiplier
+                    if (!window.gameEffects) window.gameEffects = {};
+                    window.gameEffects.transportSpeed = (window.gameEffects.transportSpeed || 1) * effectValue;
+                    break;
+                    
+                case 'auto_chop':
+                    // Enable automatic chopping
+                    if (!window.gameEffects) window.gameEffects = {};
+                    window.gameEffects.autoChop = effectValue;
+                    break;
+                    
+                case 'weather_prediction':
+                    // Enable weather prediction
+                    if (!window.gameEffects) window.gameEffects = {};
+                    window.gameEffects.weatherPrediction = effectValue;
+                    break;
+                    
+                case 'bulk_harvest':
+                    // Enable bulk harvesting
+                    if (!window.gameEffects) window.gameEffects = {};
+                    window.gameEffects.bulkHarvest = effectValue;
+                    break;
+                    
+                case 'wood_quality':
+                    // Apply wood quality multiplier
+                    if (!window.gameEffects) window.gameEffects = {};
+                    window.gameEffects.woodQuality = (window.gameEffects.woodQuality || 1) * effectValue;
+                    break;
+                    
+                case 'wood_durability':
+                    // Apply wood durability multiplier
+                    if (!window.gameEffects) window.gameEffects = {};
+                    window.gameEffects.woodDurability = (window.gameEffects.woodDurability || 1) * effectValue;
+                    break;
+                    
+                case 'tree_detection':
+                    // Apply tree detection range multiplier
+                    if (!window.gameEffects) window.gameEffects = {};
+                    window.gameEffects.treeDetection = (window.gameEffects.treeDetection || 1) * effectValue;
+                    break;
+                    
+                // Furniture building capabilities
+                case 'can_build_chair':
+                case 'can_build_table':
+                case 'can_build_wardrobe': 
+                case 'can_build_bed':
+                case 'can_build_shelf':
+                case 'can_build_dresser':
+                case 'can_build_sofa':
+                case 'can_build_cabinet':
+                    if (!window.gameEffects) window.gameEffects = {};
+                    if (!window.gameEffects.canBuild) window.gameEffects.canBuild = {};
+                    window.gameEffects.canBuild[effectType] = effectValue;
+                    break;
+                    
+                default:
+                    // Generic effect handling
+                    if (!window.gameEffects) window.gameEffects = {};
+                    window.gameEffects[effectType] = effectValue;
+                    break;
+            }
+        });
+        
+        // Notify status system about research completion
+        if (window.statusSystem) {
+            window.statusSystem.showToast(`🔬 Research "${research.name}" completed!`, "success");
+        }
+        
+        // Update displays that might be affected by the new effects
+        if (window.updateDisplay) {
+            window.updateDisplay();
+        }
     }
 
     // UI aktualisieren

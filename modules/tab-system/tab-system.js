@@ -68,13 +68,17 @@ class TabSystem {
   async loadArbeitsamtTable() {
     try {
       const response = await fetch('arbeitsamt-table.html');
+      if (!response.ok) {
+        throw new Error(`Failed to load arbeitsamt table: ${response.status}`);
+      }
+      
       const html = await response.text();
       const container = document.getElementById('external-arbeitsamt-container');
       
       if (container) {
         container.innerHTML = html;
         
-        // Nach dem Laden: Event-Handler setzen
+        // Event-Handler für Arbeitsamt-Buttons setzen
         setTimeout(() => {
           if (window.setupArbeitsamtEventHandlers) {
             window.setupArbeitsamtEventHandlers();
@@ -83,12 +87,19 @@ class TabSystem {
       }
     } catch (error) {
       console.error('Error loading arbeitsamt table:', error);
+      if (window.statusSystem) {
+        window.statusSystem.showToast("❌ Failed to load job office table", "error");
+      }
     }
   }
 
   async loadMoebelbauTable() {
     try {
       const response = await fetch('moebelbau-table.html');
+      if (!response.ok) {
+        throw new Error(`Failed to load moebelbau table: ${response.status}`);
+      }
+      
       const html = await response.text();
       const container = document.getElementById('external-moebelbau-container');
       
@@ -107,6 +118,9 @@ class TabSystem {
       }
     } catch (error) {
       console.error('Error loading moebelbau table:', error);
+      if (window.statusSystem) {
+        window.statusSystem.showToast("❌ Failed to load furniture table", "error");
+      }
     }
   }
 
@@ -146,19 +160,25 @@ class TabSystem {
 
   handleMoebelBuild(button, element) {
     if (!window.holz || window.gold === undefined) {
-      console.log("Window variables not available!");
+      if (window.statusSystem) {
+        window.statusSystem.showToast("❌ Game variables not available", "error");
+      }
       return;
     }
 
     // Forschungsprüfung
     if (!window.researchSystem) {
-      console.log("Research system not available!");
+      if (window.statusSystem) {
+        window.statusSystem.showToast("❌ Research system not available", "error");
+      }
       return;
     }
     
     const unlocked = window.researchSystem.research.find(r => r.id === button.research && r.completed);
     if (!unlocked) {
-      console.log("Research not completed for:", button.research);
+      if (window.statusSystem) {
+        window.statusSystem.showToast(`🔒 Research "${button.research}" not completed`, "warning");
+      }
       return;
     }
     
@@ -179,8 +199,15 @@ class TabSystem {
       if (window.showGoldAnimation) {
         window.showGoldAnimation(element, button.reward);
       }
+      
+      // Success feedback
+      if (window.statusSystem) {
+        window.statusSystem.showToast(`✅ Built furniture (+${button.reward} gold)`, "success");
+      }
     } else {
-      console.log("Not enough wood! Need:", button.cost, "Have:", window.holz);
+      if (window.statusSystem) {
+        window.statusSystem.showToast(`❌ Not enough wood! Need: ${button.cost}, Have: ${window.holz}`, "error");
+      }
     }
   }
 }

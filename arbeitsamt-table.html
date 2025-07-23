@@ -1,247 +1,62 @@
-<!-- Arbeitsamt-Tabelle - Externe Datei -->
-<div class="button-section">
-  <table class="arbeitsamt-table-external">
-    <thead>
-      <tr>
-        <th style="text-align: left;">Beruf</th>
-        <th>Anzahl</th>
-        <th>Kosten</th>
-        <th>Aktion</th>
-        <th>Werkzeug</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>🪓 Holzfäller</td>
-        <td><span id="workerCount">1</span></td>
-        <td><span id="workerCost">20</span>💰</td>
-        <td><button id="hireWorkerButton" onclick="testHireWorker()">Anstellen</button></td>
-        <td><button id="upgradeToolButton" onclick="testUpgradeTool()" title="Axt verbessern"><span class="icon">🪓</span> Lv. <span id="toolLevelAxe">1</span> (<span id="toolCostAxe">50</span><span class="icon">💰</span>)</button></td>
-      </tr>
-      <tr>
-        <td>🌱 Förster</td>
-        <td><span id="foresterCount">1</span></td>
-        <td><span id="foresterCost">25</span>💰</td>
-        <td><button id="hireForesterButton" onclick="testHireForester()">Anstellen</button></td>
-        <td><button id="upgradePlantToolButton" onclick="testUpgradePlantTool()" title="Pflanzwerkzeug verbessern"><span class="icon">🌿</span> Lv. <span id="toolLevelPlant">1</span> (<span id="toolCostPlant">50</span><span class="icon">💰</span>)</button></td>
-      </tr>
-      <tr>
-        <td>🪚 Schreiner</td>
-        <td><span id="carpenterCount">0</span></td>
-        <td><span id="carpenterCost">30</span>💰</td>
-        <td><button id="hireCarpenterButton" onclick="testHireCarpenter()">Anstellen</button></td>
-        <td><button id="upgradeCarpenterToolButton" onclick="testUpgradeCarpenterTool()" title="Schreinerwerkzeug verbessern"><span class="icon">🔨</span> Lv. <span id="toolLevelCarpenter">1</span> (<span id="toolCostCarpenter">50</span><span class="icon">💰</span>)</button></td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-
-<script>
-// Test-Funktionen für direkte Event-Handler
-function testUpgradeTool() {
-  console.log("=== DIRECT TEST: UPGRADE TOOL CLICKED ===");
-  console.log("Window variables:", {
-    gold: window.gold,
-    toolLevel: window.toolLevel
-  });
-  
-  if (window.gold && window.toolLevel) {
-    const cost = window.toolLevel * 50;
-    console.log("Calculated cost:", cost);
-    
-    if (window.gold >= cost) {
-      console.log("Enough gold, proceeding with upgrade");
-      window.gold -= cost;
-      window.toolLevel++;
-      console.log("After upgrade - gold:", window.gold, "toolLevel:", window.toolLevel);
-      
-      // Lokale Variablen in index.html aktualisieren
-      if (window.updateLocalVariables) {
-        window.updateLocalVariables();
-      }
-      
-      if (window.updateDisplay) {
-        window.updateDisplay();
-      }
-      console.log("Tool upgraded to level:", window.toolLevel);
-    } else {
-      console.log("Not enough gold! Need:", cost, "Have:", window.gold);
-    }
-  } else {
-    console.log("Window variables not available!");
-  }
-}
-
-function testUpgradePlantTool() {
-  console.log("=== DIRECT TEST: UPGRADE PLANT TOOL CLICKED ===");
-  console.log("Window variables:", {
-    gold: window.gold,
-    plantToolLevel: window.plantToolLevel
-  });
-  
-  if (window.gold && window.plantToolLevel) {
-    const cost = window.plantToolLevel * 50;
-    console.log("Calculated cost:", cost);
-    
-    if (window.gold >= cost) {
-      console.log("Enough gold, proceeding with upgrade");
-      window.gold -= cost;
-      window.plantToolLevel++;
-      console.log("After upgrade - gold:", window.gold, "plantToolLevel:", window.plantToolLevel);
-      
-      // Lokale Variablen in index.html aktualisieren
-      if (window.updateLocalVariables) {
-        window.updateLocalVariables();
-      }
-      
-      if (window.updateDisplay) {
-        window.updateDisplay();
-      }
-      console.log("Plant tool upgraded to level:", window.plantToolLevel);
-    } else {
-      console.log("Not enough gold! Need:", cost, "Have:", window.gold);
-    }
-  } else {
-    console.log("Window variables not available!");
-  }
-}
-
-function testUpgradeCarpenterTool() {
-  console.log("=== DIRECT TEST: UPGRADE CARPENTER TOOL CLICKED ===");
-  console.log("Window variables:", {
-    gold: window.gold,
-    carpenterToolLevel: window.carpenterToolLevel
-  });
-  
-  if (window.gold && window.carpenterToolLevel) {
-    const cost = window.carpenterToolLevel * 50;
-    console.log("Calculated cost:", cost);
-    
-    if (window.gold >= cost) {
-      console.log("Enough gold, proceeding with upgrade");
-      window.gold -= cost;
-      window.carpenterToolLevel++;
-      console.log("After upgrade - gold:", window.gold, "carpenterToolLevel:", window.carpenterToolLevel);
-      
-      // Lokale Variablen in index.html aktualisieren
-      if (window.updateLocalVariables) {
-        window.updateLocalVariables();
-      }
-      
-      if (window.updateDisplay) {
-        window.updateDisplay();
-      }
-      console.log("Carpenter tool upgraded to level:", window.carpenterToolLevel);
-    } else {
-      console.log("Not enough gold! Need:", cost, "Have:", window.gold);
-    }
-  } else {
-    console.log("Window variables not available!");
-  }
-}
-
-function testHireWorker() {
-  console.log("=== DIRECT TEST: HIRE WORKER CLICKED ===");
-  console.log("Window variables:", {
-    gold: window.gold,
-    workers: window.workers,
-    workerBaseCost: window.workerBaseCost
-  });
-  
-  if (window.gold && window.workers && window.workerBaseCost && window.calculateWorkerPrice) {
-    const price = window.calculateWorkerPrice(window.workerBaseCost, window.workers - 1);
-    console.log("Calculated price:", price);
-    
-    if (window.gold >= price) {
-      console.log("Enough gold, proceeding with hire");
-      window.gold -= price;
-      window.workers++;
-      console.log("After hire - gold:", window.gold, "workers:", window.workers);
-      
-      // Lokale Variablen in index.html aktualisieren
-      if (window.updateLocalVariables) {
-        window.updateLocalVariables();
-      }
-      
-      if (window.updateDisplay) {
-        window.updateDisplay();
-      }
-      console.log("Worker hired, total workers:", window.workers);
-    } else {
-      console.log("Not enough gold! Need:", price, "Have:", window.gold);
-    }
-  } else {
-    console.log("Window variables not available!");
-  }
-}
-
-function testHireForester() {
-  console.log("=== DIRECT TEST: HIRE FORESTER CLICKED ===");
-  console.log("Window variables:", {
-    gold: window.gold,
-    foresters: window.foresters,
-    foresterBaseCost: window.foresterBaseCost
-  });
-  
-  if (window.gold && window.foresters && window.foresterBaseCost && window.calculateWorkerPrice) {
-    const price = window.calculateWorkerPrice(window.foresterBaseCost, window.foresters - 1);
-    console.log("Calculated price:", price);
-    
-    if (window.gold >= price) {
-      console.log("Enough gold, proceeding with hire");
-      window.gold -= price;
-      window.foresters++;
-      console.log("After hire - gold:", window.gold, "foresters:", window.foresters);
-      
-      // Lokale Variablen in index.html aktualisieren
-      if (window.updateLocalVariables) {
-        window.updateLocalVariables();
-      }
-      
-      if (window.updateDisplay) {
-        window.updateDisplay();
-      }
-      console.log("Forester hired, total foresters:", window.foresters);
-    } else {
-      console.log("Not enough gold! Need:", price, "Have:", window.gold);
-    }
-  } else {
-    console.log("Window variables not available!");
-  }
-}
-
-function testHireCarpenter() {
-  console.log("=== DIRECT TEST: HIRE CARPENTER CLICKED ===");
-  console.log("Window variables:", {
-    gold: window.gold,
-    carpenters: window.carpenters,
-    carpenterBaseCost: window.carpenterBaseCost
-  });
-  
-  if (window.gold && window.carpenters !== undefined && window.carpenterBaseCost && window.calculateWorkerPrice) {
-    const price = window.calculateWorkerPrice(window.carpenterBaseCost, window.carpenters);
-    console.log("Calculated price:", price);
-    
-    if (window.gold >= price) {
-      console.log("Enough gold, proceeding with hire");
-      window.gold -= price;
-      window.carpenters++;
-      console.log("After hire - gold:", window.gold, "carpenters:", window.carpenters);
-      
-      // Lokale Variablen in index.html aktualisieren
-      if (window.updateLocalVariables) {
-        window.updateLocalVariables();
-      }
-      
-      if (window.updateDisplay) {
-        window.updateDisplay();
-      }
-      console.log("Carpenter hired, total carpenters:", window.carpenters);
-    } else {
-      console.log("Not enough gold! Need:", price, "Have:", window.gold);
-    }
-  } else {
-    console.log("Window variables not available!");
-  }
-}
-</script> 
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <title>Arbeitsamt</title>
+</head>
+<body>
+    <!-- Arbeitsamt-Tabelle -->
+    <table style="width: 100%; border-collapse: collapse; background: linear-gradient(to bottom, #d4d0c8, #f0f0f0); border: 2px outset #d4d0c8;">
+        <thead>
+            <tr style="background: linear-gradient(to bottom, #e0e0e0, #c0c0c0); border-bottom: 1px solid #808080;">
+                <th style="border: 1px outset #d4d0c8; padding: 8px; background: linear-gradient(to bottom, #e0e0e0, #c0c0c0);">Upgrade</th>
+                <th style="border: 1px outset #d4d0c8; padding: 8px; background: linear-gradient(to bottom, #e0e0e0, #c0c0c0);">Cost</th>
+                <th style="border: 1px outset #d4d0c8; padding: 8px; background: linear-gradient(to bottom, #e0e0e0, #c0c0c0);">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="border: 1px inset #d4d0c8; padding: 8px;">🪓 Tool (Level <span id="toolLevel">1</span>)</td>
+                <td style="border: 1px inset #d4d0c8; padding: 8px;"><span id="toolCost">50</span> 💰</td>
+                <td style="border: 1px inset #d4d0c8; padding: 8px;">
+                    <button id="upgradeToolButton" style="padding: 4px 8px; border: 1px outset #d4d0c8; background: linear-gradient(to bottom, #f0f0f0, #d4d0c8); cursor: pointer;">Upgrade</button>
+                </td>
+            </tr>
+            <tr>
+                <td style="border: 1px inset #d4d0c8; padding: 8px;">🌱 Plant Tool (Level <span id="toolLevelPlant">1</span>)</td>
+                <td style="border: 1px inset #d4d0c8; padding: 8px;"><span id="toolCostPlant">50</span> 💰</td>
+                <td style="border: 1px inset #d4d0c8; padding: 8px;">
+                    <button id="upgradePlantToolButton" style="padding: 4px 8px; border: 1px outset #d4d0c8; background: linear-gradient(to bottom, #f0f0f0, #d4d0c8); cursor: pointer;">Upgrade</button>
+                </td>
+            </tr>
+            <tr>
+                <td style="border: 1px inset #d4d0c8; padding: 8px;">🔨 Carpenter Tool (Level <span id="toolLevelCarpenter">1</span>)</td>
+                <td style="border: 1px inset #d4d0c8; padding: 8px;"><span id="toolCostCarpenter">50</span> 💰</td>
+                <td style="border: 1px inset #d4d0c8; padding: 8px;">
+                    <button id="upgradeCarpenterToolButton" style="padding: 4px 8px; border: 1px outset #d4d0c8; background: linear-gradient(to bottom, #f0f0f0, #d4d0c8); cursor: pointer;">Upgrade</button>
+                </td>
+            </tr>
+            <tr>
+                <td style="border: 1px inset #d4d0c8; padding: 8px;">👷 Workers (<span id="workerCount">1</span>)</td>
+                <td style="border: 1px inset #d4d0c8; padding: 8px;"><span id="workerCost">20</span> 💰</td>
+                <td style="border: 1px inset #d4d0c8; padding: 8px;">
+                    <button id="hireWorkerButton" style="padding: 4px 8px; border: 1px outset #d4d0c8; background: linear-gradient(to bottom, #f0f0f0, #d4d0c8); cursor: pointer;">Hire</button>
+                </td>
+            </tr>
+            <tr>
+                <td style="border: 1px inset #d4d0c8; padding: 8px;">🌲 Foresters (<span id="foresterCount">1</span>)</td>
+                <td style="border: 1px inset #d4d0c8; padding: 8px;"><span id="foresterCost">25</span> 💰</td>
+                <td style="border: 1px inset #d4d0c8; padding: 8px;">
+                    <button id="hireForesterButton" style="padding: 4px 8px; border: 1px outset #d4d0c8; background: linear-gradient(to bottom, #f0f0f0, #d4d0c8); cursor: pointer;">Hire</button>
+                </td>
+            </tr>
+            <tr>
+                <td style="border: 1px inset #d4d0c8; padding: 8px;">🪑 Carpenters (<span id="carpenterCount">0</span>)</td>
+                <td style="border: 1px inset #d4d0c8; padding: 8px;"><span id="carpenterCost">30</span> 💰</td>
+                <td style="border: 1px inset #d4d0c8; padding: 8px;">
+                    <button id="hireCarpenterButton" style="padding: 4px 8px; border: 1px outset #d4d0c8; background: linear-gradient(to bottom, #f0f0f0, #d4d0c8); cursor: pointer;">Hire</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html> 
