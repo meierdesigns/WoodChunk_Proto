@@ -18,18 +18,18 @@ if not exist "src\server.js" (
     exit /b 1
 )
 
-REM Check if port 3000 is already in use
-echo Checking if port 3000 is available...
-netstat -an | findstr ":3000" >nul
+REM Check if port 1337 is already in use
+echo Checking if port 1337 is available...
+netstat -an | findstr ":1337" >nul
 if %errorlevel% equ 0 (
-    echo Warning: Port 3000 is already in use!
-    echo Attempting to kill existing process on port 3000...
-    for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":3000"') do (
+    echo Warning: Port 1337 is already in use!
+    echo Attempting to kill existing process on port 1337...
+    for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":1337"') do (
         taskkill /PID %%a /F >nul 2>&1
     )
     timeout /t 2 >nul
 )
 
-echo Starting server on http://localhost:3000...
+echo Starting server on http://localhost:1337...
 node src/server.js
 pause 

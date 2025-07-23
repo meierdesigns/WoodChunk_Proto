@@ -1,6 +1,6 @@
 {
-  "gold": 12849,
-  "holz": 3243,
+  "gold": 30294,
+  "holz": 3229,
   "trees": 10,
   "workers": 8,
   "foresters": 8,
@@ -11,6 +11,6 @@
   "progress": 0,
   "foresterProgress": 0,
   "carpenterProgress": 20,
-  "timestamp": "2025-07-23T21:43:55.903Z",
-  "gameTime": 1391
+  "timestamp": "2025-07-23T21:52:54.908Z",
+  "gameTime": 1214
 }
