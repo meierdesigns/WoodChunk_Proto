@@ -1,0 +1,53 @@
+.progress-bar-outer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.bar-icon {
+  font-size: 20px;
+  margin-right: 4px;
+}
+
+.bar {
+  width: 100%;
+  height: 24px;
+  background: #808080;
+  border: 3px solid #000000;
+  box-shadow: inset 2px 2px 0px #fff, inset -2px -2px 0px #404040;
+  overflow: hidden;
+  position: relative;
+}
+
+.bar-inner {
+  height: 100%;
+  width: 0%;
+  transition: width 0.2s ease;
+  box-shadow: inset 1px 1px 0px #fff;
+  min-width: 0;
+  max-width: 100%;
+  background: linear-gradient(90deg, #ff0000 0%, #ff4444 100%);
+}
+
+.bar-inner.forester {
+  background: linear-gradient(90deg, #00ff00 0%, #44ff44 100%);
+}
+
+.bar-inner.carpenter {
+  background: linear-gradient(90deg, #ff8800 0%, #ffaa44 100%);
+}
+
+.bar-text {
+  position: absolute;
+  top: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 14px;
+  z-index: 10;
+  text-shadow: 1px 1px 0 #000;
+  line-height: 20px;
+}

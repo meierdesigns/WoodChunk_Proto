@@ -1,0 +1,149 @@
+#gameContainer { 
+  width: 100%; 
+  max-width: 900px;
+  box-sizing: border-box;
+  background: linear-gradient(180deg, #c0c0c0 0%, #a0a0a0 100%);
+  border: 4px solid #000000;
+  border-radius: 8px;
+  box-shadow: 
+    inset 2px 2px 0px #ffffff,
+    inset -2px -2px 0px #808080,
+    4px 4px 0px #000000;
+  padding: 16px;
+  margin: 16px auto;
+  overflow-x: hidden;
+}
+
+.topbar-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.topbar-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.topbar-progress {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.topbar-progress progress-bar {
+  flex: 1 1 0;
+  min-width: 80px;
+  max-width: 200px;
+}
+
+.topbar-actions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.topbar-weather {
+  flex-shrink: 0;
+  min-width: 200px;
+}
+
+.weather-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.weather-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.divider {
+  width: 2px;
+  height: 20px;
+  background: #000;
+  margin: 0 5px;
+}
+
+.forecast-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.forecast-text {
+  font-size: 8px;
+  color: #000;
+}
+
+.forecast-icons {
+  display: flex;
+  gap: 4px;
+}
+
+.weather-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 8px;
+  color: #000;
+}
+
+.weather-icon-current,
+.weather-icon-forecast {
+  font-size: 16px;
+}
+
+#workerVisuals {
+  margin: 10px 0;
+  min-height: 20px;
+}
+
+.button-group { 
+  display: flex; 
+  flex-direction: row; 
+  width: 100%; 
+  gap: 15px; 
+  flex-wrap: wrap;
+}
+
+#resetBtn { 
+  margin-top: 20px;
+  background: linear-gradient(180deg, #ff4444 0%, #cc0000 100%);
+  color: #ffffff;
+  text-shadow: 1px 1px 0px #000000;
+  font-size: 14px;
+  padding: 12px 24px;
+}
+
+/* Gold-Animation für Möbelbau */
+@keyframes goldFloat {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateY(-30px) scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-60px) scale(1.5);
+  }
+}
+
+.gold-animation {
+  position: absolute;
+  color: #FFD700;
+  font-weight: bold;
+  font-size: 6pt;
+  text-shadow: 2px 2px 0 #000, 0 0 1px #000;
+  pointer-events: none;
+  z-index: 1000;
+  animation: goldFloat 1.5s ease-out forwards;
+}
