@@ -1,0 +1,26 @@
+<!-- Job Row Component Template -->
+<tr class="job-row" data-job-type="{jobType}">
+  <td>
+    <div class="job-display">
+      <div class="job-icon-shield">
+        <span class="job-icon">{jobIcon}</span>
+      </div>
+      <span class="job-name">{jobName}</span>
+    </div>
+  </td>
+  <td>
+    <span id="{jobType}Count">{count}</span>
+  </td>
+  <td>
+    <div class="action-controls">
+      <button id="decrease{jobType}Count" onclick="decrease{jobType}Count()" disabled>-</button>
+      <button id="increase{jobType}Count" onclick="increase{jobType}Count()">+</button>
+    </div>
+  </td>
+  <td>
+    <button id="upgrade{jobType}ToolButton" onclick="testUpgrade{jobType}Tool()" title="{toolName} verbessern">
+      <span class="icon">{toolIcon}</span> Lv. <span id="toolLevel{jobType}">{toolLevel}</span> 
+      (<span id="toolCost{jobType}">{toolCost}</span><span class="icon">💰</span>)
+    </button>
+  </td>
+</tr> 

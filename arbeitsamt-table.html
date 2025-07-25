@@ -5,40 +5,94 @@
       <tr>
         <th style="text-align: left;">Beruf</th>
         <th>Anzahl</th>
-        <th>Kosten</th>
         <th>Aktion</th>
         <th>Werkzeug</th>
       </tr>
     </thead>
-    <tbody>
-      <tr>
-        <td>🪓 Holzfäller</td>
-        <td><span id="workerCount">1</span></td>
-        <td><span id="workerCost">20</span>💰</td>
-        <td><button id="hireWorkerButton" onclick="testHireWorker()">Anstellen</button></td>
-        <td><button id="upgradeToolButton" onclick="testUpgradeTool()" title="Axt verbessern"><span class="icon">🪓</span> Lv. <span id="toolLevelAxe">1</span> (<span id="toolCostAxe">50</span><span class="icon">💰</span>)</button></td>
+    <tbody id="job-rows-container">
+      <!-- Fallback job rows in case component fails -->
+      <tr class="job-row" data-job-type="Worker">
+        <td>
+          <div class="job-display">
+            <div class="job-icon-shield">
+              <span class="job-icon">🪓</span>
+            </div>
+            <span class="job-name">Holzfäller</span>
+          </div>
+        </td>
+        <td>
+          <span id="workerCount">0</span>
+        </td>
+        <td>
+          <div class="action-controls">
+            <button id="decreaseWorkerCount" onclick="decreaseWorkerCount()" disabled>-</button>
+            <button id="increaseWorkerCount" onclick="increaseWorkerCount()">+</button>
+          </div>
+        </td>
+        <td>
+          <span class="tool-level">Lv. <span id="toolLevelWorker">1</span></span>
+          <button id="upgradeWorkerToolButton" onclick="testUpgradeTool()" title="Axt verbessern">
+            <span class="icon">🪓</span> <span id="toolCostWorker">50</span><span class="icon">💰</span>
+          </button>
+        </td>
       </tr>
-      <tr>
-        <td>🌱 Förster</td>
-        <td><span id="foresterCount">1</span></td>
-        <td><span id="foresterCost">25</span>💰</td>
-        <td><button id="hireForesterButton" onclick="testHireForester()">Anstellen</button></td>
-        <td><button id="upgradePlantToolButton" onclick="testUpgradePlantTool()" title="Pflanzwerkzeug verbessern"><span class="icon">🌿</span> Lv. <span id="toolLevelPlant">1</span> (<span id="toolCostPlant">50</span><span class="icon">💰</span>)</button></td>
+      <tr class="job-row" data-job-type="Forester">
+        <td>
+          <div class="job-display">
+            <div class="job-icon-shield">
+              <span class="job-icon">🌱</span>
+            </div>
+            <span class="job-name">Förster</span>
+          </div>
+        </td>
+        <td>
+          <span id="foresterCount">0</span>
+        </td>
+        <td>
+          <div class="action-controls">
+            <button id="decreaseForesterCount" onclick="decreaseForesterCount()" disabled>-</button>
+            <button id="increaseForesterCount" onclick="increaseForesterCount()">+</button>
+          </div>
+        </td>
+        <td>
+          <span class="tool-level">Lv. <span id="toolLevelForester">1</span></span>
+          <button id="upgradeForesterToolButton" onclick="testUpgradePlantTool()" title="Pflanzwerkzeug verbessern">
+            <span class="icon">🌿</span> <span id="toolCostForester">50</span><span class="icon">💰</span>
+          </button>
+        </td>
       </tr>
-      <tr>
-        <td>🪚 Schreiner</td>
-        <td><span id="carpenterCount">0</span></td>
-        <td><span id="carpenterCost">30</span>💰</td>
-        <td><button id="hireCarpenterButton" onclick="testHireCarpenter()">Anstellen</button></td>
-        <td><button id="upgradeCarpenterToolButton" onclick="testUpgradeCarpenterTool()" title="Schreinerwerkzeug verbessern"><span class="icon">🔨</span> Lv. <span id="toolLevelCarpenter">1</span> (<span id="toolCostCarpenter">50</span><span class="icon">💰</span>)</button></td>
+      <tr class="job-row" data-job-type="Carpenter">
+        <td>
+          <div class="job-display">
+            <div class="job-icon-shield">
+              <span class="job-icon">🪑</span>
+            </div>
+            <span class="job-name">Schreiner</span>
+          </div>
+        </td>
+        <td>
+          <span id="carpenterCount">0</span>
+        </td>
+        <td>
+          <div class="action-controls">
+            <button id="decreaseCarpenterCount" onclick="decreaseCarpenterCount()" disabled>-</button>
+            <button id="increaseCarpenterCount" onclick="increaseCarpenterCount()">+</button>
+          </div>
+        </td>
+        <td>
+          <span class="tool-level">Lv. <span id="toolLevelCarpenter">1</span></span>
+          <button id="upgradeCarpenterToolButton" onclick="testUpgradeCarpenterTool()" title="Schreinerwerkzeug verbessern">
+            <span class="icon">🔨</span> <span id="toolCostCarpenter">50</span><span class="icon">💰</span>
+          </button>
+        </td>
       </tr>
     </tbody>
   </table>
 </div>
 
 <script>
-// Test-Funktionen für direkte Event-Handler
-function testUpgradeTool() {
+// Define functions first, before any HTML rendering
+window.testUpgradeTool = function() {
   console.log("=== DIRECT TEST: UPGRADE TOOL CLICKED ===");
   console.log("Window variables:", {
     gold: window.gold,
@@ -72,7 +126,7 @@ function testUpgradeTool() {
   }
 }
 
-function testUpgradePlantTool() {
+window.testUpgradePlantTool = function() {
   console.log("=== DIRECT TEST: UPGRADE PLANT TOOL CLICKED ===");
   console.log("Window variables:", {
     gold: window.gold,
@@ -106,7 +160,7 @@ function testUpgradePlantTool() {
   }
 }
 
-function testUpgradeCarpenterTool() {
+window.testUpgradeCarpenterTool = function() {
   console.log("=== DIRECT TEST: UPGRADE CARPENTER TOOL CLICKED ===");
   console.log("Window variables:", {
     gold: window.gold,
@@ -140,7 +194,137 @@ function testUpgradeCarpenterTool() {
   }
 }
 
-function testHireWorker() {
+// Simple inline template for now
+const jobRowTemplate = `
+<tr class="job-row" data-job-type="{jobType}">
+  <td>
+    <div class="job-display">
+      <div class="job-icon-shield">
+        <span class="job-icon">{jobIcon}</span>
+      </div>
+      <span class="job-name">{jobName}</span>
+    </div>
+  </td>
+  <td>
+    <span id="{jobType}Count">{count}</span>
+  </td>
+  <td>
+    <div class="action-controls">
+      <button id="decrease{jobType}Count" onclick="decrease{jobType}Count()" disabled>-</button>
+      <button id="increase{jobType}Count" onclick="increase{jobType}Count()">+</button>
+    </div>
+  </td>
+  <td>
+    <button id="upgrade{jobType}ToolButton" onclick="testUpgrade{jobType}Tool()" title="{toolName} verbessern">
+      <span class="icon">{toolIcon}</span> Lv. <span id="toolLevel{jobType}">{toolLevel}</span> 
+      (<span id="toolCost{jobType}">{toolCost}</span><span class="icon">💰</span>)
+    </button>
+  </td>
+</tr>
+`;
+
+// Job data configuration
+const jobConfigs = [
+  {
+    jobType: 'Worker',
+    jobIcon: '🪓',
+    jobName: 'Holzfäller',
+    toolName: 'Axt',
+    toolIcon: '🪓',
+    count: 0,
+    toolLevel: 1,
+    toolCost: 50
+  },
+  {
+    jobType: 'Forester',
+    jobIcon: '🌱',
+    jobName: 'Förster',
+    toolName: 'Pflanzwerkzeug',
+    toolIcon: '🌿',
+    count: 0,
+    toolLevel: 1,
+    toolCost: 50
+  },
+  {
+    jobType: 'Carpenter',
+    jobIcon: '🪑',
+    jobName: 'Schreiner',
+    toolName: 'Schreinerwerkzeug',
+    toolIcon: '🔨',
+    count: 0,
+    toolLevel: 1,
+    toolCost: 50
+  }
+];
+
+// Simple render function
+function renderJobRow(jobData) {
+  let html = jobRowTemplate;
+  
+  // Replace placeholders with actual data
+  const replacements = {
+    '{jobType}': jobData.jobType,
+    '{jobIcon}': jobData.jobIcon,
+    '{jobName}': jobData.jobName,
+    '{count}': jobData.count || 0,
+    '{toolName}': jobData.toolName,
+    '{toolIcon}': jobData.toolIcon,
+    '{toolLevel}': jobData.toolLevel || 1,
+    '{toolCost}': jobData.toolCost || 50
+  };
+
+  Object.entries(replacements).forEach(([placeholder, value]) => {
+    html = html.replace(new RegExp(placeholder, 'g'), value);
+  });
+
+  return html;
+}
+
+// Render all job rows
+function renderJobRows() {
+  const container = document.getElementById('job-rows-container');
+  if (!container) {
+    console.error('Job rows container not found');
+    return;
+  }
+  
+  console.log('Rendering job rows...');
+  container.innerHTML = '';
+  
+  jobConfigs.forEach(jobConfig => {
+    const jobRowHtml = renderJobRow(jobConfig);
+    container.insertAdjacentHTML('beforeend', jobRowHtml);
+  });
+  
+  console.log('Job rows rendered');
+}
+
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', renderJobRows);
+} else {
+  renderJobRows();
+}
+
+// Debug: Check if functions are available
+console.log('Functions available:', {
+  testUpgradeTool: typeof window.testUpgradeTool,
+  testUpgradePlantTool: typeof window.testUpgradePlantTool,
+  testUpgradeCarpenterTool: typeof window.testUpgradeCarpenterTool
+});
+
+// Test function availability after a delay
+setTimeout(() => {
+  console.log('Delayed function check:', {
+    testUpgradeTool: typeof window.testUpgradeTool,
+    testUpgradePlantTool: typeof window.testUpgradePlantTool,
+    testUpgradeCarpenterTool: typeof window.testUpgradeCarpenterTool
+  });
+}, 1000);
+</script>
+
+<script>
+window.testHireWorker = function() {
   console.log("=== DIRECT TEST: HIRE WORKER CLICKED ===");
   console.log("Window variables:", {
     gold: window.gold,
@@ -175,7 +359,7 @@ function testHireWorker() {
   }
 }
 
-function testHireForester() {
+window.testHireForester = function() {
   console.log("=== DIRECT TEST: HIRE FORESTER CLICKED ===");
   console.log("Window variables:", {
     gold: window.gold,
@@ -210,7 +394,7 @@ function testHireForester() {
   }
 }
 
-function testHireCarpenter() {
+window.testHireCarpenter = function() {
   console.log("=== DIRECT TEST: HIRE CARPENTER CLICKED ===");
   console.log("Window variables:", {
     gold: window.gold,
@@ -242,6 +426,43 @@ function testHireCarpenter() {
     }
   } else {
     console.log("Window variables not available!");
+  }
+}
+
+// Count control functions
+window.increaseWorkerCount = function() {
+  if (window.gameCore) {
+    window.gameCore.increaseWorkerCount('workers');
+  }
+}
+
+window.decreaseWorkerCount = function() {
+  if (window.gameCore) {
+    window.gameCore.decreaseWorkerCount('workers');
+  }
+}
+
+window.increaseForesterCount = function() {
+  if (window.gameCore) {
+    window.gameCore.increaseWorkerCount('foresters');
+  }
+}
+
+window.decreaseForesterCount = function() {
+  if (window.gameCore) {
+    window.gameCore.decreaseWorkerCount('foresters');
+  }
+}
+
+window.increaseCarpenterCount = function() {
+  if (window.gameCore) {
+    window.gameCore.increaseWorkerCount('carpenters');
+  }
+}
+
+window.decreaseCarpenterCount = function() {
+  if (window.gameCore) {
+    window.gameCore.decreaseWorkerCount('carpenters');
   }
 }
 </script> 

@@ -1,0 +1,135 @@
+<!-- Arbeiter-Verwaltung - Externe Datei -->
+<div class="arbeiter-section">
+  <div class="arbeiter-header">
+    <h3>👥 Arbeiter-Verwaltung</h3>
+    <div class="total-workers">
+      <span>Gesamt: <span id="totalWorkers">0</span></span>
+    </div>
+  </div>
+  
+  <table class="arbeiter-table">
+    <thead>
+      <tr>
+        <th>Beruf</th>
+        <th>Verteilt</th>
+        <th>Verteilung</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <div class="job-display">
+            <div class="job-icon-shield">
+              <span class="job-icon">🪓</span>
+            </div>
+            <span class="job-name">Holzfäller</span>
+          </div>
+        </td>
+        <td><span id="distributedWorkers">0</span></td>
+        <td>
+          <div class="distribution-controls">
+            <button id="decreaseWorkers" onclick="decreaseWorkers()" disabled>-</button>
+            <span id="workerDistribution">0</span>
+            <button id="increaseWorkers" onclick="increaseWorkers()">+</button>
+          </div>
+        </td>
+        <td><span id="workerStatus">Verfügbar</span></td>
+      </tr>
+      <tr>
+        <td>
+          <div class="job-display">
+            <div class="job-icon-shield">
+              <span class="job-icon">🌱</span>
+            </div>
+            <span class="job-name">Förster</span>
+          </div>
+        </td>
+        <td><span id="distributedForesters">0</span></td>
+        <td>
+          <div class="distribution-controls">
+            <button id="decreaseForesters" onclick="decreaseForesters()" disabled>-</button>
+            <span id="foresterDistribution">0</span>
+            <button id="increaseForesters" onclick="increaseForesters()">+</button>
+          </div>
+        </td>
+        <td><span id="foresterStatus">Verfügbar</span></td>
+      </tr>
+      <tr>
+        <td>
+          <div class="job-display">
+            <div class="job-icon-shield">
+              <span class="job-icon">🪑</span>
+            </div>
+            <span class="job-name">Schreiner</span>
+          </div>
+        </td>
+        <td><span id="distributedCarpenters">0</span></td>
+        <td>
+          <div class="distribution-controls">
+            <button id="decreaseCarpenters" onclick="decreaseCarpenters()" disabled>-</button>
+            <span id="carpenterDistribution">0</span>
+            <button id="increaseCarpenters" onclick="increaseCarpenters()">+</button>
+          </div>
+        </td>
+        <td><span id="carpenterStatus">Verfügbar</span></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <div class="arbeiter-actions">
+    <button id="hireMoreWorkers" onclick="hireMoreWorkers()">💰 Mehr Arbeiter anstellen</button>
+    <button id="fireWorkers" onclick="fireWorkers()" disabled>🔥 Arbeiter entlassen</button>
+  </div>
+</div>
+
+<script>
+// Worker distribution functions
+function increaseWorkers() {
+  if (window.gameCore) {
+    window.gameCore.increaseWorkerDistribution('workers');
+  }
+}
+
+function decreaseWorkers() {
+  if (window.gameCore) {
+    window.gameCore.decreaseWorkerDistribution('workers');
+  }
+}
+
+function increaseForesters() {
+  if (window.gameCore) {
+    window.gameCore.increaseWorkerDistribution('foresters');
+  }
+}
+
+function decreaseForesters() {
+  if (window.gameCore) {
+    window.gameCore.decreaseWorkerDistribution('foresters');
+  }
+}
+
+function increaseCarpenters() {
+  if (window.gameCore) {
+    window.gameCore.increaseWorkerDistribution('carpenters');
+  }
+}
+
+function decreaseCarpenters() {
+  if (window.gameCore) {
+    window.gameCore.decreaseWorkerDistribution('carpenters');
+  }
+}
+
+function hireMoreWorkers() {
+  if (window.gameCore) {
+    window.gameCore.hireMoreWorkers();
+  }
+}
+
+function fireWorkers() {
+  if (window.gameCore) {
+    window.gameCore.fireWorkers();
+  }
+}
+</script> 

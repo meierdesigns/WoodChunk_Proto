@@ -61,3 +61,357 @@
     transform: translateY(0);
   }
 }
+
+/* Job Display Styles */
+.job-display {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.job-icon-shield {
+  background: linear-gradient(180deg, #4b2e13 0%, #7c5a3a 100%);
+  border: 2px solid #000;
+  border-radius: 8px;
+  padding: 8px 12px;
+  box-shadow: 3px 3px 0 #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 60px;
+  min-height: 40px;
+}
+
+.job-icon {
+  font-size: 24px;
+  filter: drop-shadow(1px 1px 0 #000);
+}
+
+.job-name {
+  color: #333;
+  font-weight: bold;
+  font-size: 16px;
+  white-space: nowrap;
+}
+
+/* Hire Button Styles */
+.hire-price-shield button,
+#hireWorkerButton,
+#hireForesterButton,
+#hireCarpenterButton {
+  background: linear-gradient(180deg, #4b2e13 0%, #7c5a3a 100%);
+  color: #ffd700;
+  border: 2px solid #000;
+  border-radius: 6px;
+  padding: 8px 16px;
+  box-shadow: 2px 2px 0 #000;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  text-shadow: 1px 1px 0 #000;
+  transition: all 0.2s;
+  min-width: 80px;
+  text-align: center;
+}
+
+#hireWorkerButton:hover,
+#hireForesterButton:hover,
+#hireCarpenterButton:hover {
+  background: linear-gradient(180deg, #5a3a1a 0%, #8b6a4a 100%);
+  transform: translateY(-1px);
+  box-shadow: 3px 3px 0 #000;
+}
+
+#hireWorkerButton:active,
+#hireForesterButton:active,
+#hireCarpenterButton:active {
+  transform: translateY(0);
+  box-shadow: 1px 1px 0 #000;
+}
+
+/* Arbeiter Management Styles */
+.arbeiter-section {
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  border: 2px solid #000;
+}
+
+.arbeiter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #000;
+}
+
+.arbeiter-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 18px;
+}
+
+.total-workers {
+  font-weight: bold;
+  color: #333;
+  font-size: 14px;
+}
+
+.arbeiter-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.arbeiter-table th,
+.arbeiter-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ccc;
+}
+
+.arbeiter-table th {
+  background: linear-gradient(180deg, #4b2e13 0%, #7c5a3a 100%);
+  color: #ffd700;
+  font-weight: bold;
+  text-shadow: 1px 1px 0 #000;
+}
+
+.distribution-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+
+.distribution-controls button {
+  background: linear-gradient(180deg, #4b2e13 0%, #7c5a3a 100%);
+  color: #ffd700;
+  border: 2px solid #000;
+  border-radius: 4px;
+  padding: 4px 8px;
+  box-shadow: 2px 2px 0 #000;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 12px;
+  text-shadow: 1px 1px 0 #000;
+  transition: all 0.2s;
+  min-width: 30px;
+}
+
+.distribution-controls button:hover:not(:disabled) {
+  background: linear-gradient(180deg, #5a3a1a 0%, #8b6a4a 100%);
+  transform: translateY(-1px);
+  box-shadow: 3px 3px 0 #000;
+}
+
+.distribution-controls button:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 1px 1px 0 #000;
+}
+
+.distribution-controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 2px 2px 0 #000;
+}
+
+.distribution-controls span {
+  font-weight: bold;
+  font-size: 14px;
+  color: #333;
+  min-width: 20px;
+  text-align: center;
+}
+
+.arbeiter-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.arbeiter-actions button {
+  background: linear-gradient(180deg, #4b2e13 0%, #7c5a3a 100%);
+  color: #ffd700;
+  border: 2px solid #000;
+  border-radius: 6px;
+  padding: 8px 16px;
+  box-shadow: 2px 2px 0 #000;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  text-shadow: 1px 1px 0 #000;
+  transition: all 0.2s;
+}
+
+.arbeiter-actions button:hover:not(:disabled) {
+  background: linear-gradient(180deg, #5a3a1a 0%, #8b6a4a 100%);
+  transform: translateY(-1px);
+  box-shadow: 3px 3px 0 #000;
+}
+
+.arbeiter-actions button:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 1px 1px 0 #000;
+}
+
+.arbeiter-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 2px 2px 0 #000;
+}
+
+/* Count Controls Styles */
+.count-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+
+.count-controls button {
+  background: linear-gradient(180deg, #4b2e13 0%, #7c5a3a 100%);
+  color: #ffd700;
+  border: 2px solid #000;
+  border-radius: 4px;
+  padding: 4px 8px;
+  box-shadow: 2px 2px 0 #000;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 12px;
+  text-shadow: 1px 1px 0 #000;
+  transition: all 0.2s;
+  min-width: 30px;
+}
+
+.count-controls button:hover:not(:disabled) {
+  background: linear-gradient(180deg, #5a3a1a 0%, #8b6a4a 100%);
+  transform: translateY(-1px);
+  box-shadow: 3px 3px 0 #000;
+}
+
+.count-controls button:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 1px 1px 0 #000;
+}
+
+.count-controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 2px 2px 0 #000;
+}
+
+.count-controls span {
+  font-weight: bold;
+  font-size: 14px;
+  color: #333;
+  min-width: 20px;
+  text-align: center;
+}
+
+/* Action Controls Styles */
+.action-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: center;
+}
+
+.action-controls button {
+  background: linear-gradient(180deg, #4b2e13 0%, #7c5a3a 100%);
+  color: #ffd700;
+  border: 2px solid #000;
+  border-radius: 4px;
+  padding: 4px 8px;
+  box-shadow: 2px 2px 0 #000;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 12px;
+  text-shadow: 1px 1px 0 #000;
+  transition: all 0.2s;
+  min-width: 30px;
+}
+
+.action-controls button:hover:not(:disabled) {
+  background: linear-gradient(180deg, #5a3a1a 0%, #8b6a4a 100%);
+  transform: translateY(-1px);
+  box-shadow: 3px 3px 0 #000;
+}
+
+.action-controls button:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 1px 1px 0 #000;
+}
+
+.action-controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 2px 2px 0 #000;
+}
+
+/* Hire button in action controls */
+.action-controls button[id*="hire"] {
+  min-width: 60px;
+  background: linear-gradient(180deg, #4a7c59 0%, #2d4a3a 100%);
+}
+
+.action-controls button[id*="hire"]:hover:not(:disabled) {
+  background: linear-gradient(180deg, #5a8c69 0%, #3d5a4a 100%);
+}
+
+/* Tool upgrade button states */
+button[id*="upgrade"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: linear-gradient(180deg, #666 0%, #444 100%) !important;
+  color: #999 !important;
+}
+
+button[id*="upgrade"]:disabled:hover {
+  transform: none !important;
+  box-shadow: 2px 2px 0 #000 !important;
+}
+
+/* Tool Level Display */
+.tool-level {
+  display: inline-block;
+  font-weight: bold;
+  font-size: 14px;
+  color: #ffd700;
+  text-shadow: 1px 1px 0 #000;
+  margin-right: 8px;
+  background: linear-gradient(180deg, #4b2e13 0%, #7c5a3a 100%);
+  border: 2px solid #000;
+  border-radius: 4px;
+  padding: 4px 8px;
+  box-shadow: 2px 2px 0 #000;
+}
+
+/* Arbeitsamt Header Styles */
+.arbeitsamt-header {
+  background: linear-gradient(180deg, #4b2e13 0%, #7c5a3a 100%);
+  border: 2px solid #000;
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin-bottom: 15px;
+  box-shadow: 2px 2px 0 #000;
+}
+
+.header-info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.info-text {
+  font-weight: bold;
+  font-size: 16px;
+  color: #ffd700;
+  text-shadow: 1px 1px 0 #000;
+}
+

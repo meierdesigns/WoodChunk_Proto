@@ -62,6 +62,7 @@ class TabSystem {
 
   async loadExternalContent() {
     await this.loadArbeitsamtTable();
+    await this.loadArbeiterTable();
     await this.loadMoebelbauTable();
   }
 
@@ -83,6 +84,27 @@ class TabSystem {
       }
     } catch (error) {
       console.error('Error loading arbeitsamt table:', error);
+    }
+  }
+
+  async loadArbeiterTable() {
+    try {
+      const response = await fetch('arbeiter-table.html');
+      const html = await response.text();
+      const container = document.getElementById('arbeiter-container');
+      
+      if (container) {
+        container.innerHTML = html;
+        
+        // Update worker table after loading
+        setTimeout(() => {
+          if (window.gameCore) {
+            window.gameCore.updateArbeiterTable();
+          }
+        }, 100);
+      }
+    } catch (error) {
+      console.error('Error loading arbeiter table:', error);
     }
   }
 

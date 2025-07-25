@@ -74,12 +74,24 @@
       <div class="tab-container">
         <div class="tab-buttons">
           <button class="tab-btn active" data-tab="arbeitsamt" onclick="switchTab('arbeitsamt')">🏢 Arbeitsamt</button>
+          <button class="tab-btn" data-tab="arbeiter" onclick="switchTab('arbeiter')">👥 Arbeiter</button>
           <button class="tab-btn" data-tab="moebelbau" onclick="switchTab('moebelbau')">🛋️ Möbelbau</button>
         </div>
         
         <div id="arbeitsamt-tab" class="tab-content active">
+          <!-- Header für Arbeitsamt -->
+          <div class="arbeitsamt-header">
+            <div class="header-info">
+                                     <span class="info-text">👥 Freie Arbeiter: <span id="availableWorkersInfo">3</span></span>
+            </div>
+          </div>
           <!-- Externe Arbeitsamt-Tabelle (wird geladen) -->
           <div id="external-arbeitsamt-container"></div>
+        </div>
+        
+        <div id="arbeiter-tab" class="tab-content">
+          <!-- Arbeiter-Verwaltung -->
+          <div id="arbeiter-container"></div>
         </div>
         
         <div id="moebelbau-tab" class="tab-content">
@@ -145,6 +157,186 @@
   <script src="modules/status-system/status-system.js"></script>
   <script src="modules/tab-system/tab-system.js"></script>
   <script src="modules/game-core/game-core.js"></script>
+
+  <!-- Global tool upgrade functions -->
+  <script>
+  window.testUpgradeTool = function() {
+    console.log("=== WORKER TOOL UPGRADE CLICKED ===");
+    console.log("Window variables:", {
+      gold: window.gold,
+      toolLevel: window.toolLevel
+    });
+    
+    if (window.gold && window.toolLevel) {
+      const cost = window.toolLevel * 50;
+      console.log("Cost calculation:", {
+        currentLevel: window.toolLevel,
+        cost: cost,
+        formula: `${window.toolLevel} * 50`
+      });
+      
+      if (window.gold >= cost) {
+        console.log("✅ Enough gold, proceeding with upgrade");
+        console.log("Before upgrade:", {
+          gold: window.gold,
+          toolLevel: window.toolLevel
+        });
+        
+        window.gold -= cost;
+        window.toolLevel++;
+        
+        console.log("After upgrade:", {
+          gold: window.gold,
+          toolLevel: window.toolLevel
+        });
+        
+        // Lokale Variablen in index.html aktualisieren
+        if (window.updateLocalVariables) {
+          console.log("Calling updateLocalVariables...");
+          window.updateLocalVariables();
+        } else {
+          console.log("❌ updateLocalVariables not available");
+        }
+        
+        if (window.updateDisplay) {
+          console.log("Calling updateDisplay...");
+          window.updateDisplay();
+        } else {
+          console.log("❌ updateDisplay not available");
+        }
+        
+        console.log("✅ Tool upgraded to level:", window.toolLevel);
+      } else {
+        console.log("❌ Not enough gold!");
+        console.log("Required:", cost, "gold");
+        console.log("Available:", window.gold, "gold");
+        console.log("Missing:", cost - window.gold, "gold");
+      }
+    } else {
+      console.log("❌ Window variables not available!");
+      console.log("window.gold:", window.gold);
+      console.log("window.toolLevel:", window.toolLevel);
+    }
+  }
+
+  window.testUpgradePlantTool = function() {
+    console.log("=== FORESTER TOOL UPGRADE CLICKED ===");
+    console.log("Window variables:", {
+      gold: window.gold,
+      plantToolLevel: window.plantToolLevel
+    });
+    
+    if (window.gold && window.plantToolLevel) {
+      const cost = window.plantToolLevel * 50;
+      console.log("Cost calculation:", {
+        currentLevel: window.plantToolLevel,
+        cost: cost,
+        formula: `${window.plantToolLevel} * 50`
+      });
+      
+      if (window.gold >= cost) {
+        console.log("✅ Enough gold, proceeding with upgrade");
+        console.log("Before upgrade:", {
+          gold: window.gold,
+          plantToolLevel: window.plantToolLevel
+        });
+        
+        window.gold -= cost;
+        window.plantToolLevel++;
+        
+        console.log("After upgrade:", {
+          gold: window.gold,
+          plantToolLevel: window.plantToolLevel
+        });
+        
+        // Lokale Variablen in index.html aktualisieren
+        if (window.updateLocalVariables) {
+          console.log("Calling updateLocalVariables...");
+          window.updateLocalVariables();
+        } else {
+          console.log("❌ updateLocalVariables not available");
+        }
+        
+        if (window.updateDisplay) {
+          console.log("Calling updateDisplay...");
+          window.updateDisplay();
+        } else {
+          console.log("❌ updateDisplay not available");
+        }
+        
+        console.log("✅ Plant tool upgraded to level:", window.plantToolLevel);
+      } else {
+        console.log("❌ Not enough gold!");
+        console.log("Required:", cost, "gold");
+        console.log("Available:", window.gold, "gold");
+        console.log("Missing:", cost - window.gold, "gold");
+      }
+    } else {
+      console.log("❌ Window variables not available!");
+      console.log("window.gold:", window.gold);
+      console.log("window.plantToolLevel:", window.plantToolLevel);
+    }
+  }
+
+  window.testUpgradeCarpenterTool = function() {
+    console.log("=== CARPENTER TOOL UPGRADE CLICKED ===");
+    console.log("Window variables:", {
+      gold: window.gold,
+      carpenterToolLevel: window.carpenterToolLevel
+    });
+    
+    if (window.gold && window.carpenterToolLevel) {
+      const cost = window.carpenterToolLevel * 50;
+      console.log("Cost calculation:", {
+        currentLevel: window.carpenterToolLevel,
+        cost: cost,
+        formula: `${window.carpenterToolLevel} * 50`
+      });
+      
+      if (window.gold >= cost) {
+        console.log("✅ Enough gold, proceeding with upgrade");
+        console.log("Before upgrade:", {
+          gold: window.gold,
+          carpenterToolLevel: window.carpenterToolLevel
+        });
+        
+        window.gold -= cost;
+        window.carpenterToolLevel++;
+        
+        console.log("After upgrade:", {
+          gold: window.gold,
+          carpenterToolLevel: window.carpenterToolLevel
+        });
+        
+        // Lokale Variablen in index.html aktualisieren
+        if (window.updateLocalVariables) {
+          console.log("Calling updateLocalVariables...");
+          window.updateLocalVariables();
+        } else {
+          console.log("❌ updateLocalVariables not available");
+        }
+        
+        if (window.updateDisplay) {
+          console.log("Calling updateDisplay...");
+          window.updateDisplay();
+        } else {
+          console.log("❌ updateDisplay not available");
+        }
+        
+        console.log("✅ Carpenter tool upgraded to level:", window.carpenterToolLevel);
+      } else {
+        console.log("❌ Not enough gold!");
+        console.log("Required:", cost, "gold");
+        console.log("Available:", window.gold, "gold");
+        console.log("Missing:", cost - window.gold, "gold");
+      }
+    } else {
+      console.log("❌ Window variables not available!");
+      console.log("window.gold:", window.gold);
+      console.log("window.carpenterToolLevel:", window.carpenterToolLevel);
+    }
+  }
+  </script>
 
   <!-- Research modal functionality -->
   <script>

@@ -230,7 +230,7 @@ function updateLocalTime() {
 // Server-Zeit abrufen und lokale Zeit synchronisieren (optional)
 async function syncWithServerTime() {
   try {
-    const response = await fetch('/time');
+    const response = await fetch('http://localhost:1337/time');
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }

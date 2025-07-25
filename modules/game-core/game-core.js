@@ -15,9 +15,9 @@ class GameCore {
       holz: 0,
       trees: 10,
       
-      // Workers
-      workers: 1,
-      foresters: 1,
+      // Workers (legacy - kept for compatibility)
+      workers: 0,
+      foresters: 0,
       carpenters: 0,
       
       // Tool levels
@@ -43,7 +43,14 @@ class GameCore {
         plant: false,
         carpenter: false
       },
-      selectedAutoFurniture: null
+      selectedAutoFurniture: null,
+      
+      // Worker distribution system
+      totalWorkers: 3,
+      distributedWorkers: 0,
+      distributedForesters: 0,
+      distributedCarpenters: 0,
+      availableWorkers: 3
     };
   }
 
@@ -53,6 +60,11 @@ class GameCore {
     this.startGameLoops();
     this.loadAutoStates();
     this.loadGameFromServer();
+    
+    // Ensure worker distribution is initialized correctly
+    setTimeout(() => {
+      this.updateWorkerDistribution();
+    }, 100);
   }
 
   setupGlobalVariables() {
@@ -70,6 +82,14 @@ class GameCore {
     window.setupArbeitsamtEventHandlers = () => this.setupArbeitsamtEventHandlers();
     window.updateMoebelVisibility = () => this.updateMoebelVisibility();
     window.formatNumber = (num) => this.formatNumber(num);
+    
+    // Make count control functions globally available
+    window.increaseWorkerCount = () => this.increaseWorkerCount('workers');
+    window.decreaseWorkerCount = () => this.decreaseWorkerCount('workers');
+    window.increaseForesterCount = () => this.increaseWorkerCount('foresters');
+    window.decreaseForesterCount = () => this.decreaseWorkerCount('foresters');
+    window.increaseCarpenterCount = () => this.increaseWorkerCount('carpenters');
+    window.decreaseCarpenterCount = () => this.decreaseWorkerCount('carpenters');
   }
 
   bindEvents() {
@@ -122,9 +142,9 @@ class GameCore {
   }
 
   updateLocalVariables() {
-    // Sync local variables from global variables
+    // Sync local variables from global variables, but preserve worker distribution
     Object.keys(this.gameState).forEach(key => {
-      if (window[key] !== undefined) {
+      if (window[key] !== undefined && !key.startsWith('distributed') && key !== 'totalWorkers' && key !== 'availableWorkers') {
         this.gameState[key] = window[key];
       }
     });
@@ -149,6 +169,9 @@ class GameCore {
     this.updatePrices();
     this.updateToolLevels();
     this.updateMoebelButtons();
+    this.updateWorkerVisuals();
+    this.updateArbeiterTable();
+    this.updateCountButtonStates();
   }
 
   updateWorkerCounts() {
@@ -250,6 +273,412 @@ class GameCore {
     });
   }
 
+  updateWorkerVisuals() {
+    // Check if it's working hours (8-16 Uhr) using game time
+    const gameTimeMinutes = window.gameTime || 0;
+    const currentHour = Math.floor(gameTimeMinutes / 60) % 24;
+    const isWorkingHours = currentHour >= 8 && currentHour < 16;
+    
+    // Disable progress bars during non-working hours
+    this.updateProgressBarStates(isWorkingHours);
+  }
+
+  updateProgressBarStates(isWorkingHours) {
+    // Get all progress bars
+    const progressBars = document.querySelectorAll('progress-bar');
+    
+    progressBars.forEach(bar => {
+      if (!isWorkingHours) {
+        // Disable progress bars during non-working hours
+        bar.style.opacity = '0.5';
+        bar.style.filter = 'grayscale(100%)';
+        
+        // Add disabled text
+        const barText = bar.querySelector('.bar-text');
+        if (barText) {
+          barText.textContent = '💤 Schlafen';
+          barText.style.color = '#999';
+        }
+      } else {
+        // Re-enable progress bars during working hours
+        bar.style.opacity = '1';
+        bar.style.filter = 'none';
+        
+        // Remove disabled text
+        const barText = bar.querySelector('.bar-text');
+        if (barText && barText.textContent === '💤 Schlafen') {
+          barText.textContent = '';
+          barText.style.color = '';
+        }
+      }
+    });
+  }
+
+  // Worker distribution methods
+  increaseWorkerDistribution(type) {
+    if (this.gameState.availableWorkers > 0) {
+      this.gameState.availableWorkers--;
+      this.gameState[`distributed${type.charAt(0).toUpperCase() + type.slice(1)}`]++;
+      this.updateWorkerDistribution();
+    }
+  }
+
+  decreaseWorkerDistribution(type) {
+    const distributedKey = `distributed${type.charAt(0).toUpperCase() + type.slice(1)}`;
+    if (this.gameState[distributedKey] > 0) {
+      this.gameState[distributedKey]--;
+      this.gameState.availableWorkers++;
+      this.updateWorkerDistribution();
+    }
+  }
+
+  updateWorkerDistribution() {
+    // Update the actual worker counts based on distribution
+    this.gameState.workers = this.gameState.distributedWorkers;
+    this.gameState.foresters = this.gameState.distributedForesters;
+    this.gameState.carpenters = this.gameState.distributedCarpenters;
+    
+    // Calculate available workers
+    this.gameState.availableWorkers = this.gameState.totalWorkers - 
+      (this.gameState.distributedWorkers + this.gameState.distributedForesters + this.gameState.distributedCarpenters);
+    
+    // Update global variables for compatibility
+    window.workers = this.gameState.workers;
+    window.foresters = this.gameState.foresters;
+    window.carpenters = this.gameState.carpenters;
+    window.totalWorkers = this.gameState.totalWorkers;
+    window.distributedWorkers = this.gameState.distributedWorkers;
+    window.distributedForesters = this.gameState.distributedForesters;
+    window.distributedCarpenters = this.gameState.distributedCarpenters;
+    window.availableWorkers = this.gameState.availableWorkers;
+    
+    // Update displays
+    this.updateDisplay();
+    this.updateArbeiterTable();
+    this.updateJobRows();
+    this.updateToolUpgradeButtons();
+  }
+
+  updateArbeiterTable() {
+    // Update total workers display
+    const totalWorkersElement = document.getElementById('totalWorkers');
+    if (totalWorkersElement) {
+      totalWorkersElement.textContent = this.gameState.totalWorkers;
+    }
+
+    // Update distributed workers displays
+    const distributedWorkersElement = document.getElementById('distributedWorkers');
+    if (distributedWorkersElement) {
+      distributedWorkersElement.textContent = this.gameState.distributedWorkers;
+    }
+
+    const distributedForestersElement = document.getElementById('distributedForesters');
+    if (distributedForestersElement) {
+      distributedForestersElement.textContent = this.gameState.distributedForesters;
+    }
+
+    const distributedCarpentersElement = document.getElementById('distributedCarpenters');
+    if (distributedCarpentersElement) {
+      distributedCarpentersElement.textContent = this.gameState.distributedCarpenters;
+    }
+
+    // Update distribution controls
+    const workerDistributionElement = document.getElementById('workerDistribution');
+    if (workerDistributionElement) {
+      workerDistributionElement.textContent = this.gameState.distributedWorkers;
+    }
+
+    const foresterDistributionElement = document.getElementById('foresterDistribution');
+    if (foresterDistributionElement) {
+      foresterDistributionElement.textContent = this.gameState.distributedForesters;
+    }
+
+    const carpenterDistributionElement = document.getElementById('carpenterDistribution');
+    if (carpenterDistributionElement) {
+      carpenterDistributionElement.textContent = this.gameState.distributedCarpenters;
+    }
+
+    // Update button states
+    this.updateDistributionButtonStates();
+  }
+
+  updateJobRows() {
+    // Update job row counts and button states
+    const jobTypes = [
+      { type: 'Worker', id: 'worker' },
+      { type: 'Forester', id: 'forester' },
+      { type: 'Carpenter', id: 'carpenter' }
+    ];
+    
+    jobTypes.forEach(jobType => {
+      const countElement = document.getElementById(jobType.id + 'Count');
+      const decreaseButton = document.getElementById('decrease' + jobType.type + 'Count');
+      const increaseButton = document.getElementById('increase' + jobType.type + 'Count');
+      
+      if (countElement) {
+        const count = this.gameState[jobType.id + 's'] || 0;
+        countElement.textContent = count;
+      }
+      
+      if (decreaseButton) {
+        const count = this.gameState[jobType.id + 's'] || 0;
+        decreaseButton.disabled = count <= 0;
+      }
+      
+      if (increaseButton) {
+        increaseButton.disabled = this.gameState.availableWorkers <= 0;
+      }
+    });
+  }
+
+  updateToolUpgradeButtons() {
+    console.log('=== TOOL UPGRADE BUTTON DEBUG ===');
+    console.log('Current game state:', {
+      gold: this.gameState.gold,
+      toolLevel: this.gameState.toolLevel,
+      plantToolLevel: this.gameState.plantToolLevel,
+      carpenterToolLevel: this.gameState.carpenterToolLevel
+    });
+    
+    // Update tool upgrade button states based on available gold
+    const toolUpgrades = [
+      { 
+        buttonId: 'upgradeWorkerToolButton', 
+        toolLevel: this.gameState.toolLevel, 
+        cost: this.gameState.toolLevel * 50,
+        name: 'Worker Tool (Axe)'
+      },
+      { 
+        buttonId: 'upgradeForesterToolButton', 
+        toolLevel: this.gameState.plantToolLevel, 
+        cost: this.gameState.plantToolLevel * 50,
+        name: 'Forester Tool (Plant)'
+      },
+      { 
+        buttonId: 'upgradeCarpenterToolButton', 
+        toolLevel: this.gameState.carpenterToolLevel, 
+        cost: this.gameState.carpenterToolLevel * 50,
+        name: 'Carpenter Tool (Hammer)'
+      }
+    ];
+    
+    console.log('Tool upgrade calculations:');
+    toolUpgrades.forEach(tool => {
+      console.log(`  ${tool.name}:`);
+      console.log(`    - Current Level: ${tool.toolLevel}`);
+      console.log(`    - Upgrade Cost: ${tool.cost} gold (${tool.toolLevel} * 50)`);
+      console.log(`    - Available Gold: ${this.gameState.gold}`);
+      console.log(`    - Can Afford: ${this.gameState.gold >= tool.cost}`);
+      console.log(`    - Gold Difference: ${this.gameState.gold - tool.cost}`);
+    });
+    
+    toolUpgrades.forEach(tool => {
+      const button = document.getElementById(tool.buttonId);
+      if (button) {
+        const canAfford = this.gameState.gold >= tool.cost;
+        const wasDisabled = button.disabled;
+        button.disabled = !canAfford;
+        
+        console.log(`Button ${tool.buttonId} (${tool.name}):`);
+        console.log(`  - Found in DOM: ✅`);
+        console.log(`  - Previous disabled state: ${wasDisabled}`);
+        console.log(`  - New disabled state: ${!canAfford}`);
+        console.log(`  - Cost: ${tool.cost} gold`);
+        console.log(`  - Can afford: ${canAfford ? '✅' : '❌'}`);
+        
+        // Update visual state
+        if (canAfford) {
+          button.classList.remove('disabled');
+          button.classList.add('enabled');
+          console.log(`  - Visual state: enabled`);
+        } else {
+          button.classList.remove('enabled');
+          button.classList.add('disabled');
+          console.log(`  - Visual state: disabled`);
+        }
+        
+        // Check if button is actually clickable
+        const isClickable = !button.disabled && !button.classList.contains('disabled');
+        console.log(`  - Actually clickable: ${isClickable ? '✅' : '❌'}`);
+        
+      } else {
+        console.log(`Button ${tool.buttonId} (${tool.name}):`);
+        console.log(`  - Found in DOM: ❌ NOT FOUND`);
+        console.log(`  - This button is missing from the HTML!`);
+      }
+    });
+    
+    console.log('=== END TOOL UPGRADE BUTTON DEBUG ===');
+  }
+
+  updateDistributionButtonStates() {
+    // Update decrease buttons
+    const decreaseWorkersBtn = document.getElementById('decreaseWorkers');
+    if (decreaseWorkersBtn) {
+      decreaseWorkersBtn.disabled = this.gameState.distributedWorkers <= 0;
+    }
+
+    const decreaseForestersBtn = document.getElementById('decreaseForesters');
+    if (decreaseForestersBtn) {
+      decreaseForestersBtn.disabled = this.gameState.distributedForesters <= 0;
+    }
+
+    const decreaseCarpentersBtn = document.getElementById('decreaseCarpenters');
+    if (decreaseCarpentersBtn) {
+      decreaseCarpentersBtn.disabled = this.gameState.distributedCarpenters <= 0;
+    }
+
+    // Update increase buttons
+    const increaseWorkersBtn = document.getElementById('increaseWorkers');
+    if (increaseWorkersBtn) {
+      increaseWorkersBtn.disabled = this.gameState.availableWorkers <= 0;
+    }
+
+    const increaseForestersBtn = document.getElementById('increaseForesters');
+    if (increaseForestersBtn) {
+      increaseForestersBtn.disabled = this.gameState.availableWorkers <= 0;
+    }
+
+    const increaseCarpentersBtn = document.getElementById('increaseCarpenters');
+    if (increaseCarpentersBtn) {
+      increaseCarpentersBtn.disabled = this.gameState.availableWorkers <= 0;
+    }
+
+    // Update fire button
+    const fireWorkersBtn = document.getElementById('fireWorkers');
+    if (fireWorkersBtn) {
+      fireWorkersBtn.disabled = this.gameState.totalWorkers <= 0;
+    }
+  }
+
+  hireMoreWorkers() {
+    const cost = this.calculateWorkerPrice(this.gameState.workerBaseCost, this.gameState.totalWorkers - 1);
+    if (this.gameState.gold >= cost) {
+      this.gameState.gold -= cost;
+      this.gameState.totalWorkers++;
+      this.gameState.availableWorkers++;
+      this.updateWorkerDistribution();
+    }
+  }
+
+  fireWorkers() {
+    if (this.gameState.totalWorkers > 0) {
+      this.gameState.totalWorkers--;
+      if (this.gameState.availableWorkers > 0) {
+        this.gameState.availableWorkers--;
+      } else {
+        // Remove from distributed workers if no available workers
+        if (this.gameState.distributedWorkers > 0) {
+          this.gameState.distributedWorkers--;
+        } else if (this.gameState.distributedForesters > 0) {
+          this.gameState.distributedForesters--;
+        } else if (this.gameState.distributedCarpenters > 0) {
+          this.gameState.distributedCarpenters--;
+        }
+      }
+      this.updateWorkerDistribution();
+    }
+  }
+
+  // Count control methods for Arbeitsamt table
+  increaseWorkerCount(type) {
+    if (this.gameState.availableWorkers > 0) {
+      this.gameState.availableWorkers--;
+      
+      // Update both old and new worker variables
+      if (type === 'workers') {
+        this.gameState.workers++;
+        this.gameState.distributedWorkers++;
+      } else if (type === 'foresters') {
+        this.gameState.foresters++;
+        this.gameState.distributedForesters++;
+      } else if (type === 'carpenters') {
+        this.gameState.carpenters++;
+        this.gameState.distributedCarpenters++;
+      }
+      
+      // Update global variables
+      window[type] = this.gameState[type];
+      window['distributed' + type.charAt(0).toUpperCase() + type.slice(1)] = this.gameState['distributed' + type.charAt(0).toUpperCase() + type.slice(1)];
+      window.availableWorkers = this.gameState.availableWorkers;
+      
+      this.updateDisplay();
+      this.updateCountButtonStates();
+      
+      // Save immediately when worker distribution changes
+      this.saveGameToServer();
+    }
+  }
+
+  decreaseWorkerCount(type) {
+    if (this.gameState[type] > 0) {
+      this.gameState.availableWorkers++;
+      
+      // Update both old and new worker variables
+      if (type === 'workers') {
+        this.gameState.workers--;
+        this.gameState.distributedWorkers--;
+      } else if (type === 'foresters') {
+        this.gameState.foresters--;
+        this.gameState.distributedForesters--;
+      } else if (type === 'carpenters') {
+        this.gameState.carpenters--;
+        this.gameState.distributedCarpenters--;
+      }
+      
+      // Update global variables
+      window[type] = this.gameState[type];
+      window['distributed' + type.charAt(0).toUpperCase() + type.slice(1)] = this.gameState['distributed' + type.charAt(0).toUpperCase() + type.slice(1)];
+      window.availableWorkers = this.gameState.availableWorkers;
+      
+      this.updateDisplay();
+      this.updateCountButtonStates();
+      
+      // Save immediately when worker distribution changes
+      this.saveGameToServer();
+    }
+  }
+
+  updateCountButtonStates() {
+    // Update decrease buttons
+    const decreaseWorkerCountBtn = document.getElementById('decreaseWorkerCount');
+    if (decreaseWorkerCountBtn) {
+      decreaseWorkerCountBtn.disabled = this.gameState.workers <= 0;
+    }
+
+    const decreaseForesterCountBtn = document.getElementById('decreaseForesterCount');
+    if (decreaseForesterCountBtn) {
+      decreaseForesterCountBtn.disabled = this.gameState.foresters <= 0;
+    }
+
+    const decreaseCarpenterCountBtn = document.getElementById('decreaseCarpenterCount');
+    if (decreaseCarpenterCountBtn) {
+      decreaseCarpenterCountBtn.disabled = this.gameState.carpenters <= 0;
+    }
+
+    // Update increase buttons
+    const increaseWorkerCountBtn = document.getElementById('increaseWorkerCount');
+    if (increaseWorkerCountBtn) {
+      increaseWorkerCountBtn.disabled = this.gameState.availableWorkers <= 0;
+    }
+
+    const increaseForesterCountBtn = document.getElementById('increaseForesterCount');
+    if (increaseForesterCountBtn) {
+      increaseForesterCountBtn.disabled = this.gameState.availableWorkers <= 0;
+    }
+
+    const increaseCarpenterCountBtn = document.getElementById('increaseCarpenterCount');
+    if (increaseCarpenterCountBtn) {
+      increaseCarpenterCountBtn.disabled = this.gameState.availableWorkers <= 0;
+    }
+
+    // Update available workers info
+    const availableWorkersInfo = document.getElementById('availableWorkersInfo');
+    if (availableWorkersInfo) {
+      availableWorkersInfo.textContent = this.gameState.availableWorkers;
+    }
+  }
+
   showGoldAnimation(button, goldAmount) {
     const animElement = document.createElement('div');
     animElement.className = 'gold-animation';
@@ -293,9 +722,70 @@ class GameCore {
   }
 
   startGameLoops() {
-    setInterval(() => this.autoCollect(), 2000);
+    setInterval(() => this.updateProgressBars(), 2000); // Update progress bars every 2 seconds
+    setInterval(() => this.autoCollect(), 3600000); // Collect resources every hour
     setInterval(() => this.autoUpgrade(), 1000);
-    setInterval(() => this.saveGameToServer(), 2000);
+    setInterval(() => this.updateSaveValues(), 1000); // Update save values every second
+    setInterval(() => this.saveGameToServer(), 1000); // Save every second
+  }
+
+  updateWoodProgress() {
+    // Check if it's working hours (8-16 Uhr) using game time
+    const gameTimeMinutes = window.gameTime || 0;
+    const currentHour = Math.floor(gameTimeMinutes / 60) % 24;
+    const isWorkingHours = currentHour >= 8 && currentHour < 16;
+    
+    if (this.gameState.trees > 0 && this.gameState.workers > 0 && isWorkingHours) {
+      const productionSpeed = this.gameState.toolLevel * this.gameState.workers;
+      this.gameState.progress += productionSpeed;
+      this.setAllProgressBars('', this.gameState.progress);
+    } else if (!isWorkingHours) {
+      // Reset progress bar during non-working hours
+      this.gameState.progress = 0;
+      this.setAllProgressBars('', 0);
+    }
+  }
+
+  updateTreeProgress() {
+    // Check if it's working hours (8-16 Uhr) using game time
+    const gameTimeMinutes = window.gameTime || 0;
+    const currentHour = Math.floor(gameTimeMinutes / 60) % 24;
+    const isWorkingHours = currentHour >= 8 && currentHour < 16;
+    
+    if (this.gameState.foresters > 0 && isWorkingHours) {
+      const productionSpeed = this.gameState.foresters * this.gameState.plantToolLevel;
+      this.gameState.foresterProgress += productionSpeed;
+      this.setAllProgressBars('forester', this.gameState.foresterProgress);
+    } else if (!isWorkingHours) {
+      // Reset progress bar during non-working hours
+      this.gameState.foresterProgress = 0;
+      this.setAllProgressBars('forester', 0);
+    }
+  }
+
+  updateGoldProgress() {
+    // Check if it's working hours (8-16 Uhr) using game time
+    const gameTimeMinutes = window.gameTime || 0;
+    const currentHour = Math.floor(gameTimeMinutes / 60) % 24;
+    const isWorkingHours = currentHour >= 8 && currentHour < 16;
+    
+    // Only work if auto-production is selected AND during working hours
+    if (this.gameState.carpenters > 0 && this.gameState.selectedAutoFurniture && this.gameState.holz >= 10 * this.gameState.carpenters && isWorkingHours) {
+      const productionSpeed = this.gameState.carpenters * this.gameState.carpenterToolLevel;
+      this.gameState.carpenterProgress += productionSpeed;
+      this.setAllProgressBars('carpenter', this.gameState.carpenterProgress);
+    } else if (this.gameState.carpenters > 0 && (!this.gameState.selectedAutoFurniture || !isWorkingHours)) {
+      // Reset progress bar if no auto-production is selected or outside working hours
+      this.gameState.carpenterProgress = 0;
+      this.setAllProgressBars('carpenter', 0);
+    }
+  }
+
+  updateProgressBars() {
+    // Update progress bars without collecting resources
+    this.updateWoodProgress();
+    this.updateTreeProgress();
+    this.updateGoldProgress();
   }
 
   autoCollect() {
@@ -317,10 +807,10 @@ class GameCore {
       const resourcesPerHour = (Math.floor(Math.random() * 11) + 5) * this.gameState.workers;
       
       // Always use progress bar system
-      this.gameState.progress += productionSpeed;
-      this.setAllProgressBars('', this.gameState.progress);
+        this.gameState.progress += productionSpeed;
+        this.setAllProgressBars('', this.gameState.progress);
       
-      if (this.gameState.progress >= 10) {
+        if (this.gameState.progress >= 10) {
         // Show full bar briefly before collecting
         this.setAllProgressBars('', 10);
         setTimeout(() => {
@@ -329,8 +819,9 @@ class GameCore {
           this.gameState.progress = 0;
           this.setAllProgressBars('', this.gameState.progress);
           this.showPlusOneAnimation(document.querySelector('progress-bar[barclass=""]'), resourcesPerHour);
+          this.updateDisplay(); // Update display after resource collection
         }, 200); // 200ms delay to show full bar
-      }
+        }
     } else if (!isWorkingHours) {
       // Reset progress bar during non-working hours
       this.gameState.progress = 0;
@@ -349,10 +840,10 @@ class GameCore {
       const resourcesPerHour = this.gameState.foresters * this.gameState.plantToolLevel;
       
       // Always use progress bar system
-      this.gameState.foresterProgress += productionSpeed;
-      this.setAllProgressBars('forester', this.gameState.foresterProgress);
+        this.gameState.foresterProgress += productionSpeed;
+        this.setAllProgressBars('forester', this.gameState.foresterProgress);
       
-      if (this.gameState.foresterProgress >= 10) {
+        if (this.gameState.foresterProgress >= 10) {
         // Show full bar briefly before collecting
         this.setAllProgressBars('forester', 10);
         setTimeout(() => {
@@ -360,8 +851,9 @@ class GameCore {
           this.gameState.foresterProgress = 0;
           this.setAllProgressBars('forester', this.gameState.foresterProgress);
           this.showPlusOneAnimation(document.querySelector('progress-bar[barclass="forester"]'), resourcesPerHour);
+          this.updateDisplay(); // Update display after resource collection
         }, 200); // 200ms delay to show full bar
-      }
+        }
     } else if (!isWorkingHours) {
       // Reset progress bar during non-working hours
       this.gameState.foresterProgress = 0;
@@ -381,10 +873,10 @@ class GameCore {
       const resourcesPerHour = 15 * this.gameState.carpenters * this.gameState.carpenterToolLevel;
       
       // Always use progress bar system
-      this.gameState.carpenterProgress += productionSpeed;
-      this.setAllProgressBars('carpenter', this.gameState.carpenterProgress);
-      
-      if (this.gameState.carpenterProgress >= this.gameState.CARPENTER_MAX) {
+        this.gameState.carpenterProgress += productionSpeed;
+        this.setAllProgressBars('carpenter', this.gameState.carpenterProgress);
+        
+        if (this.gameState.carpenterProgress >= this.gameState.CARPENTER_MAX) {
         // Show full bar briefly before collecting
         this.setAllProgressBars('carpenter', this.gameState.CARPENTER_MAX);
         setTimeout(() => {
@@ -393,8 +885,12 @@ class GameCore {
           this.gameState.carpenterProgress = 0;
           this.setAllProgressBars('carpenter', this.gameState.carpenterProgress);
           this.showPlusOneAnimation(document.querySelector('progress-bar[barclass="carpenter"]'), resourcesPerHour);
+          
+          // Update tool upgrade buttons when gold changes
+          this.updateToolUpgradeButtons();
+          this.updateDisplay(); // Update display after resource collection
         }, 200); // 200ms delay to show full bar
-      }
+        }
     } else if (this.gameState.carpenters > 0 && (!this.gameState.selectedAutoFurniture || !isWorkingHours)) {
       // Reset progress bar if no auto-production is selected or outside working hours
       this.gameState.carpenterProgress = 0;
@@ -419,6 +915,9 @@ class GameCore {
       if (data && this.gameState.holz >= data.cost) {
         this.gameState.holz -= data.cost;
         this.gameState.gold += data.reward;
+        
+        // Update tool upgrade buttons when gold changes
+        this.updateToolUpgradeButtons();
       }
     }
   }
@@ -584,9 +1083,17 @@ class GameCore {
     localStorage.setItem('selectedAutoFurniture', this.gameState.selectedAutoFurniture);
   }
 
+  updateSaveValues() {
+    // Update all values that belong to the save state
+    this.updateLocalVariables();
+    // Don't call updateWorkerDistribution() here as it might reset the distribution
+    this.saveAutoUpgradeState();
+    this.saveAutoProductionState();
+  }
+
   async saveGameToServer() {
     try {
-      const response = await fetch('/save', {
+      const response = await fetch('http://localhost:1337/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -601,7 +1108,13 @@ class GameCore {
           carpenterToolLevel: this.gameState.carpenterToolLevel,
           progress: this.gameState.progress,
           foresterProgress: this.gameState.foresterProgress,
-          carpenterProgress: this.gameState.carpenterProgress
+          carpenterProgress: this.gameState.carpenterProgress,
+          // Worker distribution system
+          totalWorkers: this.gameState.totalWorkers,
+          distributedWorkers: this.gameState.distributedWorkers,
+          distributedForesters: this.gameState.distributedForesters,
+          distributedCarpenters: this.gameState.distributedCarpenters,
+          availableWorkers: this.gameState.availableWorkers
         })
       });
       await response.json();
@@ -612,22 +1125,40 @@ class GameCore {
 
   async loadGameFromServer() {
     try {
-      const response = await fetch('/load');
+      const response = await fetch('http://localhost:1337/load');
       const save = await response.json();
       
       if (save) {
-        // Update game state with saved data
+        // Restore progress bars
+        this.setAllProgressBars('', this.gameState.progress || 0);
+        this.setAllProgressBars('forester', this.gameState.foresterProgress || 0);
+        this.setAllProgressBars('carpenter', this.gameState.carpenterProgress || 0);
+        
+        // Handle worker distribution first
+        if (save.distributedWorkers !== undefined) {
+          // Use saved distribution data
+          this.gameState.distributedWorkers = save.distributedWorkers || 0;
+          this.gameState.distributedForesters = save.distributedForesters || 0;
+          this.gameState.distributedCarpenters = save.distributedCarpenters || 0;
+          this.gameState.totalWorkers = save.totalWorkers || 2;
+        } else {
+          // Legacy: calculate distribution from worker counts
+          this.gameState.distributedWorkers = save.workers || 0;
+          this.gameState.distributedForesters = save.foresters || 0;
+          this.gameState.distributedCarpenters = save.carpenters || 0;
+          this.gameState.totalWorkers = 3;
+        }
+        
+        // Update game state with saved data (but don't overwrite distribution data)
         Object.keys(this.gameState).forEach(key => {
-          if (save[key] !== undefined) {
+          if (save[key] !== undefined && !key.startsWith('distributed') && key !== 'totalWorkers' && key !== 'availableWorkers') {
             this.gameState[key] = save[key];
             window[key] = save[key];
           }
         });
 
-        // Restore progress bars
-        this.setAllProgressBars('', this.gameState.progress || 0);
-        this.setAllProgressBars('forester', this.gameState.foresterProgress || 0);
-        this.setAllProgressBars('carpenter', this.gameState.carpenterProgress || 0);
+        // Update worker distribution after loading other data
+        this.updateWorkerDistribution();
         
         this.updateDisplay();
       }
@@ -661,6 +1192,9 @@ class GameCore {
     if (window.researchSystem) {
       window.researchSystem.resetResearch();
     }
+
+    // Ensure worker distribution is correct after reset
+    this.updateWorkerDistribution();
 
     this.updateDisplay();
     this.saveGameToServer();

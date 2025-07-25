@@ -302,7 +302,7 @@ if (typeof window !== 'undefined') {
             window.researchSystem.resetResearch();
             console.log('Research reset via researchSystem');
         } else {
-            localStorage.removeItem('research');
+        localStorage.removeItem('research');
             console.log('Research reset via localStorage only');
         }
     }
